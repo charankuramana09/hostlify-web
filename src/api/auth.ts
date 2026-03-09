@@ -1,0 +1,42 @@
+import { apiClient } from './client'
+
+export interface LoginPayload {
+  email: string
+  password: string
+}
+
+export interface RegisterPayload {
+  firstName: string
+  lastName: string
+  email: string
+  password: string
+  mobile: string
+}
+
+export interface ApiResponse<T> {
+  success: boolean
+  message: string
+  data: T
+  timestamp: number
+}
+
+export interface AuthData {
+  accessToken: string
+  refreshToken: string
+  role: string
+}
+
+export const registerHosteller = (data: RegisterPayload) =>
+  apiClient.post<ApiResponse<AuthData>>('/auth/register/hosteller', data).then((r) => r.data)
+
+export const loginHosteller = (data: LoginPayload) =>
+  apiClient.post<ApiResponse<AuthData>>('/auth/hosteller/login', data).then((r) => r.data)
+
+export const loginStaff = (data: LoginPayload) =>
+  apiClient.post<ApiResponse<AuthData>>('/auth/staff/login', data).then((r) => r.data)
+
+export const loginSuperAdmin = (data: LoginPayload) =>
+  apiClient.post<ApiResponse<AuthData>>('/auth/superadmin/login', data).then((r) => r.data)
+
+export const refreshAuthToken = (refreshToken: string) =>
+  apiClient.post<ApiResponse<AuthData>>(`/auth/refresh?refreshToken=${refreshToken}`).then((r) => r.data)

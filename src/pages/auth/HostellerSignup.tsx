@@ -1,0 +1,150 @@
+import { useState, type FormEvent, type ChangeEvent } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
+import { useMutation } from '@tanstack/react-query'
+import { registerHosteller } from '../../api/auth'
+import { useAuthStore } from '../../store/authStore'
+import { STRINGS } from '../../constants/strings'
+import { Button, Input } from '../../components/common/index'
+
+export default function HostellerSignup() {
+    const navigate = useNavigate()
+    const setAuth = useAuthStore((s) => s.setAuth)
+    const [form, setForm] = useState({
+        firstName: '',
+        lastName: '',
+        email: '',
+        password: '',
+        mobile: '',
+    })
+
+    const { mutate, isPending, error } = useMutation({
+        mutationFn: registerHosteller,
+        onSuccess: (response) => {
+            const { accessToken, refreshToken, role } = response.data
+            setAuth({ accessToken, refreshToken, role })
+            navigate('/app/dashboard')
+        },
+    })
+
+    function handleSubmit(e: FormEvent) {
+        e.preventDefault()
+        mutate(form)
+    }
+
+    const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
+        const { id, value } = e.target
+        setForm(prev => ({ ...prev, [id]: value }))
+    }
+
+    const errorMsg = error instanceof Error ? error.message : error ? 'Registration failed. Please try again.' : null
+
+    return (
+        <div className="min-h-screen bg-gray-50 flex flex-col">
+            {/* Registration Hero from wireframe HP-01 */}
+            <div className="bg-slate-900 pt-8 px-10 pb-4 text-white">
+                <div className="flex items-center gap-3 mb-6">
+                    <div className="text-xl font-bold tracking-tight">{STRINGS.common.appName}</div>
+                    <div className="w-[1px] h-5 bg-white/20"></div>
+                    <div className="text-[13px] text-white/60">New Resident Registration</div>
+                </div>
+
+                {/* Stepper mockup from wireframe */}
+                <div className="flex items-center mb-6 overflow-x-auto no-scrollbar">
+                    <div className="flex items-center shrink-0">
+                        <div className="w-7.5 h-7.5 rounded-full bg-brand-600 flex items-center justify-center text-[13px] font-semibold text-white">1</div>
+                        <span className="text-[12px] font-medium ml-2 text-white">{STRINGS.auth.registrationStep1.split(' — ')[1]}</span>
+                    </div>
+                    <div className="flex-1 min-w-[30px] h-[2px] bg-white/10 mx-2"></div>
+                    <div className="flex items-center opacity-40 shrink-0">
+                        <div className="w-7.5 h-7.5 rounded-full bg-white/20 flex items-center justify-center text-[13px] font-semibold text-white">2</div>
+                        <span className="text-[12px] font-medium ml-2 text-white">{STRINGS.auth.registrationStep2.split(' — ')[1]}</span>
+                    </div>
+                    <div className="hidden sm:block flex-1 min-w-[30px] h-[2px] bg-white/10 mx-2"></div>
+                </div>
+            </div>
+
+            <div className="flex-1 flex justify-center p-4">
+                <div className="w-full max-w-2xl bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden self-start">
+                    <form onSubmit={handleSubmit} className="p-8">
+                        <div className="mb-6">
+                            <h2 className="text-lg font-bold text-gray-900">{STRINGS.auth.registrationStep1}</h2>
+                            <p className="text-[13px] text-gray-400 mt-1">{STRINGS.common.allFieldsRequired}</p>
+                        </div>
+
+                        {errorMsg && (
+                            <div className="alert alert-danger mb-6">
+                                <span>{errorMsg}</span>
+                            </div>
+                        )}
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6">
+                            <Input
+                                id="firstName"
+                                label={STRINGS.auth.firstName}
+                                required
+                                value={form.firstName}
+                                onChange={handleChange}
+                                placeholder="e.g. Ravi"
+                            />
+                            <Input
+                                id="lastName"
+                                label={STRINGS.auth.lastName}
+                                required
+                                value={form.lastName}
+                                onChange={handleChange}
+                                placeholder="e.g. Kumar"
+                            />
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6">
+                            <Input
+                                id="email"
+                                label={STRINGS.auth.email}
+                                type="email"
+                                required
+                                value={form.email}
+                                onChange={handleChange}
+                                placeholder={STRINGS.auth.emailPlaceholder}
+                                hint="Used for login and notifications"
+                            />
+                            <Input
+                                id="mobile"
+                                label={STRINGS.auth.mobile}
+                                type="tel"
+                                required
+                                prefix="+91"
+                                value={form.mobile}
+                                onChange={handleChange}
+                                placeholder="9876543210"
+                            />
+                        </div>
+
+                        <Input
+                            id="password"
+                            label={STRINGS.auth.password}
+                            type="password"
+                            required
+                            value={form.password}
+                            onChange={handleChange}
+                            placeholder={STRINGS.auth.passwordPlaceholder}
+                        />
+
+                        <div className="mt-8 flex items-center justify-between border-t border-gray-100 pt-6">
+                            <Link to="/auth/login" className="text-[13px] text-gray-500 hover:text-gray-900 font-medium">
+                                {STRINGS.common.back} to Login
+                            </Link>
+                            <Button
+                                type="submit"
+                                size="lg"
+                                isLoading={isPending}
+                                className="px-8"
+                            >
+                                {STRINGS.common.continue} →
+                            </Button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    )
+}

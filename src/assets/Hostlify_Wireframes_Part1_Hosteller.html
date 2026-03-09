@@ -1,0 +1,1883 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hostlify – Wireframes Part 1: Hosteller Portal</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* ══ DESIGN SYSTEM ══════════════════════════════════════════════════════ */
+:root {
+  /* Brand */
+  --brand-900: #0f2d4a;
+  --brand-800: #1a3d5c;
+  --brand-700: #1e5080;
+  --brand-600: #1d6ea8;
+  --brand-500: #1a8fd1;
+  --brand-400: #3aaee8;
+  --brand-300: #7acdf2;
+  --brand-100: #e8f4fb;
+  --brand-50:  #f0f8fd;
+
+  /* Accent */
+  --accent-600: #d04a1a;
+  --accent-500: #f05a20;
+  --accent-100: #fff0e8;
+
+  /* Semantic */
+  --success-600: #1a7a4a;
+  --success-500: #22a564;
+  --success-100: #e6f7ef;
+  --warning-600: #b45309;
+  --warning-500: #f59e0b;
+  --warning-100: #fef3c7;
+  --danger-600: #b91c1c;
+  --danger-500: #ef4444;
+  --danger-100: #fee2e2;
+  --info-500: #6366f1;
+  --info-100: #eef2ff;
+
+  /* Grays */
+  --gray-950: #0a0f14;
+  --gray-900: #111827;
+  --gray-800: #1f2937;
+  --gray-700: #374151;
+  --gray-600: #4b5563;
+  --gray-500: #6b7280;
+  --gray-400: #9ca3af;
+  --gray-300: #d1d5db;
+  --gray-200: #e5e7eb;
+  --gray-100: #f3f4f6;
+  --gray-50:  #f9fafb;
+  --white:    #ffffff;
+
+  /* Typography */
+  --font-body: 'DM Sans', sans-serif;
+  --font-mono: 'DM Mono', monospace;
+
+  /* Spacing */
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+  --radius-xl: 20px;
+  --radius-full: 9999px;
+
+  /* Shadows */
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.06);
+  --shadow-md: 0 4px 12px rgba(0,0,0,0.08), 0 2px 4px rgba(0,0,0,0.05);
+  --shadow-lg: 0 10px 30px rgba(0,0,0,0.10), 0 4px 8px rgba(0,0,0,0.06);
+  --shadow-card: 0 2px 8px rgba(15,45,74,0.06), 0 1px 3px rgba(15,45,74,0.04);
+
+  /* Sidebar */
+  --sidebar-bg: #0f2d4a;
+  --sidebar-width: 228px;
+  --header-height: 56px;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: var(--font-body);
+  background: #e8eef4;
+  color: var(--gray-900);
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+/* ── Page wrapper ─────────────────────────────────────── */
+.doc-wrapper {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 32px 24px;
+}
+
+.doc-header {
+  background: var(--brand-900);
+  color: white;
+  padding: 32px 40px;
+  border-radius: var(--radius-xl);
+  margin-bottom: 40px;
+  position: relative;
+  overflow: hidden;
+}
+.doc-header::before {
+  content: '';
+  position: absolute;
+  top: -60px; right: -60px;
+  width: 240px; height: 240px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.04);
+}
+.doc-header h1 { font-size: 28px; font-weight: 700; letter-spacing: -0.5px; }
+.doc-header p { color: rgba(255,255,255,0.6); margin-top: 6px; font-size: 14px; }
+.doc-header .meta { display: flex; gap: 24px; margin-top: 20px; }
+.doc-header .meta-item { font-size: 13px; }
+.doc-header .meta-item span { color: rgba(255,255,255,0.5); display: block; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 2px; }
+
+/* ── Section label ────────────────────────────────────── */
+.section-label {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--brand-600);
+  margin: 48px 0 16px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--gray-200);
+}
+
+/* ── Screen block ─────────────────────────────────────── */
+.screen-block {
+  background: white;
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-lg);
+  margin-bottom: 48px;
+  overflow: hidden;
+  border: 1px solid var(--gray-200);
+}
+.screen-meta {
+  background: var(--gray-50);
+  border-bottom: 1px solid var(--gray-200);
+  padding: 14px 24px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.screen-id {
+  background: var(--brand-600);
+  color: white;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-mono);
+}
+.screen-name { font-size: 15px; font-weight: 600; color: var(--gray-800); }
+.screen-route { font-size: 12px; color: var(--gray-400); font-family: var(--font-mono); margin-left: auto; }
+.screen-frame { padding: 0; background: #f0f4f8; }
+
+/* ── Design System Card ───────────────────────────────── */
+.ds-card {
+  background: white;
+  border-radius: var(--radius-xl);
+  padding: 32px;
+  margin-bottom: 32px;
+  box-shadow: var(--shadow-card);
+  border: 1px solid var(--gray-200);
+}
+.ds-title { font-size: 18px; font-weight: 700; color: var(--gray-900); margin-bottom: 20px; }
+.ds-subtitle { font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; color: var(--gray-500); margin: 20px 0 10px; }
+
+/* Colors */
+.color-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 10px; }
+.color-chip { border-radius: var(--radius-md); overflow: hidden; box-shadow: var(--shadow-sm); }
+.color-swatch { height: 48px; }
+.color-info { padding: 6px 8px; background: white; font-size: 11px; }
+.color-name { font-weight: 600; color: var(--gray-700); display: block; }
+.color-hex { color: var(--gray-400); font-family: var(--font-mono); }
+
+/* Typography */
+.type-row { padding: 12px 0; border-bottom: 1px solid var(--gray-100); display: flex; align-items: baseline; gap: 20px; }
+.type-spec { font-size: 11px; color: var(--gray-400); font-family: var(--font-mono); min-width: 160px; }
+
+/* Components preview */
+.comp-row { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-bottom: 12px; }
+
+/* ══ COMPONENT LIBRARY ══════════════════════════════════ */
+
+/* --- Buttons --- */
+.btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 9px 18px; border-radius: var(--radius-md);
+  font-size: 14px; font-weight: 500; font-family: var(--font-body);
+  border: none; cursor: pointer; transition: all 0.15s;
+  text-decoration: none; white-space: nowrap;
+}
+.btn-primary   { background: var(--brand-600); color: white; }
+.btn-secondary { background: var(--gray-100); color: var(--gray-700); border: 1px solid var(--gray-200); }
+.btn-success   { background: var(--success-500); color: white; }
+.btn-danger    { background: var(--danger-500); color: white; }
+.btn-warning   { background: var(--warning-500); color: white; }
+.btn-ghost     { background: transparent; color: var(--brand-600); border: 1.5px solid var(--brand-300); }
+.btn-sm        { padding: 6px 12px; font-size: 13px; border-radius: var(--radius-sm); }
+.btn-lg        { padding: 12px 24px; font-size: 15px; font-weight: 600; border-radius: var(--radius-lg); }
+.btn-icon      { padding: 8px; border-radius: var(--radius-md); background: var(--gray-100); color: var(--gray-600); border: 1px solid var(--gray-200); }
+
+/* --- Badges --- */
+.badge {
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 3px 9px; border-radius: var(--radius-full);
+  font-size: 12px; font-weight: 600; white-space: nowrap;
+}
+.badge-success  { background: var(--success-100); color: var(--success-600); }
+.badge-warning  { background: var(--warning-100); color: var(--warning-600); }
+.badge-danger   { background: var(--danger-100); color: var(--danger-600); }
+.badge-info     { background: var(--info-100); color: var(--info-500); }
+.badge-brand    { background: var(--brand-100); color: var(--brand-700); }
+.badge-gray     { background: var(--gray-100); color: var(--gray-600); }
+.badge-dot::before { content: '●'; font-size: 7px; }
+
+/* --- Cards --- */
+.card {
+  background: white; border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card); border: 1px solid var(--gray-200);
+  padding: 20px;
+}
+
+/* --- Stat cards --- */
+.stat-card {
+  background: white; border-radius: var(--radius-lg);
+  padding: 20px; box-shadow: var(--shadow-card);
+  border: 1px solid var(--gray-200);
+}
+.stat-card-accent { border-left: 3px solid var(--brand-500); }
+.stat-card-success { border-left: 3px solid var(--success-500); }
+.stat-card-warning { border-left: 3px solid var(--warning-500); }
+.stat-card-danger  { border-left: 3px solid var(--danger-500); }
+.stat-label { font-size: 12px; color: var(--gray-500); font-weight: 500; text-transform: uppercase; letter-spacing: 0.3px; }
+.stat-value { font-size: 26px; font-weight: 700; color: var(--gray-900); line-height: 1.2; margin: 4px 0 2px; }
+.stat-sub   { font-size: 12px; color: var(--gray-400); }
+.stat-icon  { width: 38px; height: 38px; border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center; font-size: 18px; margin-bottom: 12px; }
+
+/* --- Form elements --- */
+.form-group { margin-bottom: 16px; }
+.form-label { display: block; font-size: 13px; font-weight: 500; color: var(--gray-700); margin-bottom: 6px; }
+.form-label .req { color: var(--danger-500); margin-left: 2px; }
+.form-input {
+  width: 100%; padding: 9px 13px;
+  border: 1.5px solid var(--gray-200); border-radius: var(--radius-md);
+  font-size: 14px; font-family: var(--font-body); color: var(--gray-900);
+  background: white; outline: none; transition: border-color 0.15s;
+}
+.form-input:focus { border-color: var(--brand-500); box-shadow: 0 0 0 3px rgba(26,143,209,0.1); }
+.form-input::placeholder { color: var(--gray-400); }
+.form-input-prefix { position: relative; }
+.form-input-prefix .prefix { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--gray-400); font-size: 14px; }
+.form-input-prefix .form-input { padding-left: 32px; }
+.form-select {
+  width: 100%; padding: 9px 32px 9px 13px;
+  border: 1.5px solid var(--gray-200); border-radius: var(--radius-md);
+  font-size: 14px; font-family: var(--font-body); color: var(--gray-900);
+  background: white url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%239ca3af' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E") no-repeat right 12px center;
+  appearance: none; outline: none;
+}
+.form-hint { font-size: 12px; color: var(--gray-400); margin-top: 4px; }
+.form-error { font-size: 12px; color: var(--danger-500); margin-top: 4px; }
+
+/* --- Table --- */
+.tbl { width: 100%; border-collapse: collapse; }
+.tbl th {
+  text-align: left; padding: 10px 16px;
+  font-size: 11px; font-weight: 600; color: var(--gray-500);
+  text-transform: uppercase; letter-spacing: 0.5px;
+  background: var(--gray-50); border-bottom: 1px solid var(--gray-200);
+}
+.tbl td { padding: 13px 16px; border-bottom: 1px solid var(--gray-100); font-size: 14px; color: var(--gray-700); }
+.tbl tr:last-child td { border-bottom: none; }
+.tbl tr:hover td { background: var(--gray-50); }
+.tbl .td-bold { font-weight: 600; color: var(--gray-900); }
+.tbl .td-mono { font-family: var(--font-mono); font-size: 13px; }
+.tbl .td-action { text-align: right; }
+
+/* --- Alert/Notice --- */
+.alert {
+  padding: 12px 16px; border-radius: var(--radius-md);
+  font-size: 13px; display: flex; align-items: flex-start; gap: 10px;
+  margin-bottom: 12px;
+}
+.alert-info    { background: var(--info-100); color: #3730a3; border-left: 3px solid var(--info-500); }
+.alert-success { background: var(--success-100); color: var(--success-600); border-left: 3px solid var(--success-500); }
+.alert-warning { background: var(--warning-100); color: var(--warning-600); border-left: 3px solid var(--warning-500); }
+.alert-danger  { background: var(--danger-100); color: var(--danger-600); border-left: 3px solid var(--danger-500); }
+
+/* --- Avatar --- */
+.avatar {
+  display: inline-flex; align-items: center; justify-content: center;
+  border-radius: var(--radius-full); font-weight: 600;
+  font-size: 14px; color: white; flex-shrink: 0;
+}
+.avatar-sm  { width: 32px; height: 32px; font-size: 12px; }
+.avatar-md  { width: 40px; height: 40px; }
+.avatar-lg  { width: 56px; height: 56px; font-size: 20px; }
+.avatar-xl  { width: 80px; height: 80px; font-size: 28px; }
+.avatar-brand  { background: linear-gradient(135deg, var(--brand-500), var(--brand-700)); }
+.avatar-orange { background: linear-gradient(135deg, #f97316, #ea580c); }
+.avatar-green  { background: linear-gradient(135deg, #22c55e, #16a34a); }
+.avatar-purple { background: linear-gradient(135deg, #a855f7, #7c3aed); }
+
+/* --- Sidebar --- */
+.sidebar {
+  width: var(--sidebar-width); background: var(--sidebar-bg);
+  height: 100%; display: flex; flex-direction: column;
+  position: relative;
+}
+.sidebar-logo {
+  padding: 18px 20px 14px;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+.sidebar-logo-text {
+  font-size: 20px; font-weight: 700; color: white; letter-spacing: -0.5px;
+}
+.sidebar-logo-sub { font-size: 11px; color: rgba(255,255,255,0.4); margin-top: 1px; }
+.sidebar-section { padding: 16px 12px 4px; }
+.sidebar-section-label {
+  font-size: 10px; font-weight: 600; text-transform: uppercase;
+  letter-spacing: 0.8px; color: rgba(255,255,255,0.3);
+  padding: 0 8px; margin-bottom: 4px;
+}
+.sidebar-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 9px 12px; border-radius: var(--radius-md);
+  font-size: 14px; color: rgba(255,255,255,0.65);
+  cursor: pointer; transition: all 0.15s; margin-bottom: 1px;
+  text-decoration: none; font-weight: 400;
+}
+.sidebar-item:hover { background: rgba(255,255,255,0.08); color: rgba(255,255,255,0.9); }
+.sidebar-item.active { background: var(--brand-600); color: white; font-weight: 500; }
+.sidebar-item .si-icon { width: 20px; text-align: center; font-size: 16px; }
+.sidebar-item .si-badge {
+  margin-left: auto; background: var(--danger-500);
+  color: white; font-size: 10px; font-weight: 700;
+  padding: 1px 6px; border-radius: var(--radius-full);
+}
+.sidebar-bottom {
+  margin-top: auto; padding: 12px;
+  border-top: 1px solid rgba(255,255,255,0.06);
+}
+.sidebar-user {
+  display: flex; align-items: center; gap: 10px;
+  padding: 8px; border-radius: var(--radius-md);
+  cursor: pointer;
+}
+.sidebar-user:hover { background: rgba(255,255,255,0.06); }
+.sidebar-user-info { flex: 1; min-width: 0; }
+.sidebar-user-name { font-size: 13px; font-weight: 500; color: white; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.sidebar-user-role { font-size: 11px; color: rgba(255,255,255,0.4); }
+
+/* --- Top header bar --- */
+.topbar {
+  height: var(--header-height); background: white;
+  border-bottom: 1px solid var(--gray-200);
+  display: flex; align-items: center;
+  padding: 0 24px; gap: 16px;
+}
+.topbar-title { font-size: 16px; font-weight: 600; color: var(--gray-900); }
+.topbar-breadcrumb { font-size: 13px; color: var(--gray-400); }
+.topbar-right { margin-left: auto; display: flex; align-items: center; gap: 12px; }
+.topbar-notif-btn {
+  width: 36px; height: 36px; border-radius: var(--radius-md);
+  background: var(--gray-100); border: 1px solid var(--gray-200);
+  display: flex; align-items: center; justify-content: center;
+  position: relative; cursor: pointer; font-size: 16px;
+}
+.topbar-notif-dot {
+  position: absolute; top: 7px; right: 7px;
+  width: 8px; height: 8px; background: var(--danger-500);
+  border-radius: 50%; border: 1.5px solid white;
+}
+
+/* --- App shell --- */
+.app-shell {
+  display: flex; height: 680px;
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+}
+.app-shell .main-area {
+  flex: 1; display: flex; flex-direction: column;
+  background: var(--gray-50); overflow: hidden; min-width: 0;
+}
+.app-shell .content-area {
+  flex: 1; overflow-y: auto; padding: 24px;
+}
+
+/* --- Page title --- */
+.page-title {
+  font-size: 20px; font-weight: 700; color: var(--gray-900);
+  letter-spacing: -0.3px; margin-bottom: 4px;
+}
+.page-subtitle { font-size: 13px; color: var(--gray-500); margin-bottom: 24px; }
+
+/* --- Grid helpers --- */
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+.grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+.flex-row { display: flex; gap: 12px; align-items: center; }
+.flex-between { display: flex; align-items: center; justify-content: space-between; }
+.flex-col { display: flex; flex-direction: column; gap: 10px; }
+
+/* --- Divider --- */
+.divider { height: 1px; background: var(--gray-200); margin: 16px 0; }
+
+/* --- Empty state --- */
+.empty-state { text-align: center; padding: 48px 24px; }
+.empty-state-icon { font-size: 48px; margin-bottom: 12px; opacity: 0.5; }
+.empty-state-title { font-size: 16px; font-weight: 600; color: var(--gray-700); margin-bottom: 6px; }
+.empty-state-sub { font-size: 13px; color: var(--gray-400); }
+
+/* --- Steps --- */
+.steps { display: flex; align-items: center; gap: 0; margin-bottom: 28px; }
+.step-item { display: flex; align-items: center; flex: 1; }
+.step-circle {
+  width: 30px; height: 30px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 13px; font-weight: 600; flex-shrink: 0;
+}
+.step-circle.done     { background: var(--success-500); color: white; }
+.step-circle.active   { background: var(--brand-600); color: white; }
+.step-circle.inactive { background: var(--gray-200); color: var(--gray-500); }
+.step-label { font-size: 12px; font-weight: 500; margin-left: 8px; color: var(--gray-600); }
+.step-line { flex: 1; height: 2px; background: var(--gray-200); margin: 0 8px; }
+.step-line.done { background: var(--success-500); }
+
+/* --- Progress bar --- */
+.progress-bar { height: 8px; background: var(--gray-200); border-radius: var(--radius-full); overflow: hidden; }
+.progress-fill { height: 100%; border-radius: var(--radius-full); background: linear-gradient(90deg, var(--brand-500), var(--brand-400)); }
+
+/* --- Tag --- */
+.tag { display: inline-flex; align-items: center; gap: 4px; padding: 4px 10px; background: var(--gray-100); color: var(--gray-700); border-radius: var(--radius-sm); font-size: 12px; font-weight: 500; }
+
+/* --- Modal overlay --- */
+.modal-backdrop {
+  background: rgba(0,0,0,0.45);
+  display: flex; align-items: center; justify-content: center;
+  padding: 24px;
+}
+.modal {
+  background: white; border-radius: var(--radius-xl);
+  width: 100%; max-width: 440px;
+  box-shadow: 0 24px 64px rgba(0,0,0,0.2);
+}
+.modal-header {
+  padding: 20px 24px; border-bottom: 1px solid var(--gray-100);
+  display: flex; align-items: center; justify-content: space-between;
+}
+.modal-title { font-size: 16px; font-weight: 700; color: var(--gray-900); }
+.modal-body { padding: 20px 24px; }
+.modal-footer { padding: 16px 24px; border-top: 1px solid var(--gray-100); display: flex; gap: 8px; justify-content: flex-end; }
+.modal-close { width: 28px; height: 28px; border-radius: var(--radius-sm); background: var(--gray-100); border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; color: var(--gray-500); font-size: 16px; }
+
+/* --- Notification item --- */
+.notif-item { display: flex; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--gray-100); }
+.notif-dot { width: 8px; height: 8px; background: var(--brand-500); border-radius: 50%; margin-top: 6px; flex-shrink: 0; }
+.notif-dot.read { background: var(--gray-300); }
+.notif-text { font-size: 13px; color: var(--gray-700); line-height: 1.5; }
+.notif-time { font-size: 11px; color: var(--gray-400); margin-top: 2px; }
+
+/* --- Razorpay payment box --- */
+.payment-box {
+  background: linear-gradient(135deg, #0f2d4a, #1a5080);
+  border-radius: var(--radius-lg); padding: 24px;
+  color: white;
+}
+.payment-box-amount { font-size: 32px; font-weight: 700; }
+.payment-box-label  { font-size: 13px; opacity: 0.7; margin-bottom: 4px; }
+.payment-box-period { font-size: 14px; opacity: 0.85; }
+
+/* --- Timeline --- */
+.timeline { position: relative; padding-left: 20px; }
+.timeline::before { content: ''; position: absolute; left: 7px; top: 0; bottom: 0; width: 2px; background: var(--gray-200); }
+.timeline-item { position: relative; padding-bottom: 20px; }
+.timeline-item::before { content: ''; position: absolute; left: -17px; top: 5px; width: 10px; height: 10px; border-radius: 50%; background: var(--brand-400); border: 2px solid white; box-shadow: 0 0 0 2px var(--brand-200, #7acdf2); }
+.timeline-item.done::before { background: var(--success-500); }
+.timeline-date { font-size: 11px; color: var(--gray-400); margin-bottom: 2px; }
+.timeline-text { font-size: 13px; color: var(--gray-700); font-weight: 500; }
+.timeline-sub  { font-size: 12px; color: var(--gray-400); }
+
+/* --- Login page --- */
+.login-page {
+  background: linear-gradient(135deg, #0a1929 0%, #0f2d4a 40%, #1d5080 100%);
+  min-height: 680px; display: flex; align-items: center; justify-content: center;
+  position: relative; overflow: hidden;
+}
+.login-page::before {
+  content: '';
+  position: absolute; top: -100px; right: -100px;
+  width: 400px; height: 400px; border-radius: 50%;
+  background: radial-gradient(circle, rgba(26,143,209,0.15) 0%, transparent 70%);
+}
+.login-card {
+  background: white; border-radius: var(--radius-xl);
+  padding: 40px; width: 380px;
+  box-shadow: 0 32px 80px rgba(0,0,0,0.4);
+  position: relative; z-index: 1;
+}
+.login-logo { font-size: 26px; font-weight: 700; color: var(--brand-800); letter-spacing: -0.5px; margin-bottom: 4px; }
+.login-subtitle { font-size: 13px; color: var(--gray-400); margin-bottom: 28px; }
+
+/* --- Annc card --- */
+.annc-card {
+  border-left: 3px solid var(--brand-500);
+  background: var(--brand-50); padding: 14px 16px;
+  border-radius: 0 var(--radius-md) var(--radius-md) 0;
+  margin-bottom: 10px;
+}
+.annc-card.urgent  { border-color: var(--danger-500); background: var(--danger-100); }
+.annc-card.important { border-color: var(--warning-500); background: var(--warning-100); }
+.annc-title { font-size: 14px; font-weight: 600; color: var(--gray-900); margin-bottom: 3px; }
+.annc-body  { font-size: 13px; color: var(--gray-600); line-height: 1.5; }
+.annc-date  { font-size: 11px; color: var(--gray-400); margin-top: 6px; }
+
+/* --- Menu table special --- */
+.menu-cell { padding: 10px 12px; border: 1px solid var(--gray-200); border-radius: var(--radius-sm); font-size: 13px; }
+.menu-day { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: var(--gray-500); margin-bottom: 8px; }
+
+/* ══ SCREEN-SPECIFIC STYLES ════════════════════════════ */
+.due-banner {
+  background: linear-gradient(135deg, var(--warning-500), #d97706);
+  border-radius: var(--radius-lg); padding: 20px 24px;
+  color: white; margin-bottom: 20px;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.due-banner-overdue {
+  background: linear-gradient(135deg, var(--danger-500), #b91c1c);
+}
+.quick-action {
+  background: white; border: 1.5px solid var(--gray-200);
+  border-radius: var(--radius-lg); padding: 16px;
+  display: flex; flex-direction: column; align-items: center;
+  gap: 8px; cursor: pointer; transition: all 0.15s; text-align: center;
+}
+.quick-action:hover { border-color: var(--brand-400); background: var(--brand-50); }
+.quick-action-icon { font-size: 24px; }
+.quick-action-label { font-size: 12px; font-weight: 500; color: var(--gray-700); }
+
+/* Complaint */
+.complaint-row { padding: 14px 16px; border: 1px solid var(--gray-200); border-radius: var(--radius-md); margin-bottom: 8px; background: white; }
+.complaint-row:hover { border-color: var(--brand-300); background: var(--brand-50); }
+
+/* Referral */
+.referral-code-box {
+  background: var(--gray-900); border-radius: var(--radius-md);
+  padding: 14px 20px; display: flex; align-items: center; justify-content: space-between;
+}
+.referral-code { font-family: var(--font-mono); font-size: 22px; font-weight: 700; color: var(--brand-300); letter-spacing: 4px; }
+
+/* ── Registration stepper ─────────────────────────────── */
+.reg-hero {
+  background: linear-gradient(135deg, #0a1929, #1d5080);
+  padding: 32px 40px 0; color: white;
+}
+.reg-body { padding: 32px 40px; background: var(--gray-50); }
+
+/* ── Scrollbar ─────────────────────────────────────────── */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--gray-300); border-radius: 3px; }
+</style>
+</head>
+<body>
+<div class="doc-wrapper">
+
+<!-- ══ DOCUMENT HEADER ═══════════════════════════════════ -->
+<div class="doc-header">
+  <div class="meta" style="gap:8px;margin-bottom:20px;">
+    <span style="background:rgba(255,255,255,0.15);color:white;font-size:11px;font-weight:600;padding:3px 10px;border-radius:4px;letter-spacing:0.5px;">PART 1 OF 3</span>
+    <span style="background:rgba(255,255,255,0.15);color:white;font-size:11px;font-weight:600;padding:3px 10px;border-radius:4px;letter-spacing:0.5px;">HOSTELLER PORTAL</span>
+    <span style="background:rgba(255,255,255,0.15);color:white;font-size:11px;font-weight:600;padding:3px 10px;border-radius:4px;letter-spacing:0.5px;">17 SCREENS</span>
+  </div>
+  <h1>Hostlify — High-Fidelity Wireframes</h1>
+  <p>Complete UI specification with design system, components, and all screen layouts. Feed to any AI design tool to generate production-ready screens.</p>
+  <div class="meta">
+    <div class="meta-item"><span>Version</span>2.0 HiFi</div>
+    <div class="meta-item"><span>Date</span>March 2026</div>
+    <div class="meta-item"><span>Fonts</span>DM Sans + DM Mono</div>
+    <div class="meta-item"><span>Primary Color</span>#1d6ea8</div>
+    <div class="meta-item"><span>Part Coverage</span>Login + Hosteller Portal (HP-01 → HP-17)</div>
+  </div>
+</div>
+
+<!-- ══ DESIGN SYSTEM ════════════════════════════════════ -->
+<div class="section-label">Design System</div>
+
+<div class="ds-card">
+  <div class="ds-title">🎨 Color Palette</div>
+  <div class="ds-subtitle">Brand Blues</div>
+  <div class="color-grid">
+    <div class="color-chip"><div class="color-swatch" style="background:#0f2d4a"></div><div class="color-info"><span class="color-name">Brand 900</span><span class="color-hex">#0f2d4a</span></div></div>
+    <div class="color-chip"><div class="color-swatch" style="background:#1a3d5c"></div><div class="color-info"><span class="color-name">Brand 800</span><span class="color-hex">#1a3d5c</span></div></div>
+    <div class="color-chip"><div class="color-swatch" style="background:#1e5080"></div><div class="color-info"><span class="color-name">Brand 700</span><span class="color-hex">#1e5080</span></div></div>
+    <div class="color-chip"><div class="color-swatch" style="background:#1d6ea8"></div><div class="color-info"><span class="color-name">Brand 600 ★</span><span class="color-hex">#1d6ea8</span></div></div>
+    <div class="color-chip"><div class="color-swatch" style="background:#1a8fd1"></div><div class="color-info"><span class="color-name">Brand 500</span><span class="color-hex">#1a8fd1</span></div></div>
+    <div class="color-chip"><div class="color-swatch" style="background:#7acdf2"></div><div class="color-info"><span class="color-name">Brand 300</span><span class="color-hex">#7acdf2</span></div></div>
+    <div class="color-chip"><div class="color-swatch" style="background:#e8f4fb"></div><div class="color-info"><span class="color-name">Brand 100</span><span class="color-hex">#e8f4fb</span></div></div>
+  </div>
+  <div class="ds-subtitle">Semantic</div>
+  <div class="color-grid">
+    <div class="color-chip"><div class="color-swatch" style="background:#22a564"></div><div class="color-info"><span class="color-name">Success</span><span class="color-hex">#22a564</span></div></div>
+    <div class="color-chip"><div class="color-swatch" style="background:#f59e0b"></div><div class="color-info"><span class="color-name">Warning</span><span class="color-hex">#f59e0b</span></div></div>
+    <div class="color-chip"><div class="color-swatch" style="background:#ef4444"></div><div class="color-info"><span class="color-name">Danger</span><span class="color-hex">#ef4444</span></div></div>
+    <div class="color-chip"><div class="color-swatch" style="background:#6366f1"></div><div class="color-info"><span class="color-name">Info</span><span class="color-hex">#6366f1</span></div></div>
+    <div class="color-chip"><div class="color-swatch" style="background:#f05a20"></div><div class="color-info"><span class="color-name">Accent</span><span class="color-hex">#f05a20</span></div></div>
+  </div>
+  <div class="ds-subtitle">Neutrals</div>
+  <div class="color-grid">
+    <div class="color-chip"><div class="color-swatch" style="background:#111827"></div><div class="color-info"><span class="color-name">Gray 900</span><span class="color-hex">#111827</span></div></div>
+    <div class="color-chip"><div class="color-swatch" style="background:#374151"></div><div class="color-info"><span class="color-name">Gray 700</span><span class="color-hex">#374151</span></div></div>
+    <div class="color-chip"><div class="color-swatch" style="background:#6b7280"></div><div class="color-info"><span class="color-name">Gray 500</span><span class="color-hex">#6b7280</span></div></div>
+    <div class="color-chip"><div class="color-swatch" style="background:#d1d5db"></div><div class="color-info"><span class="color-name">Gray 300</span><span class="color-hex">#d1d5db</span></div></div>
+    <div class="color-chip"><div class="color-swatch" style="background:#f3f4f6"></div><div class="color-info"><span class="color-name">Gray 100</span><span class="color-hex">#f3f4f6</span></div></div>
+    <div class="color-chip"><div class="color-swatch" style="background:#f9fafb;border:1px solid #e5e7eb"></div><div class="color-info"><span class="color-name">Gray 50</span><span class="color-hex">#f9fafb</span></div></div>
+  </div>
+</div>
+
+<div class="ds-card">
+  <div class="ds-title">✍️ Typography — DM Sans</div>
+  <div class="type-row"><div class="type-spec">700 / 28px / -0.5px</div><div style="font-size:28px;font-weight:700;letter-spacing:-0.5px;color:#111827">Page Title</div></div>
+  <div class="type-row"><div class="type-spec">700 / 20px / -0.3px</div><div style="font-size:20px;font-weight:700;letter-spacing:-0.3px;color:#111827">Section Heading</div></div>
+  <div class="type-row"><div class="type-spec">600 / 16px / normal</div><div style="font-size:16px;font-weight:600;color:#111827">Card Title</div></div>
+  <div class="type-row"><div class="type-spec">500 / 14px / normal</div><div style="font-size:14px;font-weight:500;color:#374151">Label / Navigation</div></div>
+  <div class="type-row"><div class="type-spec">400 / 14px / normal</div><div style="font-size:14px;color:#374151">Body text — used for descriptions and table content</div></div>
+  <div class="type-row"><div class="type-spec">400 / 13px / normal</div><div style="font-size:13px;color:#6b7280">Secondary text — captions, hints, timestamps</div></div>
+  <div class="type-row"><div class="type-spec">600 / 11px / +0.5px UC</div><div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;color:#6b7280">TABLE HEADER / SECTION LABEL</div></div>
+  <div class="type-row"><div class="type-spec">Mono 500 / 13px</div><div style="font-size:13px;font-family:'DM Mono',monospace;color:#374151">₹7,500.00 · RAVI2025 · route/path</div></div>
+</div>
+
+<div class="ds-card">
+  <div class="ds-title">🧩 Component Library</div>
+
+  <div class="ds-subtitle">Buttons</div>
+  <div class="comp-row">
+    <button class="btn btn-primary">Pay Now</button>
+    <button class="btn btn-secondary">Cancel</button>
+    <button class="btn btn-success">Approve</button>
+    <button class="btn btn-danger">Suspend</button>
+    <button class="btn btn-ghost">View Details</button>
+    <button class="btn btn-sm btn-primary">Assign</button>
+    <button class="btn btn-lg btn-primary">Continue →</button>
+  </div>
+
+  <div class="ds-subtitle">Status Badges</div>
+  <div class="comp-row">
+    <span class="badge badge-success badge-dot">Active</span>
+    <span class="badge badge-warning badge-dot">Pending</span>
+    <span class="badge badge-danger badge-dot">Overdue</span>
+    <span class="badge badge-info badge-dot">In Progress</span>
+    <span class="badge badge-brand badge-dot">Allocated</span>
+    <span class="badge badge-gray badge-dot">Checked Out</span>
+  </div>
+
+  <div class="ds-subtitle">Alerts / Callouts</div>
+  <div class="alert alert-warning">⚠️ <span>Your rent of <strong>₹7,500</strong> is due on <strong>20 March 2026</strong>. Pay before the due date to avoid late fees.</span></div>
+  <div class="alert alert-success">✅ <span>Payment of ₹7,500 received successfully. Receipt sent to your email.</span></div>
+  <div class="alert alert-danger">🚨 <span>Your account has an overdue balance of ₹500. A late fee may be applied.</span></div>
+  <div class="alert alert-info">ℹ️ <span>Your registration is pending approval. Admin will allocate your bed within 24 hours.</span></div>
+
+  <div class="ds-subtitle">Form Inputs</div>
+  <div class="grid-3" style="max-width:700px">
+    <div class="form-group">
+      <label class="form-label">Email Address <span class="req">*</span></label>
+      <input class="form-input" type="email" placeholder="you@email.com" value="ravi@gmail.com">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Mobile Number</label>
+      <div class="form-input-prefix">
+        <span class="prefix">+91</span>
+        <input class="form-input" type="tel" placeholder="9876543210">
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Hostel Type</label>
+      <select class="form-select"><option>Select type...</option><option selected>Boys Hostel</option></select>
+    </div>
+  </div>
+
+  <div class="ds-subtitle">Data Table</div>
+  <table class="tbl">
+    <thead><tr><th>Name</th><th>Room / Bed</th><th>Due Amount</th><th>Status</th><th>Actions</th></tr></thead>
+    <tbody>
+      <tr><td class="td-bold">Ravi Kumar</td><td>Floor 2 / Room 205 / Bed A</td><td class="td-mono">₹7,500.00</td><td><span class="badge badge-warning badge-dot">Pending</span></td><td class="td-action"><button class="btn btn-sm btn-ghost">View</button></td></tr>
+      <tr><td class="td-bold">Arjun Singh</td><td>Floor 1 / Room 102 / Bed B</td><td class="td-mono">₹0.00</td><td><span class="badge badge-success badge-dot">Paid</span></td><td class="td-action"><button class="btn btn-sm btn-ghost">View</button></td></tr>
+      <tr><td class="td-bold">Mohammed Ali</td><td>Floor 3 / Room 302 / Bed C</td><td class="td-mono">₹8,200.00</td><td><span class="badge badge-danger badge-dot">Overdue</span></td><td class="td-action"><button class="btn btn-sm btn-danger">Collect</button></td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- ══ SCREENS ══════════════════════════════════════════ -->
+<div class="section-label">Auth Screens</div>
+
+<!-- ── HP-00: Hosteller Login ─────────────────────────── -->
+<div class="screen-block">
+  <div class="screen-meta">
+    <span class="screen-id">HP-00</span>
+    <span class="screen-name">Hosteller Login</span>
+    <span class="screen-route">/auth/hosteller/login</span>
+  </div>
+  <div class="screen-frame">
+    <div class="login-page">
+      <!-- background orbs -->
+      <div style="position:absolute;bottom:-80px;left:-80px;width:300px;height:300px;border-radius:50%;background:radial-gradient(circle,rgba(58,174,232,0.1) 0%,transparent 70%)"></div>
+      <div style="position:absolute;top:40px;left:40px">
+        <div style="font-size:22px;font-weight:700;color:white;letter-spacing:-0.5px">Hostlify</div>
+        <div style="font-size:12px;color:rgba(255,255,255,0.4);margin-top:2px">Smart Hostel Management</div>
+      </div>
+      <div class="login-card">
+        <div class="login-logo">Hostlify</div>
+        <div class="login-subtitle">Hosteller Portal · Sign in to your account</div>
+        <div class="form-group">
+          <label class="form-label">Email Address</label>
+          <input class="form-input" type="email" placeholder="yourname@email.com" style="font-size:15px;padding:11px 14px">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Password <a href="#" style="float:right;font-size:12px;color:var(--brand-600);text-decoration:none;font-weight:400">Forgot password?</a></label>
+          <div style="position:relative">
+            <input class="form-input" type="password" placeholder="••••••••" style="font-size:15px;padding:11px 14px;padding-right:40px">
+            <span style="position:absolute;right:12px;top:50%;transform:translateY(-50%);color:var(--gray-400);cursor:pointer;font-size:16px">👁</span>
+          </div>
+        </div>
+        <button class="btn btn-primary btn-lg" style="width:100%;justify-content:center;margin-top:8px;font-size:15px">Sign In</button>
+        <div style="text-align:center;margin-top:20px;font-size:13px;color:var(--gray-400)">
+          New resident? <a href="#" style="color:var(--brand-600);font-weight:500;text-decoration:none">Register with hostel QR code</a>
+        </div>
+        <div style="text-align:center;margin-top:24px;padding-top:16px;border-top:1px solid var(--gray-100)">
+          <span style="font-size:12px;color:var(--gray-400)">Are you hostel staff? </span>
+          <a href="#" style="font-size:12px;color:var(--brand-600);font-weight:500;text-decoration:none">Staff Login →</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── HP-01: Registration ────────────────────────────── -->
+<div class="screen-block">
+  <div class="screen-meta">
+    <span class="screen-id">HP-01</span>
+    <span class="screen-name">Hosteller Registration</span>
+    <span class="screen-route">/auth/hosteller/register?h={hostel_token}</span>
+  </div>
+  <div class="screen-frame">
+    <!-- Step header -->
+    <div class="reg-hero">
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:24px">
+        <div style="font-size:20px;font-weight:700;color:white">Hostlify</div>
+        <div style="width:1px;height:20px;background:rgba(255,255,255,0.2)"></div>
+        <div style="font-size:13px;color:rgba(255,255,255,0.6)">Sri Sai Hostel — Ameerpet</div>
+      </div>
+      <div class="steps">
+        <div class="step-item"><div class="step-circle active">1</div><span class="step-label" style="color:white">Personal Info</span></div>
+        <div class="step-line"></div>
+        <div class="step-item"><div class="step-circle inactive">2</div><span class="step-label">Address</span></div>
+        <div class="step-line"></div>
+        <div class="step-item"><div class="step-circle inactive">3</div><span class="step-label">Emergency</span></div>
+        <div class="step-line"></div>
+        <div class="step-item"><div class="step-circle inactive">4</div><span class="step-label">Review</span></div>
+      </div>
+    </div>
+    <div class="reg-body">
+      <div style="font-size:18px;font-weight:700;color:var(--gray-900);margin-bottom:4px">Step 1 — Personal Information</div>
+      <div style="font-size:13px;color:var(--gray-400);margin-bottom:24px">All fields marked * are required</div>
+      <div class="grid-2">
+        <div class="form-group">
+          <label class="form-label">First Name <span class="req">*</span></label>
+          <input class="form-input" placeholder="e.g. Ravi">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Last Name <span class="req">*</span></label>
+          <input class="form-input" placeholder="e.g. Kumar">
+        </div>
+      </div>
+      <div class="grid-2">
+        <div class="form-group">
+          <label class="form-label">Email Address <span class="req">*</span></label>
+          <input class="form-input" type="email" placeholder="you@email.com">
+          <div class="form-hint">Used for login and notifications</div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Mobile Number <span class="req">*</span></label>
+          <div class="form-input-prefix">
+            <span class="prefix">+91</span>
+            <input class="form-input" type="tel" placeholder="9876543210">
+          </div>
+        </div>
+      </div>
+      <div class="grid-3">
+        <div class="form-group">
+          <label class="form-label">Gender <span class="req">*</span></label>
+          <select class="form-select"><option>Select...</option><option>Male</option><option>Female</option><option>Other</option></select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Date of Birth</label>
+          <input class="form-input" type="date">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Resident Type <span class="req">*</span></label>
+          <select class="form-select"><option>Select...</option><option selected>Working Professional</option><option>Student</option></select>
+        </div>
+      </div>
+      <div class="grid-2">
+        <div class="form-group">
+          <label class="form-label">Company / College</label>
+          <input class="form-input" placeholder="e.g. TCS Hyderabad">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Password <span class="req">*</span></label>
+          <input class="form-input" type="password" placeholder="Min 8 chars, 1 upper, 1 number">
+          <div class="form-hint">Must contain uppercase, number, and special character</div>
+        </div>
+      </div>
+      <div class="form-group" style="max-width:320px">
+        <label class="form-label">Referral Code <span style="font-size:11px;color:var(--success-500);font-weight:400">(5% discount on first month)</span></label>
+        <input class="form-input" placeholder="e.g. RAVI2025" style="text-transform:uppercase;letter-spacing:2px">
+      </div>
+      <div style="display:flex;justify-content:flex-end;margin-top:8px">
+        <button class="btn btn-primary btn-lg">Continue to Address →</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="section-label">Hosteller Portal — Main Screens</div>
+
+<!-- ── HP-02: Dashboard ───────────────────────────────── -->
+<div class="screen-block">
+  <div class="screen-meta">
+    <span class="screen-id">HP-02</span>
+    <span class="screen-name">Hosteller Dashboard</span>
+    <span class="screen-route">/app/dashboard</span>
+  </div>
+  <div class="screen-frame">
+    <div class="app-shell">
+      <!-- Sidebar -->
+      <div class="sidebar">
+        <div class="sidebar-logo">
+          <div class="sidebar-logo-text">Hostlify</div>
+          <div class="sidebar-logo-sub">Sri Sai Hostel – Ameerpet</div>
+        </div>
+        <div class="sidebar-section">
+          <div class="sidebar-section-label">Main</div>
+          <a class="sidebar-item active"><span class="si-icon">🏠</span> Dashboard</a>
+          <a class="sidebar-item"><span class="si-icon">💳</span> My Dues <span class="si-badge">1</span></a>
+          <a class="sidebar-item"><span class="si-icon">📋</span> Complaints</a>
+          <a class="sidebar-item"><span class="si-icon">🍽</span> Meal Menu</a>
+          <a class="sidebar-item"><span class="si-icon">📢</span> Announcements <span class="si-badge">2</span></a>
+        </div>
+        <div class="sidebar-section">
+          <div class="sidebar-section-label">Services</div>
+          <a class="sidebar-item"><span class="si-icon">🏖</span> Leave Request</a>
+          <a class="sidebar-item"><span class="si-icon">🚗</span> Parking</a>
+          <a class="sidebar-item"><span class="si-icon">🧹</span> Cleaning</a>
+          <a class="sidebar-item"><span class="si-icon">👥</span> Referral</a>
+        </div>
+        <div class="sidebar-section">
+          <div class="sidebar-section-label">Account</div>
+          <a class="sidebar-item"><span class="si-icon">👤</span> My Profile</a>
+        </div>
+        <div class="sidebar-bottom">
+          <div class="sidebar-user">
+            <div class="avatar avatar-md avatar-orange">RK</div>
+            <div class="sidebar-user-info">
+              <div class="sidebar-user-name">Ravi Kumar</div>
+              <div class="sidebar-user-role">Room 205, Bed A</div>
+            </div>
+            <span style="color:rgba(255,255,255,0.3);font-size:14px">⚙</span>
+          </div>
+        </div>
+      </div>
+      <!-- Main area -->
+      <div class="main-area">
+        <div class="topbar">
+          <div>
+            <div class="topbar-title">Dashboard</div>
+            <div class="topbar-breadcrumb">Good morning, Ravi 👋</div>
+          </div>
+          <div class="topbar-right">
+            <div class="topbar-notif-btn">🔔<div class="topbar-notif-dot"></div></div>
+            <div class="avatar avatar-sm avatar-orange">RK</div>
+          </div>
+        </div>
+        <div class="content-area">
+          <!-- Due banner -->
+          <div class="due-banner">
+            <div>
+              <div style="font-size:12px;opacity:0.8;font-weight:500;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px">Upcoming Due · March 2026</div>
+              <div style="font-size:26px;font-weight:700">₹7,125.00</div>
+              <div style="font-size:13px;opacity:0.85;margin-top:2px">Due on 20 March · Referral discount ₹375 applied</div>
+            </div>
+            <button class="btn btn-lg" style="background:white;color:var(--warning-600);font-weight:700;border:none">Pay Now</button>
+          </div>
+          <!-- Stats row -->
+          <div class="grid-4" style="margin-bottom:20px">
+            <div class="stat-card stat-card-accent">
+              <div class="stat-label">My Room</div>
+              <div class="stat-value" style="font-size:18px;margin:6px 0">Rm 205 · Bed A</div>
+              <div class="stat-sub">2nd Floor · Sri Sai Hostel</div>
+            </div>
+            <div class="stat-card stat-card-success">
+              <div class="stat-label">Rent Amount</div>
+              <div class="stat-value">₹7,500</div>
+              <div class="stat-sub">per month</div>
+            </div>
+            <div class="stat-card stat-card-warning">
+              <div class="stat-label">Joined On</div>
+              <div class="stat-value" style="font-size:18px;margin:6px 0">01 Nov 2025</div>
+              <div class="stat-sub">4 months stay</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-label">Referral Savings</div>
+              <div class="stat-value" style="color:var(--success-500)">₹1,125</div>
+              <div class="stat-sub">3 referrals made</div>
+            </div>
+          </div>
+          <!-- Quick actions + announcements -->
+          <div class="grid-2">
+            <div>
+              <div style="font-size:14px;font-weight:600;color:var(--gray-900);margin-bottom:12px">Quick Actions</div>
+              <div class="grid-4" style="grid-template-columns:repeat(4,1fr)">
+                <div class="quick-action"><span class="quick-action-icon">💳</span><span class="quick-action-label">Pay Dues</span></div>
+                <div class="quick-action"><span class="quick-action-icon">📋</span><span class="quick-action-label">Complaint</span></div>
+                <div class="quick-action"><span class="quick-action-icon">🏖</span><span class="quick-action-label">Leave</span></div>
+                <div class="quick-action"><span class="quick-action-icon">👥</span><span class="quick-action-label">Refer</span></div>
+              </div>
+            </div>
+            <div>
+              <div style="font-size:14px;font-weight:600;color:var(--gray-900);margin-bottom:12px">Latest Announcements</div>
+              <div class="annc-card urgent">
+                <div class="annc-title">🚨 Water Supply — 16 March</div>
+                <div class="annc-body">No water from 10 AM – 2 PM due to maintenance work.</div>
+                <div class="annc-date">Posted 15 Mar 2026</div>
+              </div>
+              <div class="annc-card">
+                <div class="annc-title">March Menu Updated</div>
+                <div class="annc-body">Special Holi menu on 14 March. Check the meal menu section.</div>
+                <div class="annc-date">Posted 12 Mar 2026</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── HP-03: My Dues ─────────────────────────────────── -->
+<div class="screen-block">
+  <div class="screen-meta">
+    <span class="screen-id">HP-03</span>
+    <span class="screen-name">My Dues — Current + History</span>
+    <span class="screen-route">/app/dues</span>
+  </div>
+  <div class="screen-frame">
+    <div class="app-shell">
+      <div class="sidebar">
+        <div class="sidebar-logo"><div class="sidebar-logo-text">Hostlify</div><div class="sidebar-logo-sub">Sri Sai Hostel – Ameerpet</div></div>
+        <div class="sidebar-section">
+          <a class="sidebar-item"><span class="si-icon">🏠</span> Dashboard</a>
+          <a class="sidebar-item active"><span class="si-icon">💳</span> My Dues <span class="si-badge">1</span></a>
+          <a class="sidebar-item"><span class="si-icon">📋</span> Complaints</a>
+          <a class="sidebar-item"><span class="si-icon">🍽</span> Meal Menu</a>
+          <a class="sidebar-item"><span class="si-icon">📢</span> Announcements</a>
+          <a class="sidebar-item"><span class="si-icon">🏖</span> Leave Request</a>
+          <a class="sidebar-item"><span class="si-icon">👥</span> Referral</a>
+          <a class="sidebar-item"><span class="si-icon">👤</span> My Profile</a>
+        </div>
+        <div class="sidebar-bottom">
+          <div class="sidebar-user">
+            <div class="avatar avatar-md avatar-orange">RK</div>
+            <div class="sidebar-user-info"><div class="sidebar-user-name">Ravi Kumar</div><div class="sidebar-user-role">Room 205, Bed A</div></div>
+          </div>
+        </div>
+      </div>
+      <div class="main-area">
+        <div class="topbar">
+          <div><div class="topbar-title">My Dues</div><div class="topbar-breadcrumb">Manage your rent payments</div></div>
+          <div class="topbar-right">
+            <div class="topbar-notif-btn">🔔<div class="topbar-notif-dot"></div></div>
+          </div>
+        </div>
+        <div class="content-area">
+          <!-- Current due card -->
+          <div class="payment-box" style="margin-bottom:20px">
+            <div class="flex-between">
+              <div>
+                <div class="payment-box-label">Current Due · March 2026</div>
+                <div class="payment-box-amount">₹7,125.00</div>
+                <div class="payment-box-period" style="margin-top:6px">
+                  Due date: <strong>20 March 2026</strong> · 5 days remaining
+                </div>
+              </div>
+              <div style="text-align:right">
+                <div style="font-size:12px;opacity:0.6;margin-bottom:8px">Breakdown</div>
+                <div style="font-size:13px;opacity:0.8">Base rent: ₹7,500.00</div>
+                <div style="font-size:13px;color:#7acdf2">Referral discount: −₹375.00</div>
+                <div style="font-size:13px;opacity:0.6">Late fee: ₹0.00</div>
+              </div>
+            </div>
+            <div style="margin-top:20px;display:flex;gap:10px">
+              <button class="btn btn-lg" style="background:white;color:var(--brand-800);font-weight:700;flex:1;justify-content:center">💳 Pay Online via Razorpay</button>
+              <button class="btn" style="background:rgba(255,255,255,0.15);color:white;border:1px solid rgba(255,255,255,0.3)">📥 Download Receipt</button>
+            </div>
+          </div>
+          <!-- Payment history -->
+          <div class="card">
+            <div class="flex-between" style="margin-bottom:16px">
+              <div style="font-size:15px;font-weight:700;color:var(--gray-900)">Payment History</div>
+              <select class="form-select" style="width:auto;font-size:13px;padding:6px 28px 6px 10px">
+                <option>All time</option><option>Last 6 months</option>
+              </select>
+            </div>
+            <table class="tbl">
+              <thead><tr><th>Month</th><th>Base Rent</th><th>Adjustments</th><th>Total Paid</th><th>Method</th><th>Date Paid</th><th>Status</th><th>Receipt</th></tr></thead>
+              <tbody>
+                <tr><td class="td-bold">March 2026</td><td class="td-mono">₹7,500</td><td class="td-mono" style="color:var(--success-600)">−₹375 referral</td><td class="td-mono">₹7,125</td><td>—</td><td>—</td><td><span class="badge badge-warning badge-dot">Pending</span></td><td>—</td></tr>
+                <tr><td class="td-bold">Feb 2026</td><td class="td-mono">₹7,500</td><td class="td-mono" style="color:var(--gray-400)">—</td><td class="td-mono">₹7,500</td><td><span class="tag">Razorpay</span></td><td>17 Feb</td><td><span class="badge badge-success badge-dot">Paid</span></td><td><button class="btn btn-sm btn-secondary">📄</button></td></tr>
+                <tr><td class="td-bold">Jan 2026</td><td class="td-mono">₹7,500</td><td class="td-mono" style="color:var(--danger-600)">+₹200 late fee</td><td class="td-mono">₹7,700</td><td><span class="tag">Cash</span></td><td>25 Jan</td><td><span class="badge badge-success badge-dot">Paid</span></td><td><button class="btn btn-sm btn-secondary">📄</button></td></tr>
+                <tr><td class="td-bold">Dec 2025</td><td class="td-mono">₹7,500</td><td class="td-mono" style="color:var(--gray-400)">—</td><td class="td-mono">₹7,500</td><td><span class="tag">UPI</span></td><td>15 Dec</td><td><span class="badge badge-success badge-dot">Paid</span></td><td><button class="btn btn-sm btn-secondary">📄</button></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── HP-04: Payment Flow (Razorpay modal) ───────────── -->
+<div class="screen-block">
+  <div class="screen-meta">
+    <span class="screen-id">HP-04</span>
+    <span class="screen-name">Payment — Razorpay Checkout</span>
+    <span class="screen-route">/app/dues → Razorpay popup</span>
+  </div>
+  <div class="screen-frame">
+    <div class="app-shell">
+      <div class="sidebar">
+        <div class="sidebar-logo"><div class="sidebar-logo-text">Hostlify</div><div class="sidebar-logo-sub">Sri Sai Hostel – Ameerpet</div></div>
+        <div class="sidebar-section">
+          <a class="sidebar-item"><span class="si-icon">🏠</span> Dashboard</a>
+          <a class="sidebar-item active"><span class="si-icon">💳</span> My Dues</a>
+        </div>
+      </div>
+      <div class="main-area" style="position:relative">
+        <div class="topbar"><div class="topbar-title">My Dues</div></div>
+        <!-- blurred background -->
+        <div class="content-area" style="filter:blur(2px);opacity:0.5">
+          <div class="payment-box"><div class="payment-box-amount">₹7,125.00</div><div class="payment-box-label">March 2026 due</div></div>
+        </div>
+        <!-- Modal overlay -->
+        <div style="position:absolute;inset:0;background:rgba(0,0,0,0.5);display:flex;align-items:center;justify-content:center">
+          <div class="modal">
+            <div class="modal-header">
+              <div>
+                <div class="modal-title">Confirm Payment</div>
+                <div style="font-size:12px;color:var(--gray-400);margin-top:2px">March 2026 Rent · Sri Sai Hostel</div>
+              </div>
+              <button class="modal-close">✕</button>
+            </div>
+            <div class="modal-body">
+              <div style="background:var(--brand-50);border:1.5px solid var(--brand-200);border-radius:var(--radius-md);padding:16px;margin-bottom:16px">
+                <div style="display:flex;justify-content:space-between;margin-bottom:8px">
+                  <span style="font-size:13px;color:var(--gray-500)">Base rent</span>
+                  <span style="font-family:var(--font-mono);font-size:14px;font-weight:500">₹7,500.00</span>
+                </div>
+                <div style="display:flex;justify-content:space-between;margin-bottom:8px">
+                  <span style="font-size:13px;color:var(--success-600)">Referral discount</span>
+                  <span style="font-family:var(--font-mono);font-size:14px;font-weight:500;color:var(--success-600)">−₹375.00</span>
+                </div>
+                <div style="height:1px;background:var(--brand-200);margin:10px 0"></div>
+                <div style="display:flex;justify-content:space-between">
+                  <span style="font-size:14px;font-weight:700;color:var(--gray-900)">Total to Pay</span>
+                  <span style="font-family:var(--font-mono);font-size:18px;font-weight:700;color:var(--brand-700)">₹7,125.00</span>
+                </div>
+              </div>
+              <div style="font-size:12px;color:var(--gray-400);text-align:center;margin-bottom:4px">Secure payment via Razorpay</div>
+              <div style="display:flex;justify-content:center;gap:8px;font-size:20px">💳 🏦 📱</div>
+              <div style="font-size:12px;color:var(--gray-400);text-align:center;margin-top:4px">UPI · Cards · Net Banking · Wallets</div>
+            </div>
+            <div class="modal-footer">
+              <button class="btn btn-secondary">Cancel</button>
+              <button class="btn btn-primary btn-lg" style="padding:10px 24px">Proceed to Pay ₹7,125</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── HP-05: Complaints ──────────────────────────────── -->
+<div class="screen-block">
+  <div class="screen-meta">
+    <span class="screen-id">HP-05</span>
+    <span class="screen-name">Complaints — List + Raise New</span>
+    <span class="screen-route">/app/complaints</span>
+  </div>
+  <div class="screen-frame">
+    <div class="app-shell">
+      <div class="sidebar">
+        <div class="sidebar-logo"><div class="sidebar-logo-text">Hostlify</div><div class="sidebar-logo-sub">Sri Sai Hostel – Ameerpet</div></div>
+        <div class="sidebar-section">
+          <a class="sidebar-item"><span class="si-icon">🏠</span> Dashboard</a>
+          <a class="sidebar-item"><span class="si-icon">💳</span> My Dues</a>
+          <a class="sidebar-item active"><span class="si-icon">📋</span> Complaints</a>
+          <a class="sidebar-item"><span class="si-icon">🍽</span> Meal Menu</a>
+          <a class="sidebar-item"><span class="si-icon">📢</span> Announcements</a>
+          <a class="sidebar-item"><span class="si-icon">🏖</span> Leave Request</a>
+          <a class="sidebar-item"><span class="si-icon">👥</span> Referral</a>
+        </div>
+        <div class="sidebar-bottom"><div class="sidebar-user"><div class="avatar avatar-md avatar-orange">RK</div><div class="sidebar-user-info"><div class="sidebar-user-name">Ravi Kumar</div><div class="sidebar-user-role">Room 205, Bed A</div></div></div></div>
+      </div>
+      <div class="main-area">
+        <div class="topbar">
+          <div><div class="topbar-title">Complaints</div></div>
+          <div class="topbar-right">
+            <button class="btn btn-primary"><span>+</span> Raise Complaint</button>
+          </div>
+        </div>
+        <div class="content-area">
+          <!-- Raise complaint form (inline) -->
+          <div class="card" style="margin-bottom:20px;border:1.5px solid var(--brand-200);background:var(--brand-50)">
+            <div style="font-size:15px;font-weight:700;color:var(--gray-900);margin-bottom:16px">📋 Raise New Complaint</div>
+            <div class="grid-2">
+              <div class="form-group">
+                <label class="form-label">Category <span class="req">*</span></label>
+                <select class="form-select"><option>Select category...</option><option selected>WiFi / Internet</option><option>Electrical</option><option>Plumbing</option><option>Cleaning</option><option>Food</option><option>Security</option><option>Noise</option><option>Other</option></select>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Priority <span class="req">*</span></label>
+                <select class="form-select"><option>Low</option><option>Medium</option><option selected>High</option><option>Urgent</option></select>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Title <span class="req">*</span></label>
+              <input class="form-input" placeholder="Short description, e.g. 'WiFi not working in Room 205'">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Description</label>
+              <textarea class="form-input" rows="3" style="resize:vertical" placeholder="Provide more details about the issue..."></textarea>
+            </div>
+            <div style="display:flex;gap:8px;justify-content:flex-end">
+              <button class="btn btn-secondary">Cancel</button>
+              <button class="btn btn-primary">Submit Complaint</button>
+            </div>
+          </div>
+          <!-- Existing complaints -->
+          <div class="card">
+            <div style="font-size:15px;font-weight:700;color:var(--gray-900);margin-bottom:16px">My Complaints</div>
+            <div class="complaint-row">
+              <div class="flex-between" style="margin-bottom:4px">
+                <div style="font-size:14px;font-weight:600;color:var(--gray-900)">WiFi not working in Room 205</div>
+                <span class="badge badge-warning badge-dot">Open · High</span>
+              </div>
+              <div style="font-size:13px;color:var(--gray-500)">WiFi / Internet · Raised on 14 Mar 2026</div>
+            </div>
+            <div class="complaint-row">
+              <div class="flex-between" style="margin-bottom:4px">
+                <div style="font-size:14px;font-weight:600;color:var(--gray-900)">Bathroom tap leaking</div>
+                <span class="badge badge-success badge-dot">Resolved</span>
+              </div>
+              <div style="font-size:13px;color:var(--gray-500)">Plumbing · Raised on 02 Mar · Resolved 05 Mar</div>
+            </div>
+            <div class="complaint-row" style="border:none">
+              <div class="flex-between" style="margin-bottom:4px">
+                <div style="font-size:14px;font-weight:600;color:var(--gray-900)">Ceiling fan making noise</div>
+                <span class="badge badge-info badge-dot">In Progress</span>
+              </div>
+              <div style="font-size:13px;color:var(--gray-500)">Electrical · Raised on 10 Feb · Assigned to maintenance</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── HP-06: Meal Menu ───────────────────────────────── -->
+<div class="screen-block">
+  <div class="screen-meta">
+    <span class="screen-id">HP-06</span>
+    <span class="screen-name">Weekly Meal Menu</span>
+    <span class="screen-route">/app/menu</span>
+  </div>
+  <div class="screen-frame">
+    <div class="app-shell">
+      <div class="sidebar">
+        <div class="sidebar-logo"><div class="sidebar-logo-text">Hostlify</div><div class="sidebar-logo-sub">Sri Sai Hostel – Ameerpet</div></div>
+        <div class="sidebar-section">
+          <a class="sidebar-item"><span class="si-icon">🏠</span> Dashboard</a>
+          <a class="sidebar-item"><span class="si-icon">💳</span> My Dues</a>
+          <a class="sidebar-item"><span class="si-icon">📋</span> Complaints</a>
+          <a class="sidebar-item active"><span class="si-icon">🍽</span> Meal Menu</a>
+          <a class="sidebar-item"><span class="si-icon">📢</span> Announcements</a>
+        </div>
+        <div class="sidebar-bottom"><div class="sidebar-user"><div class="avatar avatar-md avatar-orange">RK</div><div class="sidebar-user-info"><div class="sidebar-user-name">Ravi Kumar</div><div class="sidebar-user-role">Room 205, Bed A</div></div></div></div>
+      </div>
+      <div class="main-area">
+        <div class="topbar">
+          <div><div class="topbar-title">Meal Menu</div><div class="topbar-breadcrumb">Week of 9–15 March 2026</div></div>
+          <div class="topbar-right">
+            <button class="btn btn-secondary btn-sm">‹ Prev Week</button>
+            <button class="btn btn-secondary btn-sm">Next Week ›</button>
+          </div>
+        </div>
+        <div class="content-area">
+          <div style="display:grid;grid-template-columns:80px repeat(7,1fr);gap:8px;font-size:13px">
+            <!-- Header -->
+            <div></div>
+            <div style="text-align:center;font-weight:700;font-size:11px;text-transform:uppercase;color:var(--brand-600);letter-spacing:0.5px">MON<div style="font-size:10px;color:var(--gray-400);font-weight:400">Mar 9</div></div>
+            <div style="text-align:center;font-weight:700;font-size:11px;text-transform:uppercase;color:var(--brand-600);letter-spacing:0.5px">TUE<div style="font-size:10px;color:var(--gray-400);font-weight:400">Mar 10</div></div>
+            <div style="text-align:center;font-weight:700;font-size:11px;text-transform:uppercase;color:var(--brand-600);letter-spacing:0.5px;background:var(--brand-50);border-radius:6px;padding:4px">TODAY<div style="font-size:10px;color:var(--brand-400);font-weight:400">Mar 11</div></div>
+            <div style="text-align:center;font-weight:700;font-size:11px;text-transform:uppercase;color:var(--brand-600);letter-spacing:0.5px">THU<div style="font-size:10px;color:var(--gray-400);font-weight:400">Mar 12</div></div>
+            <div style="text-align:center;font-weight:700;font-size:11px;text-transform:uppercase;color:var(--brand-600);letter-spacing:0.5px">FRI<div style="font-size:10px;color:var(--gray-400);font-weight:400">Mar 13</div></div>
+            <div style="text-align:center;font-weight:700;font-size:11px;text-transform:uppercase;color:var(--gray-400);letter-spacing:0.5px">SAT<div style="font-size:10px;color:var(--gray-300);font-weight:400">Mar 14</div></div>
+            <div style="text-align:center;font-weight:700;font-size:11px;text-transform:uppercase;color:var(--gray-400);letter-spacing:0.5px">SUN<div style="font-size:10px;color:var(--gray-300);font-weight:400">Mar 15</div></div>
+
+            <!-- Breakfast -->
+            <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;color:var(--gray-500);padding:10px 0;display:flex;align-items:center">☀️ Bfast<div style="font-size:9px;color:var(--gray-400);font-weight:400;margin-top:2px">7:30–9AM</div></div>
+            <div class="menu-cell">Idli, Sambar, Coconut Chutney</div>
+            <div class="menu-cell">Poha, Groundnuts</div>
+            <div class="menu-cell" style="background:var(--brand-50);border-color:var(--brand-200)">Dosa, Sambar, Tomato Chutney</div>
+            <div class="menu-cell">Upma, Pickle</div>
+            <div class="menu-cell">Puri Bhaji</div>
+            <div class="menu-cell" style="color:var(--gray-400)">Bread, Eggs, Jam</div>
+            <div class="menu-cell" style="color:var(--gray-400)">Paratha, Curd</div>
+
+            <!-- Lunch -->
+            <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;color:var(--gray-500);padding:10px 0;display:flex;align-items:center">🌞 Lunch<div style="font-size:9px;color:var(--gray-400);font-weight:400;margin-top:2px">12:30–2PM</div></div>
+            <div class="menu-cell">Rice, Dal, Palak Paneer, Curd</div>
+            <div class="menu-cell">Rice, Rajma, Roti, Salad</div>
+            <div class="menu-cell" style="background:var(--brand-50);border-color:var(--brand-200)">Rice, Dal Fry, Aloo Gobi, Curd</div>
+            <div class="menu-cell">Roti, Chana Masala, Rice</div>
+            <div class="menu-cell">Rice, Fish Curry, Salad</div>
+            <div class="menu-cell" style="color:var(--gray-400)">Biryani, Raita</div>
+            <div class="menu-cell" style="color:var(--gray-400)">Roti, Mix Veg, Dal</div>
+
+            <!-- Dinner -->
+            <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;color:var(--gray-500);padding:10px 0;display:flex;align-items:center">🌙 Dinner<div style="font-size:9px;color:var(--gray-400);font-weight:400;margin-top:2px">7:30–9PM</div></div>
+            <div class="menu-cell">Roti, Dal Makhani, Rice</div>
+            <div class="menu-cell">Noodles, Spring Rolls</div>
+            <div class="menu-cell" style="background:var(--brand-50);border-color:var(--brand-200)">Roti, Paneer Butter Masala, Rice</div>
+            <div class="menu-cell">Fried Rice, Manchurian</div>
+            <div class="menu-cell">Roti, Egg Curry, Rice</div>
+            <div class="menu-cell" style="color:var(--gray-400)">Pav Bhaji</div>
+            <div class="menu-cell" style="color:var(--gray-400)">Roti, Dal, Kheer</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── HP-07: Announcements ───────────────────────────── -->
+<div class="screen-block">
+  <div class="screen-meta">
+    <span class="screen-id">HP-07</span>
+    <span class="screen-name">Announcements</span>
+    <span class="screen-route">/app/announcements</span>
+  </div>
+  <div class="screen-frame">
+    <div class="app-shell">
+      <div class="sidebar">
+        <div class="sidebar-logo"><div class="sidebar-logo-text">Hostlify</div></div>
+        <div class="sidebar-section">
+          <a class="sidebar-item"><span class="si-icon">🏠</span> Dashboard</a>
+          <a class="sidebar-item"><span class="si-icon">💳</span> My Dues</a>
+          <a class="sidebar-item"><span class="si-icon">📋</span> Complaints</a>
+          <a class="sidebar-item"><span class="si-icon">🍽</span> Meal Menu</a>
+          <a class="sidebar-item active"><span class="si-icon">📢</span> Announcements <span class="si-badge">2</span></a>
+        </div>
+      </div>
+      <div class="main-area">
+        <div class="topbar"><div class="topbar-title">Announcements</div></div>
+        <div class="content-area">
+          <div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;color:var(--danger-600);margin-bottom:8px">🚨 Urgent</div>
+          <div class="annc-card urgent" style="margin-bottom:16px">
+            <div class="flex-between">
+              <div class="annc-title">Water Supply Disruption — 16 March</div>
+              <span class="badge badge-danger">URGENT</span>
+            </div>
+            <div class="annc-body" style="margin-top:6px">There will be no water supply from 10 AM to 2 PM on 16 March 2026 due to underground pipe maintenance work by HMWSSB. Please store water in advance.</div>
+            <div class="annc-date">Posted by Admin · 15 Mar 2026, 8:00 PM</div>
+          </div>
+          <div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;color:var(--warning-600);margin-bottom:8px">⚠️ Important</div>
+          <div class="annc-card important" style="margin-bottom:16px">
+            <div class="flex-between">
+              <div class="annc-title">March Rent Due — Pay by 20 March</div>
+              <span class="badge badge-warning">IMPORTANT</span>
+            </div>
+            <div class="annc-body" style="margin-top:6px">March rent is due by 20 March 2026. Late payments after grace period will incur a ₹200 late fee. Pay online via the Dues section or pay cash to the admin.</div>
+            <div class="annc-date">Posted by Admin · 12 Mar 2026</div>
+          </div>
+          <div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;color:var(--brand-600);margin-bottom:8px">ℹ️ General</div>
+          <div class="annc-card" style="margin-bottom:8px">
+            <div class="annc-title">Holi Special Menu — 14 March</div>
+            <div class="annc-body">Special Holi celebration menu with sweets and snacks. Check the Meal Menu section for details.</div>
+            <div class="annc-date">Posted by Admin · 12 Mar 2026</div>
+          </div>
+          <div class="annc-card">
+            <div class="annc-title">Gym Timings Updated</div>
+            <div class="annc-body">The gym will now be open from 5 AM to 10 PM. Evening batch added from 7–9 PM.</div>
+            <div class="annc-date">Posted by Admin · 5 Mar 2026</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── HP-08: Leave Request ───────────────────────────── -->
+<div class="screen-block">
+  <div class="screen-meta">
+    <span class="screen-id">HP-08</span>
+    <span class="screen-name">Leave Request / Vacate Notice</span>
+    <span class="screen-route">/app/leave</span>
+  </div>
+  <div class="screen-frame">
+    <div class="app-shell">
+      <div class="sidebar">
+        <div class="sidebar-logo"><div class="sidebar-logo-text">Hostlify</div></div>
+        <div class="sidebar-section">
+          <a class="sidebar-item"><span class="si-icon">🏠</span> Dashboard</a>
+          <a class="sidebar-item"><span class="si-icon">💳</span> My Dues</a>
+          <a class="sidebar-item active"><span class="si-icon">🏖</span> Leave Request</a>
+          <a class="sidebar-item"><span class="si-icon">👥</span> Referral</a>
+        </div>
+      </div>
+      <div class="main-area">
+        <div class="topbar"><div class="topbar-title">Leave Request</div></div>
+        <div class="content-area">
+          <div class="grid-2">
+            <div>
+              <div class="card" style="margin-bottom:16px">
+                <div style="font-size:15px;font-weight:700;margin-bottom:16px">Submit Request</div>
+                <div class="form-group">
+                  <label class="form-label">Request Type <span class="req">*</span></label>
+                  <select class="form-select"><option selected>Temporary Leave (bed held)</option><option>Permanent Vacate</option></select>
+                  <div class="form-hint">Temporary: your bed is held. Permanent: initiates checkout process.</div>
+                </div>
+                <div class="grid-2">
+                  <div class="form-group">
+                    <label class="form-label">From Date <span class="req">*</span></label>
+                    <input class="form-input" type="date" value="2026-03-25">
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">To Date</label>
+                    <input class="form-input" type="date" value="2026-03-30">
+                    <div class="form-hint">Leave empty for Vacate type</div>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Reason</label>
+                  <textarea class="form-input" rows="3" placeholder="Optional — e.g. going home for Holi festival"></textarea>
+                </div>
+                <button class="btn btn-primary" style="width:100%;justify-content:center">Submit Request</button>
+              </div>
+              <div class="alert alert-info">ℹ️ Admin will approve within 24 hours. You'll receive an SMS confirmation.</div>
+            </div>
+            <div>
+              <div class="card">
+                <div style="font-size:15px;font-weight:700;margin-bottom:16px">Request History</div>
+                <div class="timeline">
+                  <div class="timeline-item done">
+                    <div class="timeline-date">Feb 2026</div>
+                    <div class="timeline-text">Temporary Leave — 14–18 Feb</div>
+                    <div class="timeline-sub">Approved · Home visit</div>
+                  </div>
+                  <div class="timeline-item done">
+                    <div class="timeline-date">Jan 2026</div>
+                    <div class="timeline-text">Temporary Leave — 13–15 Jan</div>
+                    <div class="timeline-sub">Approved · Pongal festival</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── HP-09: Referral ────────────────────────────────── -->
+<div class="screen-block">
+  <div class="screen-meta">
+    <span class="screen-id">HP-09</span>
+    <span class="screen-name">Referral Program</span>
+    <span class="screen-route">/app/referral</span>
+  </div>
+  <div class="screen-frame">
+    <div class="app-shell">
+      <div class="sidebar">
+        <div class="sidebar-logo"><div class="sidebar-logo-text">Hostlify</div></div>
+        <div class="sidebar-section">
+          <a class="sidebar-item"><span class="si-icon">🏠</span> Dashboard</a>
+          <a class="sidebar-item active"><span class="si-icon">👥</span> Referral</a>
+        </div>
+      </div>
+      <div class="main-area">
+        <div class="topbar"><div class="topbar-title">Referral Program</div></div>
+        <div class="content-area">
+          <!-- Hero -->
+          <div style="background:linear-gradient(135deg,#0f2d4a,#1a8fd1);border-radius:var(--radius-lg);padding:28px;color:white;margin-bottom:20px">
+            <div style="font-size:22px;font-weight:700;margin-bottom:6px">Refer friends, save on rent 💰</div>
+            <div style="font-size:14px;opacity:0.8;margin-bottom:20px">Share your code. When a friend joins and pays first rent, you both get <strong>5% off</strong> next month.</div>
+            <div class="referral-code-box">
+              <div>
+                <div style="font-size:11px;color:rgba(255,255,255,0.5);margin-bottom:4px;text-transform:uppercase;letter-spacing:0.5px">Your Referral Code</div>
+                <div class="referral-code">RAVI2025</div>
+              </div>
+              <button class="btn" style="background:var(--brand-500);color:white;border:none">Copy Code</button>
+            </div>
+            <div style="margin-top:12px;display:flex;gap:8px">
+              <button class="btn" style="background:rgba(255,255,255,0.1);color:white;border:1px solid rgba(255,255,255,0.2);flex:1;justify-content:center">📤 Share via WhatsApp</button>
+              <button class="btn" style="background:rgba(255,255,255,0.1);color:white;border:1px solid rgba(255,255,255,0.2);flex:1;justify-content:center">🔗 Copy Link</button>
+            </div>
+          </div>
+          <div class="grid-3" style="margin-bottom:20px">
+            <div class="stat-card stat-card-accent"><div class="stat-label">Total Referrals</div><div class="stat-value">3</div><div class="stat-sub">friends joined</div></div>
+            <div class="stat-card stat-card-success"><div class="stat-label">Total Savings</div><div class="stat-value" style="color:var(--success-500)">₹1,125</div><div class="stat-sub">across 3 months</div></div>
+            <div class="stat-card stat-card-warning"><div class="stat-label">Pending</div><div class="stat-value">0</div><div class="stat-sub">waiting for activation</div></div>
+          </div>
+          <div class="card">
+            <div style="font-size:15px;font-weight:700;margin-bottom:14px">Referral History</div>
+            <table class="tbl">
+              <thead><tr><th>Friend Name</th><th>Joined</th><th>Discount Applied</th><th>Your Savings</th><th>Status</th></tr></thead>
+              <tbody>
+                <tr><td class="td-bold">Ajay K.</td><td>01 Dec 2025</td><td>Jan 2026 rent</td><td class="td-mono" style="color:var(--success-600)">₹375</td><td><span class="badge badge-success badge-dot">Confirmed</span></td></tr>
+                <tr><td class="td-bold">Rahul M.</td><td>15 Jan 2026</td><td>Feb 2026 rent</td><td class="td-mono" style="color:var(--success-600)">₹375</td><td><span class="badge badge-success badge-dot">Confirmed</span></td></tr>
+                <tr><td class="td-bold">Suresh P.</td><td>01 Mar 2026</td><td>Apr 2026 rent</td><td class="td-mono" style="color:var(--warning-600)">₹375</td><td><span class="badge badge-warning badge-dot">Pending next cycle</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── HP-10: My Profile ───────────────────────────────── -->
+<div class="screen-block">
+  <div class="screen-meta">
+    <span class="screen-id">HP-10</span>
+    <span class="screen-name">My Profile</span>
+    <span class="screen-route">/app/profile</span>
+  </div>
+  <div class="screen-frame">
+    <div class="app-shell">
+      <div class="sidebar">
+        <div class="sidebar-logo"><div class="sidebar-logo-text">Hostlify</div></div>
+        <div class="sidebar-section">
+          <a class="sidebar-item"><span class="si-icon">🏠</span> Dashboard</a>
+          <a class="sidebar-item active"><span class="si-icon">👤</span> My Profile</a>
+        </div>
+      </div>
+      <div class="main-area">
+        <div class="topbar">
+          <div><div class="topbar-title">My Profile</div></div>
+          <div class="topbar-right"><button class="btn btn-primary">Save Changes</button></div>
+        </div>
+        <div class="content-area">
+          <!-- Profile header -->
+          <div class="card" style="margin-bottom:16px">
+            <div style="display:flex;align-items:center;gap:20px">
+              <div style="position:relative">
+                <div class="avatar avatar-xl avatar-orange">RK</div>
+                <button style="position:absolute;bottom:0;right:0;width:26px;height:26px;background:var(--brand-600);border:2px solid white;border-radius:50%;color:white;font-size:12px;cursor:pointer;border:2px solid white">✏</button>
+              </div>
+              <div>
+                <div style="font-size:20px;font-weight:700;color:var(--gray-900)">Ravi Kumar</div>
+                <div style="font-size:14px;color:var(--gray-500);margin-top:2px">Room 205, Bed A · 2nd Floor</div>
+                <div style="display:flex;gap:8px;margin-top:8px">
+                  <span class="badge badge-success badge-dot">Active</span>
+                  <span class="badge badge-brand">Working Professional</span>
+                  <span class="tag">Joined Nov 2025</span>
+                </div>
+              </div>
+              <div style="margin-left:auto;text-align:right">
+                <div style="font-size:12px;color:var(--gray-400)">Advance paid</div>
+                <div style="font-size:18px;font-weight:700;color:var(--gray-900);font-family:var(--font-mono)">₹15,000</div>
+                <div style="font-size:12px;color:var(--gray-400)">2 months deposit</div>
+              </div>
+            </div>
+          </div>
+          <div class="grid-2">
+            <div class="card">
+              <div style="font-size:15px;font-weight:700;margin-bottom:16px">Personal Information</div>
+              <div class="grid-2">
+                <div class="form-group"><label class="form-label">First Name</label><input class="form-input" value="Ravi"></div>
+                <div class="form-group"><label class="form-label">Last Name</label><input class="form-input" value="Kumar"></div>
+              </div>
+              <div class="form-group"><label class="form-label">Email</label><input class="form-input" value="ravi@gmail.com" disabled style="background:var(--gray-50);color:var(--gray-400)"><div class="form-hint">Email cannot be changed. Contact admin.</div></div>
+              <div class="form-group"><label class="form-label">Mobile</label><input class="form-input" value="+91 9876543210"></div>
+              <div class="form-group"><label class="form-label">Company / College</label><input class="form-input" value="TCS Hyderabad"></div>
+              <div class="form-group"><label class="form-label">Permanent Address</label><textarea class="form-input" rows="2">123 Main Street, Warangal, Telangana - 506001</textarea></div>
+            </div>
+            <div>
+              <div class="card" style="margin-bottom:16px">
+                <div style="font-size:15px;font-weight:700;margin-bottom:16px">Documents</div>
+                <div style="border:1.5px dashed var(--gray-300);border-radius:var(--radius-md);padding:16px;text-align:center;background:var(--gray-50);margin-bottom:12px">
+                  <div style="font-size:24px;margin-bottom:6px">🪪</div>
+                  <div style="font-size:13px;font-weight:600;color:var(--gray-700)">ID Proof Uploaded</div>
+                  <div style="font-size:12px;color:var(--gray-400)">Aadhaar Card · Uploaded Nov 2025</div>
+                  <button class="btn btn-sm btn-secondary" style="margin-top:8px">Replace</button>
+                </div>
+                <div style="border:1.5px dashed var(--gray-200);border-radius:var(--radius-md);padding:16px;text-align:center;background:var(--gray-50)">
+                  <div style="font-size:24px;margin-bottom:6px">📸</div>
+                  <div style="font-size:13px;font-weight:600;color:var(--gray-700)">Profile Photo</div>
+                  <div style="font-size:12px;color:var(--gray-400)">Uploaded Nov 2025</div>
+                  <button class="btn btn-sm btn-secondary" style="margin-top:8px">Change Photo</button>
+                </div>
+              </div>
+              <div class="card">
+                <div style="font-size:15px;font-weight:700;margin-bottom:14px">Emergency Contact</div>
+                <div class="form-group"><label class="form-label">Name</label><input class="form-input" value="Suresh Kumar"></div>
+                <div class="form-group"><label class="form-label">Relationship</label><input class="form-input" value="Father"></div>
+                <div class="form-group" style="margin-bottom:0"><label class="form-label">Mobile</label><input class="form-input" value="+91 9123456789"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── HP-11: Notifications ───────────────────────────── -->
+<div class="screen-block">
+  <div class="screen-meta">
+    <span class="screen-id">HP-11</span>
+    <span class="screen-name">Notifications Panel</span>
+    <span class="screen-route">/app/notifications (slide-in panel)</span>
+  </div>
+  <div class="screen-frame">
+    <div class="app-shell">
+      <div class="sidebar">
+        <div class="sidebar-logo"><div class="sidebar-logo-text">Hostlify</div></div>
+        <div class="sidebar-section">
+          <a class="sidebar-item active"><span class="si-icon">🏠</span> Dashboard</a>
+        </div>
+      </div>
+      <div class="main-area" style="position:relative;overflow:hidden">
+        <div class="topbar"><div class="topbar-title">Dashboard</div><div class="topbar-right"><div class="topbar-notif-btn" style="background:var(--brand-100);border-color:var(--brand-300)">🔔<div class="topbar-notif-dot"></div></div></div></div>
+        <div class="content-area" style="filter:blur(1px);opacity:0.4">
+          <div class="due-banner"><div><div style="font-size:26px;font-weight:700">₹7,125.00</div></div></div>
+        </div>
+        <!-- Notification panel -->
+        <div style="position:absolute;top:0;right:0;bottom:0;width:320px;background:white;box-shadow:-8px 0 32px rgba(0,0,0,0.12);z-index:10;display:flex;flex-direction:column">
+          <div style="padding:16px 20px;border-bottom:1px solid var(--gray-100);display:flex;align-items:center;justify-content:space-between">
+            <div style="font-size:16px;font-weight:700;color:var(--gray-900)">Notifications</div>
+            <div style="display:flex;gap:8px;align-items:center">
+              <span class="badge badge-brand">3 new</span>
+              <button style="font-size:12px;color:var(--brand-600);background:none;border:none;cursor:pointer;font-weight:500">Mark all read</button>
+            </div>
+          </div>
+          <div style="flex:1;overflow-y:auto;padding:4px 20px">
+            <div class="notif-item">
+              <div class="notif-dot"></div>
+              <div>
+                <div class="notif-text"><strong>Rent Due Reminder</strong> — ₹7,125 due in 5 days (20 Mar). Pay online to avoid late fee.</div>
+                <div class="notif-time">2 hours ago · 🔔 Reminder</div>
+              </div>
+            </div>
+            <div class="notif-item">
+              <div class="notif-dot"></div>
+              <div>
+                <div class="notif-text"><strong>Announcement</strong> — Water supply disrupted 16 March 10 AM – 2 PM.</div>
+                <div class="notif-time">Yesterday, 8 PM · 📢 Announcement</div>
+              </div>
+            </div>
+            <div class="notif-item">
+              <div class="notif-dot"></div>
+              <div>
+                <div class="notif-text"><strong>Complaint Update</strong> — Your WiFi complaint has been assigned to maintenance team.</div>
+                <div class="notif-time">2 days ago · 📋 Complaint</div>
+              </div>
+            </div>
+            <div class="notif-item">
+              <div class="notif-dot read"></div>
+              <div>
+                <div class="notif-text" style="color:var(--gray-400)">Payment confirmed — ₹7,500 for February 2026. Receipt sent to email.</div>
+                <div class="notif-time">17 Feb · 💳 Payment</div>
+              </div>
+            </div>
+            <div class="notif-item" style="border:none">
+              <div class="notif-dot read"></div>
+              <div>
+                <div class="notif-text" style="color:var(--gray-400)">Referral confirmed — Rahul M. joined and paid first rent. ₹375 discount applied to Feb dues.</div>
+                <div class="notif-time">1 Feb · 👥 Referral</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── HP-12: Service - Parking ───────────────────────── -->
+<div class="screen-block">
+  <div class="screen-meta">
+    <span class="screen-id">HP-12</span>
+    <span class="screen-name">Parking Registration</span>
+    <span class="screen-route">/app/services/parking</span>
+  </div>
+  <div class="screen-frame">
+    <div class="app-shell">
+      <div class="sidebar">
+        <div class="sidebar-logo"><div class="sidebar-logo-text">Hostlify</div></div>
+        <div class="sidebar-section">
+          <a class="sidebar-item"><span class="si-icon">🏠</span> Dashboard</a>
+          <a class="sidebar-item active"><span class="si-icon">🚗</span> Parking</a>
+          <a class="sidebar-item"><span class="si-icon">🧹</span> Cleaning</a>
+        </div>
+      </div>
+      <div class="main-area">
+        <div class="topbar"><div class="topbar-title">Parking Registration</div></div>
+        <div class="content-area">
+          <div class="grid-2">
+            <div class="card">
+              <div style="font-size:15px;font-weight:700;margin-bottom:16px">Register Vehicle</div>
+              <div class="form-group">
+                <label class="form-label">Vehicle Number <span class="req">*</span></label>
+                <input class="form-input" placeholder="e.g. TS09AB1234" style="text-transform:uppercase;letter-spacing:2px;font-weight:600;font-family:var(--font-mono)">
+                <div class="form-hint">Enter as shown on registration certificate</div>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Vehicle Type <span class="req">*</span></label>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+                  <div style="border:2px solid var(--brand-500);background:var(--brand-50);border-radius:var(--radius-md);padding:12px;text-align:center;cursor:pointer">
+                    <div style="font-size:24px">🏍</div>
+                    <div style="font-size:13px;font-weight:600;color:var(--brand-700)">Bike / Scooter</div>
+                  </div>
+                  <div style="border:1.5px solid var(--gray-200);border-radius:var(--radius-md);padding:12px;text-align:center;cursor:pointer">
+                    <div style="font-size:24px">🚗</div>
+                    <div style="font-size:13px;font-weight:600;color:var(--gray-600)">Car</div>
+                  </div>
+                  <div style="border:1.5px solid var(--gray-200);border-radius:var(--radius-md);padding:12px;text-align:center;cursor:pointer">
+                    <div style="font-size:24px">🚲</div>
+                    <div style="font-size:13px;font-weight:600;color:var(--gray-600)">Bicycle</div>
+                  </div>
+                  <div style="border:1.5px solid var(--gray-200);border-radius:var(--radius-md);padding:12px;text-align:center;cursor:pointer">
+                    <div style="font-size:24px">🛵</div>
+                    <div style="font-size:13px;font-weight:600;color:var(--gray-600)">Moped</div>
+                  </div>
+                </div>
+              </div>
+              <button class="btn btn-primary" style="width:100%;justify-content:center;margin-top:8px">Register Vehicle</button>
+            </div>
+            <div class="card">
+              <div style="font-size:15px;font-weight:700;margin-bottom:16px">My Vehicles</div>
+              <div style="border:1px solid var(--success-100);background:var(--success-100);border-radius:var(--radius-md);padding:14px;margin-bottom:10px">
+                <div style="display:flex;align-items:center;gap:10px">
+                  <div style="font-size:28px">🏍</div>
+                  <div>
+                    <div style="font-size:16px;font-weight:700;font-family:var(--font-mono);letter-spacing:2px;color:var(--gray-900)">TS09AB1234</div>
+                    <div style="font-size:13px;color:var(--gray-500)">Bike · Slot P-12</div>
+                  </div>
+                  <span class="badge badge-success" style="margin-left:auto">Active</span>
+                </div>
+              </div>
+              <div style="background:var(--gray-50);border-radius:var(--radius-md);padding:14px;margin-top:8px">
+                <div style="font-size:12px;color:var(--gray-500)">Parking slot assigned by admin</div>
+                <div style="font-size:14px;font-weight:600;color:var(--gray-900);margin-top:4px">Slot P-12 · Near Gate 2</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── HP-13: Cleaning Request ────────────────────────── -->
+<div class="screen-block">
+  <div class="screen-meta">
+    <span class="screen-id">HP-13</span>
+    <span class="screen-name">Room Cleaning Request</span>
+    <span class="screen-route">/app/services/cleaning</span>
+  </div>
+  <div class="screen-frame">
+    <div class="app-shell">
+      <div class="sidebar">
+        <div class="sidebar-logo"><div class="sidebar-logo-text">Hostlify</div></div>
+        <div class="sidebar-section">
+          <a class="sidebar-item"><span class="si-icon">🏠</span> Dashboard</a>
+          <a class="sidebar-item"><span class="si-icon">🚗</span> Parking</a>
+          <a class="sidebar-item active"><span class="si-icon">🧹</span> Cleaning</a>
+        </div>
+      </div>
+      <div class="main-area">
+        <div class="topbar"><div class="topbar-title">Room Cleaning</div></div>
+        <div class="content-area">
+          <div class="grid-2">
+            <div class="card">
+              <div style="font-size:15px;font-weight:700;margin-bottom:16px">Request Cleaning — Room 205</div>
+              <div class="form-group">
+                <label class="form-label">Preferred Date <span class="req">*</span></label>
+                <input class="form-input" type="date" value="2026-03-20">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Preferred Time Slot <span class="req">*</span></label>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+                  <div style="border:2px solid var(--brand-500);background:var(--brand-50);border-radius:var(--radius-md);padding:10px;text-align:center;cursor:pointer"><div style="font-size:13px;font-weight:600;color:var(--brand-700)">9 AM – 11 AM</div></div>
+                  <div style="border:1.5px solid var(--gray-200);border-radius:var(--radius-md);padding:10px;text-align:center;cursor:pointer"><div style="font-size:13px;font-weight:600;color:var(--gray-600)">11 AM – 1 PM</div></div>
+                  <div style="border:1.5px solid var(--gray-200);border-radius:var(--radius-md);padding:10px;text-align:center;cursor:pointer"><div style="font-size:13px;font-weight:600;color:var(--gray-600)">2 PM – 4 PM</div></div>
+                  <div style="border:1.5px solid var(--gray-200);border-radius:var(--radius-md);padding:10px;text-align:center;cursor:pointer"><div style="font-size:13px;font-weight:600;color:var(--gray-600)">4 PM – 6 PM</div></div>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Special Notes</label>
+                <textarea class="form-input" rows="2" placeholder="e.g. Please clean bathroom and mop the floor"></textarea>
+              </div>
+              <button class="btn btn-primary" style="width:100%;justify-content:center">Request Cleaning</button>
+            </div>
+            <div class="card">
+              <div style="font-size:15px;font-weight:700;margin-bottom:16px">Recent Requests</div>
+              <div style="padding:12px;border:1px solid var(--success-100);background:var(--success-100);border-radius:var(--radius-md);margin-bottom:8px">
+                <div style="font-size:14px;font-weight:600">18 Mar 2026 · 9–11 AM</div>
+                <div style="font-size:13px;color:var(--gray-500);margin-top:2px">Completed ✓</div>
+              </div>
+              <div style="padding:12px;border:1px solid var(--gray-200);border-radius:var(--radius-md)">
+                <div style="font-size:14px;font-weight:600">5 Mar 2026 · 2–4 PM</div>
+                <div style="font-size:13px;color:var(--gray-500);margin-top:2px">Completed ✓</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── HP-14: Submit Review ───────────────────────────── -->
+<div class="screen-block">
+  <div class="screen-meta">
+    <span class="screen-id">HP-14</span>
+    <span class="screen-name">Submit Review (Post-Checkout)</span>
+    <span class="screen-route">/app/review</span>
+  </div>
+  <div class="screen-frame">
+    <div class="app-shell">
+      <div class="sidebar">
+        <div class="sidebar-logo"><div class="sidebar-logo-text">Hostlify</div></div>
+        <div class="sidebar-section"><a class="sidebar-item active"><span class="si-icon">⭐</span> Submit Review</a></div>
+      </div>
+      <div class="main-area">
+        <div class="topbar"><div class="topbar-title">Submit Review</div></div>
+        <div class="content-area">
+          <div style="max-width:500px;margin:0 auto">
+            <div class="card">
+              <div style="text-align:center;margin-bottom:24px">
+                <div style="font-size:40px;margin-bottom:8px">🏠</div>
+                <div style="font-size:18px;font-weight:700">Sri Sai Hostel – Ameerpet</div>
+                <div style="font-size:13px;color:var(--gray-400);margin-top:4px">Stay duration: Nov 2025 – Mar 2026 (4 months)</div>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Overall Rating <span class="req">*</span></label>
+                <div style="display:flex;gap:8px;font-size:32px;cursor:pointer">
+                  <span>⭐</span><span>⭐</span><span>⭐</span><span>⭐</span><span style="opacity:0.3">⭐</span>
+                </div>
+                <div style="font-size:13px;color:var(--warning-600);font-weight:600;margin-top:4px">4 out of 5 — Very Good</div>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Your Review</label>
+                <textarea class="form-input" rows="4" placeholder="Share your experience living here. What did you like? What could be better?">Good hostel, clean rooms and decent food. WiFi could be better but overall a comfortable stay.</textarea>
+              </div>
+              <button class="btn btn-primary btn-lg" style="width:100%;justify-content:center">Submit Review</button>
+              <div style="text-align:center;margin-top:12px;font-size:12px;color:var(--gray-400)">Reviews are visible to admin and future residents</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── HP-15: Registration Pending Screen ────────────────── -->
+<div class="screen-block">
+  <div class="screen-meta">
+    <span class="screen-id">HP-15</span>
+    <span class="screen-name">Registration Submitted — Pending State</span>
+    <span class="screen-route">/app/pending</span>
+  </div>
+  <div class="screen-frame">
+    <div style="background:var(--gray-50);min-height:680px;display:flex;align-items:center;justify-content:center">
+      <div style="max-width:420px;text-align:center;padding:40px">
+        <div style="width:80px;height:80px;background:var(--warning-100);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 20px;font-size:36px">⏳</div>
+        <div style="font-size:22px;font-weight:700;color:var(--gray-900);margin-bottom:8px">Registration Submitted!</div>
+        <div style="font-size:15px;color:var(--gray-500);margin-bottom:24px;line-height:1.7">Your registration for <strong>Sri Sai Hostel – Ameerpet</strong> has been received. Admin will review and allocate your bed within <strong>24 hours</strong>.</div>
+        <div class="card" style="text-align:left;margin-bottom:20px">
+          <div style="font-size:13px;font-weight:700;color:var(--gray-700);margin-bottom:12px">What happens next?</div>
+          <div style="display:flex;gap:10px;margin-bottom:10px"><span style="width:24px;height:24px;background:var(--brand-100);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:var(--brand-700);flex-shrink:0">1</span><div style="font-size:13px;color:var(--gray-600)">Admin reviews your registration and verifies details</div></div>
+          <div style="display:flex;gap:10px;margin-bottom:10px"><span style="width:24px;height:24px;background:var(--brand-100);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:var(--brand-700);flex-shrink:0">2</span><div style="font-size:13px;color:var(--gray-600)">A bed is allocated to you</div></div>
+          <div style="display:flex;gap:10px"><span style="width:24px;height:24px;background:var(--brand-100);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:var(--brand-700);flex-shrink:0">3</span><div style="font-size:13px;color:var(--gray-600)">You receive an SMS/email with your room details and login access is activated</div></div>
+        </div>
+        <div style="font-size:13px;color:var(--gray-400)">Registered as <strong style="color:var(--gray-700)">ravi@gmail.com</strong></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── HP-16: Payment Success ──────────────────────────── -->
+<div class="screen-block">
+  <div class="screen-meta">
+    <span class="screen-id">HP-16</span>
+    <span class="screen-name">Payment Success Screen</span>
+    <span class="screen-route">/app/dues/success?payment_id=xxx</span>
+  </div>
+  <div class="screen-frame">
+    <div class="app-shell">
+      <div class="sidebar">
+        <div class="sidebar-logo"><div class="sidebar-logo-text">Hostlify</div></div>
+        <div class="sidebar-section"><a class="sidebar-item active"><span class="si-icon">💳</span> My Dues</a></div>
+      </div>
+      <div class="main-area">
+        <div class="topbar"><div class="topbar-title">Payment</div></div>
+        <div class="content-area" style="display:flex;align-items:center;justify-content:center">
+          <div style="max-width:400px;text-align:center">
+            <div style="width:80px;height:80px;background:var(--success-100);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;font-size:40px">✅</div>
+            <div style="font-size:22px;font-weight:700;color:var(--success-600);margin-bottom:8px">Payment Successful!</div>
+            <div style="font-size:32px;font-weight:700;color:var(--gray-900);font-family:var(--font-mono);margin-bottom:4px">₹7,125.00</div>
+            <div style="font-size:14px;color:var(--gray-500);margin-bottom:24px">March 2026 Rent · Sri Sai Hostel – Ameerpet</div>
+            <div class="card" style="text-align:left;margin-bottom:20px">
+              <div class="flex-between" style="margin-bottom:8px"><span style="font-size:13px;color:var(--gray-500)">Payment ID</span><span style="font-family:var(--font-mono);font-size:13px">pay_Mn12abc78</span></div>
+              <div class="flex-between" style="margin-bottom:8px"><span style="font-size:13px;color:var(--gray-500)">Date & Time</span><span style="font-size:13px">15 Mar 2026, 11:32 AM</span></div>
+              <div class="flex-between"><span style="font-size:13px;color:var(--gray-500)">Method</span><span class="tag">UPI · BHIM</span></div>
+            </div>
+            <div style="display:flex;gap:8px;justify-content:center">
+              <button class="btn btn-secondary">📄 Download Receipt</button>
+              <button class="btn btn-primary">Go to Dashboard</button>
+            </div>
+            <div style="font-size:12px;color:var(--gray-400);margin-top:16px">Receipt sent to ravi@gmail.com</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── HP-17: Checkout Confirmation ───────────────────── -->
+<div class="screen-block">
+  <div class="screen-meta">
+    <span class="screen-id">HP-17</span>
+    <span class="screen-name">Checked Out State</span>
+    <span class="screen-route">/app/checked-out</span>
+  </div>
+  <div class="screen-frame">
+    <div style="background:linear-gradient(135deg,#0a1929,#1d5080);min-height:680px;display:flex;align-items:center;justify-content:center">
+      <div style="max-width:420px;text-align:center;color:white;padding:40px">
+        <div style="font-size:22px;font-weight:700;letter-spacing:-0.5px;margin-bottom:32px">Hostlify</div>
+        <div style="font-size:40px;margin-bottom:16px">👋</div>
+        <div style="font-size:22px;font-weight:700;margin-bottom:8px">Thanks for your stay, Ravi!</div>
+        <div style="font-size:14px;opacity:0.7;margin-bottom:28px;line-height:1.7">You've been checked out from Sri Sai Hostel – Ameerpet on <strong>31 March 2026</strong>. We hope you had a comfortable stay.</div>
+        <div style="background:rgba(255,255,255,0.1);border-radius:var(--radius-lg);padding:20px;margin-bottom:20px;text-align:left">
+          <div style="font-size:12px;opacity:0.6;margin-bottom:12px;text-transform:uppercase;letter-spacing:0.5px">Stay Summary</div>
+          <div style="display:flex;justify-content:space-between;margin-bottom:8px"><span style="opacity:0.7">Duration</span><span>Nov 2025 – Mar 2026 (5 months)</span></div>
+          <div style="display:flex;justify-content:space-between;margin-bottom:8px"><span style="opacity:0.7">Total Paid</span><span style="font-family:var(--font-mono)">₹36,875</span></div>
+          <div style="display:flex;justify-content:space-between"><span style="opacity:0.7">Advance Refunded</span><span style="font-family:var(--font-mono);color:#7acdf2">₹7,500</span></div>
+        </div>
+        <button class="btn btn-lg" style="background:white;color:var(--brand-800);font-weight:700;width:100%;justify-content:center">⭐ Leave a Review</button>
+        <div style="margin-top:12px;font-size:13px;opacity:0.5">Your account will remain accessible for 30 days</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Footer -->
+<div style="text-align:center;padding:40px 0 20px;font-size:13px;color:var(--gray-400)">
+  Hostlify Wireframes v2.0 · Part 1 of 3 · Hosteller Portal (HP-00 → HP-17) · 
+  <strong style="color:var(--gray-600)">Next: Part 2 — Staff Portal (27 screens)</strong>
+</div>
+
+</div>
+</body>
+</html>
