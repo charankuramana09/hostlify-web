@@ -21,12 +21,18 @@ export default function StaffLogin() {
 
   const errorMsg = error instanceof Error ? error.message : error ? 'Login failed. Please try again.' : null
 
+  function handleDemoAccess() {
+    setAuth({ accessToken: 'demo-token', refreshToken: 'demo-refresh', role: 'HOSTEL_STAFF' })
+    navigate('/admin/dashboard')
+  }
+
   return (
     <LoginForm
       portalLabel={STRINGS.auth.staffPortal}
       onSubmit={(email, password) => mutate({ email, password })}
       isLoading={isPending}
       error={errorMsg}
+      onDemoAccess={handleDemoAccess}
       otherPortals={[
         { label: STRINGS.auth.hostellerPortal, to: '/auth/login' },
         { label: STRINGS.auth.superAdminPortal, to: '/auth/super-admin/login' },

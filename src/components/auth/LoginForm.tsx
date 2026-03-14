@@ -1,4 +1,4 @@
-import { useState, type FormEvent } from 'react'
+import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { STRINGS } from '../../constants/strings'
 import Button from '../common/Button'
@@ -11,6 +11,7 @@ interface LoginFormProps {
   error?: string | null
   otherPortals?: { label: string; to: string }[]
   signupLink?: { label: string; to: string }
+  onDemoAccess?: () => void
 }
 
 export default function LoginForm({
@@ -20,11 +21,12 @@ export default function LoginForm({
   error,
   otherPortals,
   signupLink,
+  onDemoAccess,
 }: LoginFormProps) {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
 
-  function handleSubmit(e: FormEvent) {
+  function handleSubmit(e: React.SyntheticEvent) {
     e.preventDefault()
     onSubmit(email, password)
   }
@@ -90,6 +92,23 @@ export default function LoginForm({
             {STRINGS.auth.signIn}
           </Button>
         </form>
+
+        {onDemoAccess && (
+          <div className="mt-4">
+            <div className="relative flex items-center gap-3 my-1">
+              <div className="flex-1 h-px bg-gray-100" />
+              <span className="text-xs text-gray-300 font-medium shrink-0">or</span>
+              <div className="flex-1 h-px bg-gray-100" />
+            </div>
+            <button
+              type="button"
+              onClick={onDemoAccess}
+              className="w-full mt-3 py-2.5 rounded-xl border-2 border-dashed border-gray-200 text-sm font-semibold text-gray-400 hover:border-indigo-300 hover:text-indigo-500 hover:bg-indigo-50/50 transition-all"
+            >
+              ⚡ Demo Access — skip login
+            </button>
+          </div>
+        )}
 
         {signupLink && (
           <div className="mt-5 text-center text-[13px] text-gray-400">

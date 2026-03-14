@@ -21,12 +21,18 @@ export default function SuperAdminLogin() {
 
   const errorMsg = error instanceof Error ? error.message : error ? 'Login failed. Please try again.' : null
 
+  function handleDemoAccess() {
+    setAuth({ accessToken: 'demo-token', refreshToken: 'demo-refresh', role: 'SUPER_ADMIN' })
+    navigate('/super-admin/dashboard')
+  }
+
   return (
     <LoginForm
       portalLabel={STRINGS.auth.superAdminPortal}
       onSubmit={(email, password) => mutate({ email, password })}
       isLoading={isPending}
       error={errorMsg}
+      onDemoAccess={handleDemoAccess}
       otherPortals={[
         { label: STRINGS.auth.hostellerPortal, to: '/auth/login' },
         { label: STRINGS.auth.staffPortal, to: '/auth/staff/login' },

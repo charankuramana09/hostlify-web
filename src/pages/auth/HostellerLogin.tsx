@@ -21,12 +21,18 @@ export default function HostellerLogin() {
 
   const errorMsg = error instanceof Error ? error.message : error ? 'Login failed. Please try again.' : null
 
+  function handleDemoAccess() {
+    setAuth({ accessToken: 'demo-token', refreshToken: 'demo-refresh', role: 'HOSTELLER' })
+    navigate('/app/dashboard')
+  }
+
   return (
     <LoginForm
       portalLabel={STRINGS.auth.hostellerPortal}
       onSubmit={(email, password) => mutate({ email, password })}
       isLoading={isPending}
       error={errorMsg}
+      onDemoAccess={handleDemoAccess}
       signupLink={{ label: STRINGS.auth.signUp, to: '/auth/signup' }}
       otherPortals={[
         { label: STRINGS.auth.staffPortal, to: '/auth/staff/login' },
