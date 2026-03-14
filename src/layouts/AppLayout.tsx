@@ -8,6 +8,8 @@ import {
   Wrench,
   UserPlus,
   Bell,
+  Car,
+  SprayCan,
 } from 'lucide-react'
 import PortalLayout, { type NavItem } from './PortalLayout'
 
@@ -21,6 +23,8 @@ const navItems: NavItem[] = [
   { label: 'Service', to: '/app/service', icon: Wrench },
   { label: 'Referral', to: '/app/referral', icon: UserPlus },
   { label: 'Announcements', to: '/app/announcements', icon: Bell },
+  { label: 'Parking', to: '/app/parking', icon: Car },
+  { label: 'Cleaning', to: '/app/cleaning', icon: SprayCan },
 ]
 
 export default function AppLayout() {

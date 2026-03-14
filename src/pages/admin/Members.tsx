@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { Link } from 'react-router-dom'
 import { Search, Users } from 'lucide-react'
 import Badge from '../../components/ui/Badge'
 import PageHeader from '../../components/ui/PageHeader'
@@ -94,7 +95,7 @@ export default function Members() {
                         {getInitials(m.name)}
                       </div>
                       <div>
-                        <p className="font-semibold text-gray-800">{m.name}</p>
+                        <Link to={`/admin/members/${m.id}`} className="font-semibold text-gray-800 hover:text-emerald-600 transition-colors">{m.name}</Link>
                         <p className="text-xs text-gray-400">{m.email}</p>
                       </div>
                     </div>

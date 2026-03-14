@@ -9,6 +9,7 @@ import HostellerLogin from './pages/auth/HostellerLogin'
 import HostellerSignup from './pages/auth/HostellerSignup'
 import StaffLogin from './pages/auth/StaffLogin'
 import SuperAdminLogin from './pages/auth/SuperAdminLogin'
+import ForgotPassword from './pages/auth/ForgotPassword'
 
 // Layouts (lazy)
 const AppLayout = lazy(() => import('./layouts/AppLayout'))
@@ -25,6 +26,8 @@ const AppLeave = lazy(() => import('./pages/app/Leave'))
 const AppService = lazy(() => import('./pages/app/Service'))
 const AppReferral = lazy(() => import('./pages/app/Referral'))
 const AppAnnouncements = lazy(() => import('./pages/app/Announcements'))
+const AppParking = lazy(() => import('./pages/app/Parking'))
+const AppCleaning = lazy(() => import('./pages/app/Cleaning'))
 
 // Staff pages
 const AdminDashboard = lazy(() => import('./pages/admin/Dashboard'))
@@ -36,9 +39,27 @@ const Expenses = lazy(() => import('./pages/admin/Expenses'))
 const AdminAnnouncements = lazy(() => import('./pages/admin/Announcements'))
 const AdminMenu = lazy(() => import('./pages/admin/Menu'))
 const AdminLeave = lazy(() => import('./pages/admin/Leave'))
+const OccupancyMap = lazy(() => import('./pages/admin/OccupancyMap'))
+const Parking = lazy(() => import('./pages/admin/Parking'))
+const Cleaning = lazy(() => import('./pages/admin/Cleaning'))
+const AdminSettings = lazy(() => import('./pages/admin/Settings'))
+const StaffManagement = lazy(() => import('./pages/admin/StaffManagement'))
+const RevenueReport = lazy(() => import('./pages/admin/RevenueReport'))
+const Reviews = lazy(() => import('./pages/admin/Reviews'))
+const Account = lazy(() => import('./pages/admin/Account'))
+const MemberDetail = lazy(() => import('./pages/admin/MemberDetail'))
+const Maintenance = lazy(() => import('./pages/admin/Maintenance'))
+const Employees = lazy(() => import('./pages/admin/Employees'))
 
 // Super Admin pages
 const SuperAdminDashboard = lazy(() => import('./pages/super-admin/Dashboard'))
+const Owners = lazy(() => import('./pages/super-admin/Owners'))
+const OwnerDetail = lazy(() => import('./pages/super-admin/OwnerDetail'))
+const CreateOwner = lazy(() => import('./pages/super-admin/CreateOwner'))
+const SARevenue = lazy(() => import('./pages/super-admin/Revenue'))
+const SAOccupancy = lazy(() => import('./pages/super-admin/Occupancy'))
+const SAComplaints = lazy(() => import('./pages/super-admin/Complaints'))
+const SAAccount = lazy(() => import('./pages/super-admin/Account'))
 
 function PageLoader() {
   return (
@@ -58,6 +79,7 @@ export default function App() {
           <Route path="/auth/signup" element={<HostellerSignup />} />
           <Route path="/auth/staff/login" element={<StaffLogin />} />
           <Route path="/auth/super-admin/login" element={<SuperAdminLogin />} />
+          <Route path="/auth/forgot-password" element={<ForgotPassword />} />
           <Route path="/unauthorized" element={<Unauthorized />} />
 
           {/* ── Hosteller Portal (/app/*) ── */}
@@ -74,6 +96,8 @@ export default function App() {
                 <Route path="/app/service" element={<AppService />} />
                 <Route path="/app/referral" element={<AppReferral />} />
                 <Route path="/app/announcements" element={<AppAnnouncements />} />
+                <Route path="/app/parking" element={<AppParking />} />
+                <Route path="/app/cleaning" element={<AppCleaning />} />
               </Route>
             </Route>
           </Route>
@@ -92,6 +116,17 @@ export default function App() {
                 <Route path="/admin/announcements" element={<AdminAnnouncements />} />
                 <Route path="/admin/menu" element={<AdminMenu />} />
                 <Route path="/admin/leave" element={<AdminLeave />} />
+                <Route path="/admin/occupancy" element={<OccupancyMap />} />
+                <Route path="/admin/parking" element={<Parking />} />
+                <Route path="/admin/cleaning" element={<Cleaning />} />
+                <Route path="/admin/settings" element={<AdminSettings />} />
+                <Route path="/admin/staff" element={<StaffManagement />} />
+                <Route path="/admin/revenue" element={<RevenueReport />} />
+                <Route path="/admin/reviews" element={<Reviews />} />
+                <Route path="/admin/account" element={<Account />} />
+                <Route path="/admin/members/:id" element={<MemberDetail />} />
+                <Route path="/admin/maintenance" element={<Maintenance />} />
+                <Route path="/admin/employees" element={<Employees />} />
               </Route>
             </Route>
           </Route>
@@ -102,6 +137,13 @@ export default function App() {
               <Route element={<SuperAdminLayout />}>
                 <Route path="/super-admin" element={<Navigate to="/super-admin/dashboard" replace />} />
                 <Route path="/super-admin/dashboard" element={<SuperAdminDashboard />} />
+                <Route path="/super-admin/owners" element={<Owners />} />
+                <Route path="/super-admin/owners/create" element={<CreateOwner />} />
+                <Route path="/super-admin/owners/:id" element={<OwnerDetail />} />
+                <Route path="/super-admin/revenue" element={<SARevenue />} />
+                <Route path="/super-admin/occupancy" element={<SAOccupancy />} />
+                <Route path="/super-admin/complaints" element={<SAComplaints />} />
+                <Route path="/super-admin/account" element={<SAAccount />} />
               </Route>
             </Route>
           </Route>

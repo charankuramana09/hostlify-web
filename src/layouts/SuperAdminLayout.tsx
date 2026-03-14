@@ -1,12 +1,13 @@
-import { LayoutDashboard, Building2, Users, BarChart3, Settings } from 'lucide-react'
+import { LayoutDashboard, Users, BarChart3, MapPin, MessageSquare, UserCircle } from 'lucide-react'
 import PortalLayout, { type NavItem } from './PortalLayout'
 
 const navItems: NavItem[] = [
-  { label: 'Dashboard', to: '/super-admin/dashboard', icon: LayoutDashboard },
-  { label: 'Hostels', to: '/super-admin/hostels', icon: Building2 },
-  { label: 'Staff', to: '/super-admin/staff', icon: Users },
-  { label: 'Reports', to: '/super-admin/reports', icon: BarChart3 },
-  { label: 'Settings', to: '/super-admin/settings', icon: Settings },
+  { label: 'Dashboard',  to: '/super-admin/dashboard',  icon: LayoutDashboard },
+  { label: 'Owners',     to: '/super-admin/owners',     icon: Users },
+  { label: 'Revenue',    to: '/super-admin/revenue',    icon: BarChart3 },
+  { label: 'Occupancy',  to: '/super-admin/occupancy',  icon: MapPin },
+  { label: 'Complaints', to: '/super-admin/complaints', icon: MessageSquare },
+  { label: 'My Account', to: '/super-admin/account',    icon: UserCircle },
 ]
 
 export default function SuperAdminLayout() {
