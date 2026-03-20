@@ -1,16 +1,14 @@
 import { useState } from 'react'
 import { Shield, AlertTriangle } from 'lucide-react'
-
-const MOCK_SA = {
-  firstName: 'Admin', lastName: 'User', email: 'admin@hostlify.in',
-  mobile: '9000000000', role: 'SUPER_ADMIN', since: 'January 2025',
-}
+import { useAuthStore } from '../../store/authStore'
 
 export default function SAAccount() {
+  const { email } = useAuthStore()
+
   const [form, setForm] = useState({
-    firstName: MOCK_SA.firstName,
-    lastName: MOCK_SA.lastName,
-    mobile: MOCK_SA.mobile,
+    firstName: 'Admin',
+    lastName: 'User',
+    mobile: '',
   })
   const [passwords, setPasswords] = useState({ current: '', newPass: '', confirm: '' })
 
@@ -21,7 +19,7 @@ export default function SAAccount() {
 
   function handlePasswordSubmit(e: React.FormEvent) {
     e.preventDefault()
-    // TODO: call changePassword API
+    // Feature coming soon
     setPasswords({ current: '', newPass: '', confirm: '' })
   }
 
@@ -44,17 +42,17 @@ export default function SAAccount() {
               className="w-16 h-16 rounded-2xl flex items-center justify-center text-xl font-bold text-white shadow-lg border-4 border-white shrink-0"
               style={{ background: 'linear-gradient(135deg, #4f46e5, #7c3aed)' }}
             >
-              {MOCK_SA.firstName[0]}{MOCK_SA.lastName[0]}
+              {form.firstName[0]}{form.lastName[0]}
             </div>
           </div>
           <div className="flex items-center gap-3 flex-wrap">
-            <h2 className="text-xl font-bold text-gray-900">{MOCK_SA.firstName} {MOCK_SA.lastName}</h2>
+            <h2 className="text-xl font-bold text-gray-900">{form.firstName} {form.lastName}</h2>
             <span className="text-xs font-semibold bg-violet-50 text-violet-700 px-2.5 py-1 rounded-full">
               SUPER ADMIN
             </span>
           </div>
-          <p className="text-sm text-gray-500 mt-1">{MOCK_SA.email}</p>
-          <p className="text-xs text-gray-400 mt-0.5">Member since {MOCK_SA.since}</p>
+          <p className="text-sm text-gray-500 mt-1">{email ?? 'admin@hostlify.in'}</p>
+          <p className="text-xs text-gray-400 mt-0.5">Member since January 2025</p>
         </div>
       </div>
 
@@ -111,6 +109,9 @@ export default function SAAccount() {
               <h3 className="font-semibold text-gray-800 text-sm">Change Password</h3>
             </div>
             <form onSubmit={handlePasswordSubmit} className="p-5 space-y-4">
+              <div className="rounded-xl bg-amber-50 border border-amber-100 px-4 py-3 text-sm text-amber-700 font-medium">
+                Feature coming soon
+              </div>
               {[
                 { key: 'current', label: 'Current Password' },
                 { key: 'newPass', label: 'New Password' },
@@ -122,16 +123,18 @@ export default function SAAccount() {
                   </label>
                   <input
                     type="password"
+                    disabled
                     value={passwords[field.key as keyof typeof passwords]}
                     onChange={(e) => setPasswords((p) => ({ ...p, [field.key]: e.target.value }))}
-                    className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500 bg-gray-50 focus:bg-white transition-colors"
+                    className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500 bg-gray-50 focus:bg-white transition-colors opacity-50 cursor-not-allowed"
                   />
                 </div>
               ))}
               <div className="flex justify-end pt-1">
                 <button
                   type="submit"
-                  className="px-5 py-2 rounded-xl text-sm font-semibold text-white transition-opacity hover:opacity-90"
+                  disabled
+                  className="px-5 py-2 rounded-xl text-sm font-semibold text-white transition-opacity hover:opacity-90 opacity-50 cursor-not-allowed"
                   style={{ background: 'linear-gradient(135deg, #1a0a2e 0%, #7c3aed 100%)' }}
                 >
                   Update Password
@@ -158,7 +161,7 @@ export default function SAAccount() {
                 ['Last Login', 'Mar 15, 2026 · 09:42 AM'],
                 ['Active Sessions', '1 device'],
                 ['Role', 'SUPER_ADMIN'],
-                ['Member Since', MOCK_SA.since],
+                ['Member Since', 'January 2025'],
               ].map(([label, value]) => (
                 <div key={label} className="flex items-center justify-between px-5 py-3">
                   <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide">{label}</p>

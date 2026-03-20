@@ -1,15 +1,10 @@
 import { useState } from 'react'
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { X, ClipboardList } from 'lucide-react'
 import Badge from '../../components/ui/Badge'
 import PageHeader from '../../components/ui/PageHeader'
-
-const MOCK_PENDING = [
-  { id: 1, applicantName: 'Ravi Kumar',  email: 'ravi@example.com',  phone: '9876500001', appliedDate: 'Mar 7, 2026', roomPreference: 'AC',     gender: 'Male',   status: 'PENDING' },
-  { id: 2, applicantName: 'Sneha Patel', email: 'sneha@example.com', phone: '9876500002', appliedDate: 'Mar 6, 2026', roomPreference: 'Non-AC', gender: 'Female', status: 'PENDING' },
-  { id: 3, applicantName: 'Karan Mehta', email: 'karan@example.com', phone: '9876500003', appliedDate: 'Mar 5, 2026', roomPreference: 'Any',    gender: 'Male',   status: 'PENDING' },
-  { id: 4, applicantName: 'Divya Rao',   email: 'divya@example.com', phone: '9876500004', appliedDate: 'Mar 4, 2026', roomPreference: 'AC',     gender: 'Female', status: 'PENDING' },
-  { id: 5, applicantName: 'Amit Joshi',  email: 'amit@example.com',  phone: '9876500005', appliedDate: 'Mar 3, 2026', roomPreference: 'Non-AC', gender: 'Male',   status: 'PENDING' },
-]
+import { getPendingAllocations, allocateBed } from '../../api/staff'
+import { useAuthStore } from '../../store/authStore'
 
 const AVATAR_COLORS = [
   'bg-indigo-500', 'bg-emerald-500', 'bg-purple-500',
@@ -26,25 +21,47 @@ function getInitials(name: string) {
   return name.split(' ').map((n) => n[0]).join('').toUpperCase().slice(0, 2)
 }
 
-type Applicant = typeof MOCK_PENDING[number]
-
 export default function PendingAllocations() {
-  const [selected, setSelected] = useState<Applicant | null>(null)
-  const [roomNumber, setRoomNumber] = useState('')
+  const { activeHostelId } = useAuthStore()
+  const queryClient = useQueryClient()
+  const [selected, setSelected] = useState<any | null>(null)
+  const [bedId, setBedId] = useState('')
+
+  const { data: pending = [], isLoading } = useQuery({
+    queryKey: ['pendingAllocations', activeHostelId],
+    queryFn: () => getPendingAllocations(activeHostelId!),
+    enabled: !!activeHostelId,
+  })
+
+  const allocateMut = useMutation({
+    mutationFn: (data: Record<string, unknown>) => allocateBed(data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['pendingAllocations', activeHostelId] })
+      setSelected(null)
+      setBedId('')
+    },
+  })
 
   function handleAllocate(e: React.FormEvent) {
     e.preventDefault()
-    // TODO: call allocateRoom() API
-    setSelected(null)
-    setRoomNumber('')
+    allocateMut.mutate({
+      bookingId: selected.id,
+      bedId: bedId ? Number(bedId) : undefined,
+    })
   }
+
+  if (isLoading) return (
+    <div className="flex items-center justify-center py-20">
+      <div className="w-8 h-8 rounded-full border-4 border-indigo-200 border-t-indigo-600 animate-spin" />
+    </div>
+  )
 
   return (
     <div className="space-y-6">
       <PageHeader
         title="Pending Allocations"
         subtitle="Review and assign rooms to new applicants"
-        count={MOCK_PENDING.length}
+        count={pending.length}
       />
 
       {/* Allocate room modal */}
@@ -56,7 +73,7 @@ export default function PendingAllocations() {
                 <div className="w-8 h-8 rounded-xl bg-emerald-50 flex items-center justify-center">
                   <ClipboardList size={15} className="text-emerald-600" />
                 </div>
-                <h3 className="font-bold text-gray-900">Allocate Room</h3>
+                <h3 className="font-bold text-gray-900">Allocate Bed</h3>
               </div>
               <button
                 onClick={() => setSelected(null)}
@@ -70,10 +87,10 @@ export default function PendingAllocations() {
             <div className="bg-gray-50 rounded-xl p-4 mb-5">
               <div className="flex items-center gap-3 mb-3">
                 <div className="w-11 h-11 rounded-xl bg-emerald-500 flex items-center justify-center text-sm font-bold text-white shrink-0">
-                  {getInitials(selected.applicantName)}
+                  {getInitials(selected.applicantName ?? selected.name ?? '??')}
                 </div>
                 <div>
-                  <p className="font-bold text-gray-800">{selected.applicantName}</p>
+                  <p className="font-bold text-gray-800">{selected.applicantName ?? selected.name}</p>
                   <p className="text-xs text-gray-500">{selected.email}</p>
                 </div>
               </div>
@@ -88,24 +105,27 @@ export default function PendingAllocations() {
                 </div>
                 <div>
                   <p className="text-[10px] font-semibold uppercase tracking-wide text-gray-400">Preference</p>
-                  <p className="text-sm font-medium text-gray-700 mt-0.5">{selected.roomPreference}</p>
+                  <p className="text-sm font-medium text-gray-700 mt-0.5">{selected.roomPreference ?? selected.preference ?? '—'}</p>
                 </div>
                 <div>
                   <p className="text-[10px] font-semibold uppercase tracking-wide text-gray-400">Applied</p>
-                  <p className="text-sm font-medium text-gray-700 mt-0.5">{selected.appliedDate}</p>
+                  <p className="text-sm font-medium text-gray-700 mt-0.5">
+                    {selected.appliedDate ?? (selected.appliedAt ? new Date(selected.appliedAt).toLocaleDateString('en-IN') : '—')}
+                  </p>
                 </div>
               </div>
             </div>
 
             <form onSubmit={handleAllocate} className="space-y-4">
               <div>
-                <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1.5">Room Number</label>
+                <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1.5">Bed ID</label>
                 <input
                   required
-                  value={roomNumber}
-                  onChange={(e) => setRoomNumber(e.target.value)}
-                  placeholder="e.g., B-204"
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-gray-50 focus:bg-white transition-colors font-mono tracking-wider"
+                  type="number"
+                  value={bedId}
+                  onChange={(e) => setBedId(e.target.value)}
+                  placeholder="Enter bed ID"
+                  className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-gray-50 focus:bg-white transition-colors"
                 />
               </div>
               <div className="flex gap-3 pt-1">
@@ -118,10 +138,11 @@ export default function PendingAllocations() {
                 </button>
                 <button
                   type="submit"
-                  className="flex-1 py-2.5 text-white rounded-xl text-sm font-semibold transition-opacity hover:opacity-90"
+                  disabled={allocateMut.isPending}
+                  className="flex-1 py-2.5 text-white rounded-xl text-sm font-semibold transition-opacity hover:opacity-90 disabled:opacity-60"
                   style={{ background: 'linear-gradient(135deg, #059669, #34d399)' }}
                 >
-                  Allocate
+                  {allocateMut.isPending ? 'Allocating…' : 'Allocate'}
                 </button>
               </div>
             </form>
@@ -144,17 +165,27 @@ export default function PendingAllocations() {
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-50">
-              {MOCK_PENDING.map((p, i) => (
+              {pending.length === 0 && (
+                <tr>
+                  <td colSpan={6} className="px-5 py-12 text-center">
+                    <div className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center mx-auto mb-2">
+                      <ClipboardList size={18} className="text-gray-300" />
+                    </div>
+                    <p className="font-semibold text-gray-400 text-sm">No pending allocations</p>
+                  </td>
+                </tr>
+              )}
+              {pending.map((p: any, i: number) => (
                 <tr key={p.id} className="hover:bg-gray-50/70 transition-colors">
                   <td className="px-5 py-3.5">
                     <div className="flex items-center gap-3">
                       <div
                         className={`w-9 h-9 rounded-xl flex items-center justify-center text-xs font-bold text-white shrink-0 ${AVATAR_COLORS[i % AVATAR_COLORS.length]}`}
                       >
-                        {getInitials(p.applicantName)}
+                        {getInitials(p.applicantName ?? p.name ?? '??')}
                       </div>
                       <div>
-                        <p className="font-semibold text-gray-800">{p.applicantName}</p>
+                        <p className="font-semibold text-gray-800">{p.applicantName ?? p.name}</p>
                         <p className="text-xs text-gray-400">{p.gender}</p>
                       </div>
                     </div>
@@ -164,13 +195,15 @@ export default function PendingAllocations() {
                     <p className="text-xs text-gray-400">{p.phone}</p>
                   </td>
                   <td className="px-5 py-3.5">
-                    <span className={`text-xs font-semibold px-2.5 py-1 rounded-full ${PREF_CHIP[p.roomPreference] ?? 'bg-gray-100 text-gray-600'}`}>
-                      {p.roomPreference}
+                    <span className={`text-xs font-semibold px-2.5 py-1 rounded-full ${PREF_CHIP[p.roomPreference ?? p.preference ?? ''] ?? 'bg-gray-100 text-gray-600'}`}>
+                      {p.roomPreference ?? p.preference ?? 'Any'}
                     </span>
                   </td>
-                  <td className="px-5 py-3.5 text-gray-500 whitespace-nowrap">{p.appliedDate}</td>
+                  <td className="px-5 py-3.5 text-gray-500 whitespace-nowrap">
+                    {p.appliedDate ?? (p.appliedAt ? new Date(p.appliedAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }) : '—')}
+                  </td>
                   <td className="px-5 py-3.5">
-                    <Badge status={p.status} />
+                    <Badge status={p.status ?? 'PENDING'} />
                   </td>
                   <td className="px-5 py-3.5">
                     <button

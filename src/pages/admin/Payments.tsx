@@ -1,17 +1,11 @@
 import { useState } from 'react'
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { IndianRupee, X, AlertTriangle, CheckCircle2, Clock } from 'lucide-react'
 import Badge from '../../components/ui/Badge'
 import PageHeader from '../../components/ui/PageHeader'
 import StatCard from '../../components/ui/StatCard'
-
-const MOCK_DUES = [
-  { id: 1, memberName: 'Arjun Sharma', roomNumber: 'A-101', amount: 5000, dueDate: 'Apr 1, 2026', status: 'PENDING' },
-  { id: 2, memberName: 'Priya Singh',  roomNumber: 'A-102', amount: 5000, dueDate: 'Apr 1, 2026', status: 'PAID' },
-  { id: 3, memberName: 'Ravi Kumar',   roomNumber: 'B-201', amount: 5000, dueDate: 'Apr 1, 2026', status: 'OVERDUE' },
-  { id: 4, memberName: 'Sneha Patel',  roomNumber: 'B-202', amount: 5000, dueDate: 'Apr 1, 2026', status: 'PENDING' },
-  { id: 5, memberName: 'Ananya Iyer',  roomNumber: 'C-302', amount: 5000, dueDate: 'Apr 1, 2026', status: 'PAID' },
-  { id: 6, memberName: 'Mohit Verma',  roomNumber: 'C-301', amount: 5000, dueDate: 'Mar 1, 2026', status: 'OVERDUE' },
-]
+import { getPendingDues, recordCashPayment } from '../../api/staff'
+import { useAuthStore } from '../../store/authStore'
 
 const AVATAR_COLORS = [
   'bg-indigo-500', 'bg-emerald-500', 'bg-purple-500',
@@ -22,24 +16,44 @@ function getInitials(name: string) {
   return name.split(' ').map((n) => n[0]).join('').toUpperCase().slice(0, 2)
 }
 
-type Due = typeof MOCK_DUES[number]
-
 export default function Payments() {
+  const { activeHostelId } = useAuthStore()
+  const queryClient = useQueryClient()
   const [tab, setTab] = useState<'dues' | 'history'>('dues')
-  const [confirmRecord, setConfirmRecord] = useState<Due | null>(null)
+  const [confirmRecord, setConfirmRecord] = useState<any | null>(null)
+
+  const { data: dues = [], isLoading } = useQuery({
+    queryKey: ['dues', activeHostelId],
+    queryFn: () => getPendingDues(activeHostelId!),
+    enabled: !!activeHostelId,
+  })
+
+  const recordMut = useMutation({
+    mutationFn: (data: Record<string, unknown>) => recordCashPayment(data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['dues', activeHostelId] })
+      setConfirmRecord(null)
+    },
+  })
 
   function handleRecordPayment() {
-    // TODO: call recordCashPayment() API
-    setConfirmRecord(null)
+    if (!confirmRecord) return
+    recordMut.mutate({ dueId: confirmRecord.id, amount: confirmRecord.amount })
   }
 
-  const pendingDues = MOCK_DUES.filter((d) => d.status !== 'PAID')
-  const paidDues    = MOCK_DUES.filter((d) => d.status === 'PAID')
-  const overdueDues = MOCK_DUES.filter((d) => d.status === 'OVERDUE')
+  const pendingDues = dues.filter((d: any) => d.status !== 'PAID')
+  const paidDues    = dues.filter((d: any) => d.status === 'PAID')
+  const overdueDues = dues.filter((d: any) => d.status === 'OVERDUE')
 
-  const totalDue     = pendingDues.reduce((s, d) => s + d.amount, 0)
-  const totalPaid    = paidDues.reduce((s, d) => s + d.amount, 0)
-  const totalOverdue = overdueDues.reduce((s, d) => s + d.amount, 0)
+  const totalDue     = pendingDues.reduce((s: number, d: any) => s + (d.amount ?? 0), 0)
+  const totalPaid    = paidDues.reduce((s: number, d: any) => s + (d.amount ?? 0), 0)
+  const totalOverdue = overdueDues.reduce((s: number, d: any) => s + (d.amount ?? 0), 0)
+
+  if (isLoading) return (
+    <div className="flex items-center justify-center py-20">
+      <div className="w-8 h-8 rounded-full border-4 border-indigo-200 border-t-indigo-600 animate-spin" />
+    </div>
+  )
 
   return (
     <div className="space-y-6">
@@ -66,17 +80,17 @@ export default function Payments() {
             <div className="bg-gray-50 rounded-xl p-4 mb-5 space-y-1.5">
               <div className="flex items-center gap-2">
                 <div className="w-9 h-9 rounded-xl bg-emerald-500 flex items-center justify-center text-xs font-bold text-white shrink-0">
-                  {getInitials(confirmRecord.memberName)}
+                  {getInitials(confirmRecord.hostellerName ?? confirmRecord.memberName ?? '??')}
                 </div>
                 <div>
-                  <p className="font-semibold text-gray-800 text-sm">{confirmRecord.memberName}</p>
+                  <p className="font-semibold text-gray-800 text-sm">{confirmRecord.hostellerName ?? confirmRecord.memberName}</p>
                   <p className="text-xs text-gray-400">Room {confirmRecord.roomNumber}</p>
                 </div>
               </div>
               <div className="pt-2 border-t border-gray-100 mt-2">
                 <p className="text-xs text-gray-400 font-medium">Amount to record</p>
                 <p className="text-2xl font-bold text-gray-900 mt-0.5 tracking-tight">
-                  ₹{confirmRecord.amount.toLocaleString()}
+                  ₹{(confirmRecord.amount ?? 0).toLocaleString()}
                 </p>
               </div>
             </div>
@@ -90,9 +104,10 @@ export default function Payments() {
               </button>
               <button
                 onClick={handleRecordPayment}
-                className="flex-1 py-2.5 bg-emerald-600 text-white rounded-xl text-sm font-semibold hover:bg-emerald-700 transition-colors"
+                disabled={recordMut.isPending}
+                className="flex-1 py-2.5 bg-emerald-600 text-white rounded-xl text-sm font-semibold hover:bg-emerald-700 transition-colors disabled:opacity-60"
               >
-                Confirm
+                {recordMut.isPending ? 'Processing…' : 'Confirm'}
               </button>
             </div>
           </div>
@@ -156,16 +171,16 @@ export default function Payments() {
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-50">
-              {(tab === 'dues' ? pendingDues : paidDues).map((d, i) => (
+              {(tab === 'dues' ? pendingDues : paidDues).map((d: any, i: number) => (
                 <tr key={d.id} className="hover:bg-gray-50/70 transition-colors">
                   <td className="px-5 py-3.5">
                     <div className="flex items-center gap-3">
                       <div
                         className={`w-9 h-9 rounded-xl flex items-center justify-center text-xs font-bold text-white shrink-0 ${AVATAR_COLORS[i % AVATAR_COLORS.length]}`}
                       >
-                        {getInitials(d.memberName)}
+                        {getInitials(d.hostellerName ?? d.memberName ?? '??')}
                       </div>
-                      <p className="font-semibold text-gray-800">{d.memberName}</p>
+                      <p className="font-semibold text-gray-800">{d.hostellerName ?? d.memberName}</p>
                     </div>
                   </td>
                   <td className="px-5 py-3.5">
@@ -175,10 +190,12 @@ export default function Payments() {
                   </td>
                   <td className="px-5 py-3.5">
                     <span className={`font-bold text-sm ${tab === 'history' ? 'text-emerald-600' : d.status === 'OVERDUE' ? 'text-red-600' : 'text-gray-900'}`}>
-                      ₹{d.amount.toLocaleString()}
+                      ₹{(d.amount ?? 0).toLocaleString()}
                     </span>
                   </td>
-                  <td className="px-5 py-3.5 text-gray-500">{d.dueDate}</td>
+                  <td className="px-5 py-3.5 text-gray-500">
+                    {d.dueDate ? new Date(d.dueDate).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }) : '—'}
+                  </td>
                   <td className="px-5 py-3.5">
                     <Badge status={d.status} />
                   </td>
@@ -194,6 +211,13 @@ export default function Payments() {
                   )}
                 </tr>
               ))}
+              {(tab === 'dues' ? pendingDues : paidDues).length === 0 && (
+                <tr>
+                  <td colSpan={tab === 'dues' ? 6 : 5} className="px-5 py-12 text-center text-sm font-semibold text-gray-400">
+                    No records found
+                  </td>
+                </tr>
+              )}
             </tbody>
           </table>
         </div>

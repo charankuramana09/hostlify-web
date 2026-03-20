@@ -1,15 +1,17 @@
 import { useState } from 'react'
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { Plus, X, Wrench, Zap, Droplets, Sofa, SprayCan, Wind, HelpCircle } from 'lucide-react'
 import Badge from '../../components/ui/Badge'
 import PageHeader from '../../components/ui/PageHeader'
+import { useAuthStore } from '../../store/authStore'
+import { getMyComplaints, createComplaint } from '../../api/hosteller'
+
+function fmtDate(d: string) {
+  if (!d) return '—'
+  return new Date(d).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })
+}
 
 const SERVICE_CATEGORIES = ['Plumbing', 'Electrical', 'Furniture', 'Cleaning', 'AC / Cooling', 'Other']
-
-const MOCK_SERVICES = [
-  { id: 1, category: 'Electrical',  description: 'Room light not working', status: 'RESOLVED',    createdAt: 'Mar 5, 2026' },
-  { id: 2, category: 'Plumbing',    description: 'Water tap leaking',      status: 'IN_PROGRESS', createdAt: 'Mar 8, 2026' },
-  { id: 3, category: 'AC / Cooling',description: 'AC remote missing',      status: 'OPEN',        createdAt: 'Mar 9, 2026' },
-]
 
 const CATEGORY_ICONS: Record<string, { icon: typeof Wrench; bg: string; color: string }> = {
   'Plumbing':    { icon: Droplets, bg: 'bg-blue-50',   color: 'text-blue-600' },
@@ -31,20 +33,54 @@ const STATUS_CHIP: Record<string, string> = {
 }
 
 export default function Service() {
+  const { hostellerProfileId, hostelId } = useAuthStore()
+  const queryClient = useQueryClient()
+
   const [showForm, setShowForm] = useState(false)
   const [form, setForm] = useState({ category: '', description: '' })
 
+  const { data: services, isLoading, error } = useQuery({
+    queryKey: ['my-complaints', hostellerProfileId],
+    queryFn: () => getMyComplaints(hostellerProfileId!),
+    enabled: !!hostellerProfileId,
+  })
+
+  const createMutation = useMutation({
+    mutationFn: createComplaint,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['my-complaints', hostellerProfileId] })
+      setShowForm(false)
+      setForm({ category: '', description: '' })
+    },
+  })
+
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
-    // TODO: call createServiceRequest() API
-    setShowForm(false)
-    setForm({ category: '', description: '' })
+    createMutation.mutate({
+      category: form.category,
+      description: form.description,
+      hostellerProfileId,
+      hostelId,
+      title: `${form.category} Issue`,
+    })
   }
 
   function selectCategory(cat: string) {
     setForm((f) => ({ ...f, category: cat }))
     setShowForm(true)
   }
+
+  const servicesList = (services ?? []).filter((s: any) =>
+    SERVICE_CATEGORIES.includes(s.category)
+  )
+
+  if (isLoading) return (
+    <div className="flex items-center justify-center py-20">
+      <div className="w-8 h-8 rounded-full border-4 border-indigo-200 border-t-indigo-600 animate-spin" />
+    </div>
+  )
+
+  if (error) return <div className="text-center py-20 text-gray-400">Failed to load data</div>
 
   return (
     <div className="space-y-6">
@@ -139,10 +175,11 @@ export default function Service() {
               </button>
               <button
                 type="submit"
-                className="px-5 py-2 text-sm rounded-xl font-semibold text-white transition-opacity hover:opacity-90"
+                disabled={createMutation.isPending}
+                className="px-5 py-2 text-sm rounded-xl font-semibold text-white transition-opacity hover:opacity-90 disabled:opacity-60"
                 style={{ background: 'linear-gradient(135deg, #1d6ea8, #1a8fd1)' }}
               >
-                Submit
+                {createMutation.isPending ? 'Submitting…' : 'Submit'}
               </button>
             </div>
           </form>
@@ -151,7 +188,7 @@ export default function Service() {
 
       {/* Current requests cards */}
       <div className="space-y-3">
-        {MOCK_SERVICES.map((s) => (
+        {servicesList.map((s: any) => (
           <div
             key={s.id}
             className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 hover:shadow-md transition-all duration-200"
@@ -173,14 +210,14 @@ export default function Service() {
                     </span>
                   </div>
                   <p className="text-sm font-semibold text-gray-800 mt-1">{s.description}</p>
-                  <p className="text-xs text-gray-400 mt-1 font-medium">Submitted {s.createdAt}</p>
+                  <p className="text-xs text-gray-400 mt-1 font-medium">Submitted {fmtDate(s.createdAt)}</p>
                 </div>
               </div>
               <Badge status={s.status} />
             </div>
           </div>
         ))}
-        {MOCK_SERVICES.length === 0 && (
+        {servicesList.length === 0 && (
           <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-12 text-center">
             <div className="w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center mx-auto mb-3">
               <Wrench size={22} className="text-gray-300" />

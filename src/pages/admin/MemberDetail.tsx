@@ -1,33 +1,9 @@
 import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { ArrowLeft, Phone, Mail, Home, CreditCard, MessageSquare, Activity, LogOut } from 'lucide-react'
 import Badge from '../../components/ui/Badge'
-
-const MOCK_MEMBER = {
-  id: 1, name: 'Arjun Sharma', email: 'arjun@example.com', phone: '9876543210',
-  gender: 'Male', dob: 'Jan 15, 2000', roomNumber: 'A-101', bedNumber: 'B1',
-  floor: 'Ground Floor', type: 'AC Double', joinDate: 'Sep 1, 2025',
-  advance: 10000, monthlyRent: 5000, status: 'ACTIVE',
-  address: '42, MG Road, Bangalore - 560001',
-  emergencyContact: { name: 'Suresh Sharma', phone: '9876500099', relation: 'Father' },
-}
-
-const MOCK_PAYMENTS = [
-  { id: 1, month: 'March 2026', amount: 5000, paidDate: 'Mar 5, 2026', method: 'UPI', ref: 'TXN9876543', status: 'PAID' },
-  { id: 2, month: 'February 2026', amount: 5000, paidDate: 'Feb 3, 2026', method: 'Cash', ref: '-', status: 'PAID' },
-  { id: 3, month: 'January 2026', amount: 5000, paidDate: null, ref: '-', status: 'OVERDUE' },
-]
-
-const MOCK_COMPLAINTS = [
-  { id: 1, title: 'AC not cooling', category: 'Maintenance', status: 'RESOLVED', date: 'Mar 7, 2026' },
-  { id: 2, title: 'Water heater issue', category: 'Plumbing', status: 'CLOSED', date: 'Feb 5, 2026' },
-]
-
-const MOCK_ACTIVITY = [
-  { id: 1, text: 'Room allocated: A-101', date: 'Sep 1, 2025', type: 'allocation' },
-  { id: 2, text: 'January dues marked OVERDUE', date: 'Feb 1, 2026', type: 'payment' },
-  { id: 3, text: 'Complaint #1 resolved', date: 'Mar 10, 2026', type: 'complaint' },
-]
+import { getMemberById, checkoutHosteller } from '../../api/staff'
 
 const CATEGORY_COLORS: Record<string, string> = {
   Maintenance: 'bg-blue-50 text-blue-700',
@@ -46,10 +22,25 @@ type Tab = 'overview' | 'payments' | 'complaints' | 'activity'
 
 export default function MemberDetail() {
   const navigate = useNavigate()
+  const { id } = useParams<{ id: string }>()
+  const queryClient = useQueryClient()
   const [activeTab, setActiveTab] = useState<Tab>('overview')
   const [showCheckout, setShowCheckout] = useState(false)
 
-  const totalCollected = MOCK_PAYMENTS.filter((p) => p.status === 'PAID').reduce((s, p) => s + p.amount, 0)
+  const { data: member, isLoading } = useQuery({
+    queryKey: ['member', id],
+    queryFn: () => getMemberById(Number(id)),
+    enabled: !!id,
+  })
+
+  const checkoutMut = useMutation({
+    mutationFn: () => checkoutHosteller(member?.bookingId ?? member?.id, {}),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['members'] })
+      setShowCheckout(false)
+      navigate(-1)
+    },
+  })
 
   const TABS: { id: Tab; label: string; icon: typeof Home }[] = [
     { id: 'overview', label: 'Overview', icon: Home },
@@ -57,6 +48,24 @@ export default function MemberDetail() {
     { id: 'complaints', label: 'Complaints', icon: MessageSquare },
     { id: 'activity', label: 'Activity', icon: Activity },
   ]
+
+  if (isLoading) return (
+    <div className="flex items-center justify-center py-20">
+      <div className="w-8 h-8 rounded-full border-4 border-indigo-200 border-t-indigo-600 animate-spin" />
+    </div>
+  )
+
+  if (!member) return (
+    <div className="flex flex-col items-center justify-center py-20 gap-2">
+      <p className="font-semibold text-gray-400 text-sm">Member not found</p>
+      <button onClick={() => navigate(-1)} className="text-xs text-emerald-600 hover:underline">Go back</button>
+    </div>
+  )
+
+  const payments: any[] = member.payments ?? []
+  const complaints: any[] = member.complaints ?? []
+  const activity: any[] = member.activity ?? []
+  const totalCollected = payments.filter((p: any) => p.status === 'PAID').reduce((s: number, p: any) => s + (p.amount ?? 0), 0)
 
   return (
     <div className="space-y-6">
@@ -82,7 +91,7 @@ export default function MemberDetail() {
         <div className="px-6 pb-6">
           <div className="flex items-end justify-between -mt-9 mb-4 gap-4">
             <div className="w-16 h-16 rounded-2xl bg-emerald-500 flex items-center justify-center text-xl font-bold text-white shadow-lg border-4 border-white shrink-0">
-              {MOCK_MEMBER.name.split(' ').map((n) => n[0]).join('').toUpperCase().slice(0, 2)}
+              {(member.name ?? '??').split(' ').map((n: string) => n[0]).join('').toUpperCase().slice(0, 2)}
             </div>
             <button
               onClick={() => setShowCheckout(true)}
@@ -94,18 +103,18 @@ export default function MemberDetail() {
           <div className="flex items-start gap-4 flex-wrap">
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2.5 flex-wrap">
-                <h2 className="text-xl font-bold text-gray-900">{MOCK_MEMBER.name}</h2>
+                <h2 className="text-xl font-bold text-gray-900">{member.name}</h2>
                 <span className="font-mono text-xs font-bold bg-gray-100 text-gray-700 px-2.5 py-1 rounded-lg tracking-wider">
-                  {MOCK_MEMBER.roomNumber}
+                  {member.roomNumber ?? '—'}
                 </span>
-                <Badge status={MOCK_MEMBER.status} />
+                <Badge status={member.status ?? 'ACTIVE'} />
               </div>
               <div className="flex items-center gap-4 mt-2 flex-wrap">
                 <span className="flex items-center gap-1.5 text-sm text-gray-500">
-                  <Mail size={13} /> {MOCK_MEMBER.email}
+                  <Mail size={13} /> {member.email}
                 </span>
                 <span className="flex items-center gap-1.5 text-sm text-gray-500">
-                  <Phone size={13} /> {MOCK_MEMBER.phone}
+                  <Phone size={13} /> {member.phone ?? '—'}
                 </span>
               </div>
             </div>
@@ -115,10 +124,10 @@ export default function MemberDetail() {
         {/* Mini Stats */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-px bg-gray-100 border-t border-gray-100">
           {[
-            { label: 'Room', value: `${MOCK_MEMBER.roomNumber} · ${MOCK_MEMBER.type}` },
-            { label: 'Advance', value: `₹${MOCK_MEMBER.advance.toLocaleString()}` },
-            { label: 'Monthly Rent', value: `₹${MOCK_MEMBER.monthlyRent.toLocaleString()}` },
-            { label: 'Join Date', value: MOCK_MEMBER.joinDate },
+            { label: 'Room', value: `${member.roomNumber ?? '—'}${member.type ? ' · ' + member.type : ''}` },
+            { label: 'Advance', value: member.advance != null ? `₹${member.advance.toLocaleString()}` : '—' },
+            { label: 'Monthly Rent', value: member.monthlyRent != null ? `₹${member.monthlyRent.toLocaleString()}` : '—' },
+            { label: 'Join Date', value: member.joinDate ? new Date(member.joinDate).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }) : '—' },
           ].map((s) => (
             <div key={s.label} className="bg-white px-5 py-3.5 text-center">
               <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide">{s.label}</p>
@@ -155,14 +164,14 @@ export default function MemberDetail() {
             </div>
             <div className="divide-y divide-gray-50">
               {[
-                ['Full Name', MOCK_MEMBER.name],
-                ['Gender', MOCK_MEMBER.gender],
-                ['Date of Birth', MOCK_MEMBER.dob],
-                ['Phone', MOCK_MEMBER.phone],
-                ['Email', MOCK_MEMBER.email],
-                ['Address', MOCK_MEMBER.address],
-                ['Floor', MOCK_MEMBER.floor],
-                ['Bed Number', MOCK_MEMBER.bedNumber],
+                ['Full Name', member.name],
+                ['Gender', member.gender ?? '—'],
+                ['Date of Birth', member.dob ?? '—'],
+                ['Phone', member.phone ?? '—'],
+                ['Email', member.email],
+                ['Address', member.address ?? '—'],
+                ['Floor', member.floor ?? '—'],
+                ['Bed Number', member.bedNumber ?? '—'],
               ].map(([label, value]) => (
                 <div key={label} className="flex items-start gap-4 px-5 py-3">
                   <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide w-32 shrink-0 pt-0.5">{label}</p>
@@ -176,19 +185,25 @@ export default function MemberDetail() {
               <h3 className="font-semibold text-gray-800 text-sm">Emergency Contact</h3>
             </div>
             <div className="p-5 space-y-3">
-              <div className="flex items-center gap-3">
-                <div className="w-11 h-11 rounded-xl bg-rose-500 flex items-center justify-center text-sm font-bold text-white shrink-0">
-                  {MOCK_MEMBER.emergencyContact.name[0]}
-                </div>
-                <div>
-                  <p className="font-semibold text-gray-900 text-sm">{MOCK_MEMBER.emergencyContact.name}</p>
-                  <p className="text-xs text-gray-400">{MOCK_MEMBER.emergencyContact.relation}</p>
-                </div>
-              </div>
-              <div className="flex items-center gap-2 text-sm text-gray-600">
-                <Phone size={14} className="text-gray-400" />
-                {MOCK_MEMBER.emergencyContact.phone}
-              </div>
+              {member.emergencyContact ? (
+                <>
+                  <div className="flex items-center gap-3">
+                    <div className="w-11 h-11 rounded-xl bg-rose-500 flex items-center justify-center text-sm font-bold text-white shrink-0">
+                      {(member.emergencyContact.name ?? '?')[0]}
+                    </div>
+                    <div>
+                      <p className="font-semibold text-gray-900 text-sm">{member.emergencyContact.name}</p>
+                      <p className="text-xs text-gray-400">{member.emergencyContact.relation}</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2 text-sm text-gray-600">
+                    <Phone size={14} className="text-gray-400" />
+                    {member.emergencyContact.phone}
+                  </div>
+                </>
+              ) : (
+                <p className="text-sm text-gray-400">No emergency contact on file.</p>
+              )}
             </div>
           </div>
         </div>
@@ -215,13 +230,18 @@ export default function MemberDetail() {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-50">
-                  {MOCK_PAYMENTS.map((p) => (
+                  {payments.length === 0 && (
+                    <tr>
+                      <td colSpan={6} className="px-5 py-10 text-center text-sm text-gray-400">No payment records available</td>
+                    </tr>
+                  )}
+                  {payments.map((p: any) => (
                     <tr key={p.id} className="hover:bg-gray-50/70 transition-colors">
                       <td className="px-5 py-3.5 font-medium text-gray-800">{p.month}</td>
-                      <td className="px-5 py-3.5 font-bold text-gray-900">₹{p.amount.toLocaleString()}</td>
+                      <td className="px-5 py-3.5 font-bold text-gray-900">₹{(p.amount ?? 0).toLocaleString()}</td>
                       <td className="px-5 py-3.5 text-gray-500">{p.paidDate ?? '—'}</td>
                       <td className="px-5 py-3.5 text-gray-600">{p.method ?? '—'}</td>
-                      <td className="px-5 py-3.5 font-mono text-xs text-gray-500">{p.ref}</td>
+                      <td className="px-5 py-3.5 font-mono text-xs text-gray-500">{p.ref ?? '—'}</td>
                       <td className="px-5 py-3.5"><Badge status={p.status} /></td>
                     </tr>
                   ))}
@@ -235,7 +255,12 @@ export default function MemberDetail() {
       {/* Complaints Tab */}
       {activeTab === 'complaints' && (
         <div className="space-y-3">
-          {MOCK_COMPLAINTS.map((c) => (
+          {complaints.length === 0 && (
+            <div className="bg-white rounded-2xl border border-gray-100 shadow-sm py-12 flex flex-col items-center gap-2">
+              <p className="font-semibold text-gray-400 text-sm">No complaints filed</p>
+            </div>
+          )}
+          {complaints.map((c: any) => (
             <div key={c.id} className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
               <div className="flex items-start justify-between gap-4">
                 <div>
@@ -245,7 +270,7 @@ export default function MemberDetail() {
                       {c.category}
                     </span>
                   </div>
-                  <p className="text-xs text-gray-400">{c.date}</p>
+                  <p className="text-xs text-gray-400">{c.date ?? c.createdAt}</p>
                 </div>
                 <Badge status={c.status} />
               </div>
@@ -257,12 +282,15 @@ export default function MemberDetail() {
       {/* Activity Tab */}
       {activeTab === 'activity' && (
         <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
+          {activity.length === 0 && (
+            <p className="text-sm text-gray-400 text-center py-8">No activity records available</p>
+          )}
           <div className="space-y-0">
-            {MOCK_ACTIVITY.map((a, i) => (
+            {activity.map((a: any, i: number) => (
               <div key={a.id} className="flex gap-4">
                 <div className="flex flex-col items-center">
                   <div className={`w-3 h-3 rounded-full mt-1 shrink-0 ${ACTIVITY_DOT[a.type] ?? 'bg-gray-400'}`} />
-                  {i < MOCK_ACTIVITY.length - 1 && <div className="w-px flex-1 bg-gray-100 mt-1" />}
+                  {i < activity.length - 1 && <div className="w-px flex-1 bg-gray-100 mt-1" />}
                 </div>
                 <div className="pb-5">
                   <p className="text-sm text-gray-800 font-medium">{a.text}</p>
@@ -283,7 +311,7 @@ export default function MemberDetail() {
             </div>
             <h3 className="font-bold text-gray-900 text-lg mb-1">Checkout Member</h3>
             <p className="text-sm text-gray-500 mb-6">
-              Are you sure you want to checkout <span className="font-semibold text-gray-700">{MOCK_MEMBER.name}</span>? This will vacate room {MOCK_MEMBER.roomNumber}.
+              Are you sure you want to checkout <span className="font-semibold text-gray-700">{member.name}</span>? This will vacate room {member.roomNumber ?? '—'}.
             </p>
             <div className="flex gap-3">
               <button
@@ -293,10 +321,11 @@ export default function MemberDetail() {
                 Cancel
               </button>
               <button
-                onClick={() => setShowCheckout(false)}
-                className="flex-1 px-4 py-2.5 text-sm text-white rounded-xl font-semibold transition-opacity hover:opacity-90 bg-red-500"
+                onClick={() => checkoutMut.mutate()}
+                disabled={checkoutMut.isPending}
+                className="flex-1 px-4 py-2.5 text-sm text-white rounded-xl font-semibold transition-opacity hover:opacity-90 bg-red-500 disabled:opacity-60"
               >
-                Confirm Checkout
+                {checkoutMut.isPending ? 'Processing…' : 'Confirm Checkout'}
               </button>
             </div>
           </div>

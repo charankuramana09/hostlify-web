@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import AuthGuard from './guards/AuthGuard'
 import RoleGuard from './guards/RoleGuard'
 import Unauthorized from './pages/Unauthorized'
+import { ToastContainer } from './components/ui/Toast'
 
 // Auth pages (eager — tiny, always needed)
 import HostellerLogin from './pages/auth/HostellerLogin'
@@ -28,10 +29,14 @@ const AppReferral = lazy(() => import('./pages/app/Referral'))
 const AppAnnouncements = lazy(() => import('./pages/app/Announcements'))
 const AppParking = lazy(() => import('./pages/app/Parking'))
 const AppCleaning = lazy(() => import('./pages/app/Cleaning'))
+const HostelDiscovery = lazy(() => import('./pages/app/HostelDiscovery'))
+const HostelDetail = lazy(() => import('./pages/app/HostelDetail'))
+const BedSelectionWizard = lazy(() => import('./pages/app/BedSelectionWizard'))
+const BookingStatus = lazy(() => import('./pages/app/BookingStatus'))
 
 // Staff pages
 const AdminDashboard = lazy(() => import('./pages/admin/Dashboard'))
-const PendingAllocations = lazy(() => import('./pages/admin/PendingAllocations'))
+const Allocations = lazy(() => import('./pages/admin/Allocations'))
 const Members = lazy(() => import('./pages/admin/Members'))
 const Payments = lazy(() => import('./pages/admin/Payments'))
 const AdminComplaints = lazy(() => import('./pages/admin/Complaints'))
@@ -43,13 +48,13 @@ const OccupancyMap = lazy(() => import('./pages/admin/OccupancyMap'))
 const Parking = lazy(() => import('./pages/admin/Parking'))
 const Cleaning = lazy(() => import('./pages/admin/Cleaning'))
 const AdminSettings = lazy(() => import('./pages/admin/Settings'))
+const HostelSetup = lazy(() => import('./pages/admin/HostelSetup'))
 const StaffManagement = lazy(() => import('./pages/admin/StaffManagement'))
 const RevenueReport = lazy(() => import('./pages/admin/RevenueReport'))
 const Reviews = lazy(() => import('./pages/admin/Reviews'))
 const Account = lazy(() => import('./pages/admin/Account'))
 const MemberDetail = lazy(() => import('./pages/admin/MemberDetail'))
 const Maintenance = lazy(() => import('./pages/admin/Maintenance'))
-const Employees = lazy(() => import('./pages/admin/Employees'))
 
 // Super Admin pages
 const SuperAdminDashboard = lazy(() => import('./pages/super-admin/Dashboard'))
@@ -72,6 +77,7 @@ function PageLoader() {
 export default function App() {
   return (
     <BrowserRouter>
+      <ToastContainer />
       <Suspense fallback={<PageLoader />}>
         <Routes>
           {/* Public */}
@@ -98,6 +104,10 @@ export default function App() {
                 <Route path="/app/announcements" element={<AppAnnouncements />} />
                 <Route path="/app/parking" element={<AppParking />} />
                 <Route path="/app/cleaning" element={<AppCleaning />} />
+                <Route path="/app/discover" element={<HostelDiscovery />} />
+                <Route path="/app/hostel/:hostelId" element={<HostelDetail />} />
+                <Route path="/app/hostel/:hostelId/book" element={<BedSelectionWizard />} />
+                <Route path="/app/booking-status" element={<BookingStatus />} />
               </Route>
             </Route>
           </Route>
@@ -108,7 +118,7 @@ export default function App() {
               <Route element={<AdminLayout />}>
                 <Route path="/admin" element={<Navigate to="/admin/dashboard" replace />} />
                 <Route path="/admin/dashboard" element={<AdminDashboard />} />
-                <Route path="/admin/allocations" element={<PendingAllocations />} />
+                <Route path="/admin/allocations" element={<Allocations />} />
                 <Route path="/admin/members" element={<Members />} />
                 <Route path="/admin/payments" element={<Payments />} />
                 <Route path="/admin/complaints" element={<AdminComplaints />} />
@@ -120,13 +130,15 @@ export default function App() {
                 <Route path="/admin/parking" element={<Parking />} />
                 <Route path="/admin/cleaning" element={<Cleaning />} />
                 <Route path="/admin/settings" element={<AdminSettings />} />
+                <Route path="/admin/hostel-setup" element={<HostelSetup />} />
                 <Route path="/admin/staff" element={<StaffManagement />} />
                 <Route path="/admin/revenue" element={<RevenueReport />} />
                 <Route path="/admin/reviews" element={<Reviews />} />
                 <Route path="/admin/account" element={<Account />} />
                 <Route path="/admin/members/:id" element={<MemberDetail />} />
                 <Route path="/admin/maintenance" element={<Maintenance />} />
-                <Route path="/admin/employees" element={<Employees />} />
+                <Route path="/admin/employees" element={<Navigate to="/admin/staff" replace />} />
+                {/* /admin/booking-requests merged into /admin/allocations */}
               </Route>
             </Route>
           </Route>

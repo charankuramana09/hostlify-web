@@ -1,7 +1,9 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { useMutation } from '@tanstack/react-query'
 import { ArrowLeft, UserPlus } from 'lucide-react'
 import PageHeader from '../../components/ui/PageHeader'
+import { createOwner } from '../../api/superadmin'
 
 const PLANS = [
   {
@@ -35,7 +37,7 @@ const FEATURE_FLAGS = [
 
 type Features = Record<string, boolean>
 
-export default function CreateOwner() {
+export default function CreateOwnerPage() {
   const navigate = useNavigate()
   const [form, setForm] = useState({
     firstName: '', lastName: '', email: '', phone: '', password: '',
@@ -45,10 +47,20 @@ export default function CreateOwner() {
     onlinePayments: true, referral: false, parking: false, cleaning: false, employees: false, advancedReports: false,
   })
 
+  const mutation = useMutation({
+    mutationFn: createOwner,
+    onSuccess: () => {
+      navigate('/super-admin/owners')
+    },
+  })
+
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
-    // TODO: call createOwner API
-    navigate('/super-admin/owners')
+    mutation.mutate({
+      ...form,
+      plan: selectedPlan,
+      features,
+    })
   }
 
   return (
@@ -64,6 +76,12 @@ export default function CreateOwner() {
         title="Create Owner Account"
         subtitle="Set up a new hostel owner on the platform"
       />
+
+      {mutation.isError && (
+        <div className="rounded-xl bg-red-50 border border-red-100 px-4 py-3 text-sm text-red-700 font-medium">
+          Failed to create owner. Please try again.
+        </div>
+      )}
 
       <form onSubmit={handleSubmit} className="space-y-6">
         {/* Section 1: Owner Details */}
@@ -183,10 +201,11 @@ export default function CreateOwner() {
           </button>
           <button
             type="submit"
-            className="flex items-center gap-2 px-6 py-2.5 rounded-xl text-sm font-semibold text-white transition-opacity hover:opacity-90"
+            disabled={mutation.isPending}
+            className="flex items-center gap-2 px-6 py-2.5 rounded-xl text-sm font-semibold text-white transition-opacity hover:opacity-90 disabled:opacity-60"
             style={{ background: 'linear-gradient(135deg, #1a0a2e 0%, #7c3aed 100%)' }}
           >
-            <UserPlus size={16} /> Create Owner Account
+            <UserPlus size={16} /> {mutation.isPending ? 'Creating...' : 'Create Owner Account'}
           </button>
         </div>
       </form>

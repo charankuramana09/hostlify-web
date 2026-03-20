@@ -1,17 +1,14 @@
 import { useState } from 'react'
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { Plus, X, Wrench } from 'lucide-react'
 import Badge from '../../components/ui/Badge'
 import PageHeader from '../../components/ui/PageHeader'
 import StatCard from '../../components/ui/StatCard'
+import { getMaintenanceLogs, createMaintenance, updateMaintenanceStatus } from '../../api/staff'
+import { useAuthStore } from '../../store/authStore'
+import { useToastStore } from '../../store/toastStore'
 
 const MAINTENANCE_CATEGORIES = ['Plumbing', 'Electrical', 'Carpentry', 'AC / Cooling', 'Painting', 'Other']
-
-const MOCK_LOGS = [
-  { id: 1, date: 'Mar 10, 2026', title: 'Leaking pipe in Block B bathroom',       category: 'Plumbing',     assignedTo: 'External Vendor',   estCost: 1500, actualCost: 1200, status: 'COMPLETED' },
-  { id: 2, date: 'Mar 8, 2026',  title: 'AC unit servicing – Room F-02',           category: 'AC / Cooling', assignedTo: 'CoolAir Services',  estCost: 3000, actualCost: null, status: 'IN_PROGRESS' },
-  { id: 3, date: 'Mar 5, 2026',  title: 'Broken bed frame in Room A-101',          category: 'Carpentry',    assignedTo: 'In-house',          estCost: 800,  actualCost: 900,  status: 'COMPLETED' },
-  { id: 4, date: 'Mar 1, 2026',  title: 'Electrical wiring check – Ground floor',  category: 'Electrical',   assignedTo: 'Spark Electricals', estCost: 5000, actualCost: null, status: 'OPEN' },
-]
 
 const CATEGORY_COLORS: Record<string, string> = {
   Plumbing: 'bg-teal-50 text-teal-700',
@@ -25,26 +22,75 @@ const CATEGORY_COLORS: Record<string, string> = {
 const STATUS_OPTIONS = ['OPEN', 'IN_PROGRESS', 'COMPLETED']
 
 export default function Maintenance() {
+  const { activeHostelId } = useAuthStore()
+  const queryClient = useQueryClient()
+  const { show } = useToastStore()
   const [showForm, setShowForm] = useState(false)
-  const [form, setForm] = useState({ category: '', title: '', assignedTo: '', estCost: '', status: 'OPEN' })
+  const [form, setForm] = useState({ category: '', title: '', description: '', assignedTo: '', estCost: '', status: 'OPEN' })
 
-  const openCount = MOCK_LOGS.filter((l) => l.status === 'OPEN').length
-  const inProgressCount = MOCK_LOGS.filter((l) => l.status === 'IN_PROGRESS').length
-  const completedCount = MOCK_LOGS.filter((l) => l.status === 'COMPLETED').length
+  const { data: logs = [], isLoading } = useQuery({
+    queryKey: ['maintenance', activeHostelId],
+    queryFn: () => getMaintenanceLogs(activeHostelId!),
+    enabled: !!activeHostelId,
+  })
+
+  const createMut = useMutation({
+    mutationFn: (data: Record<string, unknown>) => createMaintenance(data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['maintenance', activeHostelId] })
+      setShowForm(false)
+      setForm({ category: '', title: '', description: '', assignedTo: '', estCost: '', status: 'OPEN' })
+      show('success', 'Log added', 'Maintenance log has been created.')
+    },
+    onError: (err: any) => {
+      const msg = err?.response?.data?.message ?? err?.message ?? 'Please check the details and try again.'
+      show('error', 'Failed to add log', msg)
+    },
+  })
+
+  const statusMut = useMutation({
+    mutationFn: ({ id, status }: { id: number; status: string }) => updateMaintenanceStatus(id, status),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['maintenance', activeHostelId] })
+      show('success', 'Status updated', 'Maintenance status has been updated.')
+    },
+    onError: (err: any) => {
+      const msg = err?.response?.data?.message ?? err?.message ?? 'Failed to update status.'
+      show('error', 'Update failed', msg)
+    },
+  })
+
+  const openCount = logs.filter((l: any) => l.status === 'OPEN').length
+  const inProgressCount = logs.filter((l: any) => l.status === 'IN_PROGRESS').length
+  const completedCount = logs.filter((l: any) => l.status === 'COMPLETED').length
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
-    // TODO: call addMaintenanceLog API
-    setShowForm(false)
-    setForm({ category: '', title: '', assignedTo: '', estCost: '', status: 'OPEN' })
+    if (!activeHostelId) { show('error', 'No hostel selected', 'Please select a hostel first.'); return }
+    createMut.mutate({
+      hostelId: activeHostelId,
+      category: form.category,
+      title: form.title,
+      description: form.description || form.title,
+      vendor: form.assignedTo,
+      assignedTo: form.assignedTo,
+      estimatedCost: form.estCost ? Number(form.estCost) : undefined,
+      status: form.status,
+    })
   }
+
+  if (isLoading) return (
+    <div className="flex items-center justify-center py-20">
+      <div className="w-8 h-8 rounded-full border-4 border-indigo-200 border-t-indigo-600 animate-spin" />
+    </div>
+  )
 
   return (
     <div className="space-y-6">
       <PageHeader
         title="Maintenance"
         subtitle="Track and manage maintenance tasks"
-        count={MOCK_LOGS.length}
+        count={logs.length}
         action={
           <button
             onClick={() => setShowForm(!showForm)}
@@ -120,8 +166,18 @@ export default function Maintenance() {
                   required
                   value={form.title}
                   onChange={(e) => setForm((f) => ({ ...f, title: e.target.value }))}
-                  placeholder="Brief description"
+                  placeholder="e.g. Leaking pipe in Room 201"
                   className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-gray-50 focus:bg-white transition-colors"
+                />
+              </div>
+              <div className="sm:col-span-2">
+                <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1.5">Description</label>
+                <textarea
+                  rows={2}
+                  value={form.description}
+                  onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))}
+                  placeholder="Additional details about the issue"
+                  className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-gray-50 focus:bg-white transition-colors resize-none"
                 />
               </div>
               <div>
@@ -167,10 +223,11 @@ export default function Maintenance() {
               </button>
               <button
                 type="submit"
-                className="px-5 py-2 text-sm rounded-xl font-semibold text-white transition-opacity hover:opacity-90"
+                disabled={createMut.isPending}
+                className="px-5 py-2 text-sm rounded-xl font-semibold text-white transition-opacity hover:opacity-90 disabled:opacity-60"
                 style={{ background: 'linear-gradient(135deg, #0f2d4a 0%, #059669 100%)' }}
               >
-                Add Log
+                {createMut.isPending ? 'Adding…' : 'Add Log'}
               </button>
             </div>
           </form>
@@ -190,24 +247,48 @@ export default function Maintenance() {
                 <th className="text-right px-5 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wide">Est. Cost</th>
                 <th className="text-right px-5 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wide">Actual Cost</th>
                 <th className="text-left px-5 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wide">Status</th>
+                <th className="text-left px-5 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wide">Action</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-50">
-              {MOCK_LOGS.map((l) => (
+              {logs.length === 0 && (
+                <tr>
+                  <td colSpan={8} className="px-5 py-12 text-center text-sm font-semibold text-gray-400">
+                    No maintenance logs yet
+                  </td>
+                </tr>
+              )}
+              {logs.map((l: any) => (
                 <tr key={l.id} className="hover:bg-gray-50/70 transition-colors">
-                  <td className="px-5 py-3.5 text-gray-500 whitespace-nowrap">{l.date}</td>
+                  <td className="px-5 py-3.5 text-gray-500 whitespace-nowrap">
+                    {l.createdAt ? new Date(l.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }) : (l.date ?? '—')}
+                  </td>
                   <td className="px-5 py-3.5 font-medium text-gray-800">{l.title}</td>
                   <td className="px-5 py-3.5">
                     <span className={`text-xs px-2.5 py-1 rounded-full font-semibold whitespace-nowrap ${CATEGORY_COLORS[l.category] ?? 'bg-gray-100 text-gray-600'}`}>
                       {l.category}
                     </span>
                   </td>
-                  <td className="px-5 py-3.5 text-gray-600">{l.assignedTo}</td>
-                  <td className="px-5 py-3.5 text-right font-medium text-gray-700">₹{l.estCost.toLocaleString()}</td>
+                  <td className="px-5 py-3.5 text-gray-600">{l.vendor ?? l.assignedTo ?? '—'}</td>
+                  <td className="px-5 py-3.5 text-right font-medium text-gray-700">
+                    {l.estimatedCost != null ? `₹${(l.estimatedCost).toLocaleString()}` : '—'}
+                  </td>
                   <td className="px-5 py-3.5 text-right font-medium text-gray-700">
                     {l.actualCost != null ? `₹${l.actualCost.toLocaleString()}` : '—'}
                   </td>
                   <td className="px-5 py-3.5"><Badge status={l.status} /></td>
+                  <td className="px-5 py-3.5">
+                    <select
+                      value={l.status}
+                      onChange={(e) => statusMut.mutate({ id: l.id, status: e.target.value })}
+                      disabled={statusMut.isPending}
+                      className="text-xs font-semibold border border-gray-200 bg-white rounded-lg px-2 py-1.5 focus:outline-none focus:ring-2 focus:ring-emerald-500 disabled:opacity-60 cursor-pointer"
+                    >
+                      {STATUS_OPTIONS.map((s) => (
+                        <option key={s} value={s}>{s.replace('_', ' ')}</option>
+                      ))}
+                    </select>
+                  </td>
                 </tr>
               ))}
             </tbody>

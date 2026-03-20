@@ -1,18 +1,7 @@
+import { useQuery } from '@tanstack/react-query'
 import { MapPin } from 'lucide-react'
 import StatCard from '../../components/ui/StatCard'
-
-const MOCK_OCCUPANCY = [
-  { hostel: 'Sunrise Hostel',        owner: 'Vikram Mehta',  city: 'Bangalore', occupied: 98, capacity: 120, rate: 81.7 },
-  { hostel: 'Green Valley Hostel',   owner: 'Vikram Mehta',  city: 'Hyderabad', occupied: 72, capacity: 80,  rate: 90.0 },
-  { hostel: 'Blue Ridge Hostel',     owner: 'Arun Krishnan', city: 'Chennai',   occupied: 55, capacity: 60,  rate: 91.7 },
-  { hostel: 'Cozy Rooms Bangalore',  owner: 'Deepa Shetty',  city: 'Bangalore', occupied: 82, capacity: 100, rate: 82.0 },
-  { hostel: 'Cozy Rooms Pune',       owner: 'Deepa Shetty',  city: 'Pune',      occupied: 95, capacity: 100, rate: 95.0 },
-  { hostel: 'Cozy Rooms Chennai',    owner: 'Deepa Shetty',  city: 'Chennai',   occupied: 55, capacity: 80,  rate: 68.8 },
-]
-
-const totalBeds = MOCK_OCCUPANCY.reduce((s, h) => s + h.capacity, 0)
-const totalOccupied = MOCK_OCCUPANCY.reduce((s, h) => s + h.occupied, 0)
-const avgRate = Math.round((totalOccupied / totalBeds) * 100 * 10) / 10
+import { getOccupancyReport } from '../../api/superadmin'
 
 function getRateColor(rate: number) {
   if (rate >= 80) return 'linear-gradient(90deg, #059669, #34d399)'
@@ -27,6 +16,52 @@ function getRateBadgeClass(rate: number) {
 }
 
 export default function Occupancy() {
+  const { data, isLoading } = useQuery({
+    queryKey: ['sa-occupancy'],
+    queryFn: getOccupancyReport,
+  })
+
+  if (isLoading)
+    return (
+      <div className="flex items-center justify-center py-20">
+        <div className="w-8 h-8 rounded-full border-4 border-indigo-200 border-t-indigo-600 animate-spin" />
+      </div>
+    )
+
+  const occupancyList: Array<{
+    hostel: string
+    owner: string
+    city: string
+    occupied: number
+    capacity: number
+    rate: number
+  }> = (data?.hostels ?? data ?? []).map((h: {
+    hostelName?: string
+    name?: string
+    ownerName?: string
+    owner?: string
+    city?: string
+    occupiedBeds?: number
+    occupied?: number
+    totalBeds?: number
+    capacity?: number
+    occupancyRate?: number
+    rate?: number
+  }) => ({
+    hostel: h.hostelName ?? h.name ?? '',
+    owner: h.ownerName ?? h.owner ?? '',
+    city: h.city ?? '',
+    occupied: h.occupiedBeds ?? h.occupied ?? 0,
+    capacity: h.totalBeds ?? h.capacity ?? 0,
+    rate: h.occupancyRate ?? h.rate ?? (h.totalBeds ?? h.capacity ?? 0) > 0
+      ? Math.round(((h.occupiedBeds ?? h.occupied ?? 0) / (h.totalBeds ?? h.capacity ?? 1)) * 100 * 10) / 10
+      : 0,
+  }))
+
+  const totalBeds = occupancyList.reduce((s, h) => s + h.capacity, 0)
+  const totalOccupied = occupancyList.reduce((s, h) => s + h.occupied, 0)
+  const avgRate = totalBeds > 0 ? Math.round((totalOccupied / totalBeds) * 100 * 10) / 10 : 0
+
   return (
     <div className="space-y-6">
       {/* Gradient Banner */}
@@ -41,7 +76,7 @@ export default function Occupancy() {
         <p className="text-sm font-medium" style={{ color: 'rgba(255,255,255,0.6)' }}>Super Admin</p>
         <h1 className="text-2xl font-bold mt-0.5 tracking-tight">Occupancy</h1>
         <p className="text-sm mt-1" style={{ color: 'rgba(255,255,255,0.5)' }}>
-          {totalOccupied} occupied of {totalBeds} total beds · {MOCK_OCCUPANCY.length} hostels
+          {totalOccupied} occupied of {totalBeds} total beds · {occupancyList.length} hostels
         </p>
       </div>
 
@@ -49,7 +84,7 @@ export default function Occupancy() {
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <StatCard
           label="Total Hostels"
-          value={MOCK_OCCUPANCY.length}
+          value={occupancyList.length}
           sub="Across the platform"
           icon={<MapPin size={20} className="text-violet-600" />}
           iconBg="bg-violet-50"
@@ -73,7 +108,7 @@ export default function Occupancy() {
 
       {/* Occupancy Cards Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-        {MOCK_OCCUPANCY.map((h) => (
+        {occupancyList.map((h) => (
           <div key={h.hostel} className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 hover:shadow-md transition-all duration-200">
             <div className="flex items-start justify-between mb-3">
               <div>
@@ -106,7 +141,7 @@ export default function Occupancy() {
           </div>
           <h2 className="font-semibold text-gray-800 text-sm">Occupancy Summary</h2>
           <span className="ml-auto text-xs font-bold bg-gray-100 text-gray-500 px-2 py-0.5 rounded-full">
-            {MOCK_OCCUPANCY.length} hostels
+            {occupancyList.length} hostels
           </span>
         </div>
         <div className="overflow-x-auto">
@@ -121,7 +156,7 @@ export default function Occupancy() {
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-50">
-              {MOCK_OCCUPANCY.map((h) => (
+              {occupancyList.map((h) => (
                 <tr key={h.hostel} className="hover:bg-gray-50/70 transition-colors">
                   <td className="px-5 py-3.5 font-semibold text-gray-800">{h.hostel}</td>
                   <td className="px-5 py-3.5 text-gray-600">{h.owner}</td>
@@ -143,4 +178,3 @@ export default function Occupancy() {
     </div>
   )
 }
-

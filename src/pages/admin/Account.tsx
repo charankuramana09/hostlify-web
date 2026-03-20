@@ -1,29 +1,12 @@
 import { useState } from 'react'
 import { Mail, Phone, Shield, Camera, Save, AlertTriangle } from 'lucide-react'
 import PageHeader from '../../components/ui/PageHeader'
-
-interface AccountState {
-  firstName: string
-  lastName: string
-  email: string
-  mobile: string
-  role: string
-  since: string
-}
+import { useAuthStore } from '../../store/authStore'
 
 interface PasswordState {
   current: string
   newPass: string
   confirm: string
-}
-
-const MOCK_ACCOUNT: AccountState = {
-  firstName: 'Raj',
-  lastName: 'Patel',
-  email: 'raj@sunrise.com',
-  mobile: '9876543000',
-  role: 'ADMIN',
-  since: 'January 2025',
 }
 
 const ROLE_COLORS: Record<string, string> = {
@@ -32,15 +15,19 @@ const ROLE_COLORS: Record<string, string> = {
   OWNER: 'bg-amber-50 text-amber-700',
 }
 
-function getInitials(firstName: string, lastName: string) {
-  return `${firstName[0] ?? ''}${lastName[0] ?? ''}`.toUpperCase()
+function getInitials(email: string) {
+  return email.slice(0, 2).toUpperCase()
 }
 
 export default function Account() {
-  const [profile, setProfile] = useState<AccountState>(MOCK_ACCOUNT)
+  const { email, subRole } = useAuthStore()
   const [passwords, setPasswords] = useState<PasswordState>({ current: '', newPass: '', confirm: '' })
   const [saved, setSaved] = useState(false)
   const [passError, setPassError] = useState('')
+  const [passMsg, setPassMsg] = useState('')
+
+  const displayRole = subRole ?? 'ADMIN'
+  const displayEmail = email ?? ''
 
   function handleProfileSave(e: React.FormEvent) {
     e.preventDefault()
@@ -54,6 +41,11 @@ export default function Account() {
         setPassError('Password must be at least 8 characters.')
         return
       }
+      // Password change endpoint not yet available
+      setPassMsg('Password change feature coming soon.')
+      setPasswords({ current: '', newPass: '', confirm: '' })
+      setPassError('')
+      return
     }
 
     setPassError('')
@@ -82,31 +74,30 @@ export default function Account() {
                 className="w-14 h-14 rounded-2xl flex items-center justify-center text-lg font-black text-white shadow-lg border-2 border-white"
                 style={{ background: 'linear-gradient(135deg, #059669, #34d399)' }}
               >
-                {getInitials(profile.firstName, profile.lastName)}
+                {getInitials(displayEmail)}
               </div>
               <button className="absolute -bottom-1 -right-1 w-6 h-6 rounded-full bg-white border border-gray-200 flex items-center justify-center shadow-sm hover:bg-gray-50 transition-colors">
                 <Camera size={11} className="text-gray-500" />
               </button>
             </div>
             <div className="pb-0.5">
-              <p className="font-bold text-gray-900">{profile.firstName} {profile.lastName}</p>
+              <p className="font-bold text-gray-900">{displayEmail}</p>
               <div className="flex items-center gap-2 mt-1 flex-wrap">
-                <span className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold ${ROLE_COLORS[profile.role] ?? 'bg-gray-100 text-gray-600'}`}>
+                <span className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold ${ROLE_COLORS[displayRole] ?? 'bg-gray-100 text-gray-600'}`}>
                   <Shield size={10} />
-                  {profile.role}
+                  {displayRole}
                 </span>
-                <span className="text-xs text-gray-400 font-medium">Since {profile.since}</span>
               </div>
             </div>
           </div>
           <div className="flex items-center gap-4 mt-3 flex-wrap">
             <div className="flex items-center gap-1.5 text-xs text-gray-500">
               <Mail size={12} className="text-gray-400" />
-              {profile.email}
+              {displayEmail}
             </div>
             <div className="flex items-center gap-1.5 text-xs text-gray-500">
               <Phone size={12} className="text-gray-400" />
-              {profile.mobile}
+              —
             </div>
           </div>
         </div>
@@ -118,33 +109,13 @@ export default function Account() {
         <div className="lg:col-span-2 bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
           <h3 className="font-bold text-gray-800 text-sm mb-5">Edit Profile</h3>
           <form onSubmit={handleProfileSave} className="space-y-5">
-            {/* Name row */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div>
-                <label className="block text-xs font-semibold text-gray-500 mb-1.5">First Name</label>
-                <input
-                  value={profile.firstName}
-                  onChange={(e) => setProfile((p) => ({ ...p, firstName: e.target.value }))}
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
-                />
-              </div>
-              <div>
-                <label className="block text-xs font-semibold text-gray-500 mb-1.5">Last Name</label>
-                <input
-                  value={profile.lastName}
-                  onChange={(e) => setProfile((p) => ({ ...p, lastName: e.target.value }))}
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
-                />
-              </div>
-            </div>
-
-            {/* Mobile */}
+            {/* Email (read-only) */}
             <div>
-              <label className="block text-xs font-semibold text-gray-500 mb-1.5">Mobile Number</label>
+              <label className="block text-xs font-semibold text-gray-500 mb-1.5">Email</label>
               <input
-                value={profile.mobile}
-                onChange={(e) => setProfile((p) => ({ ...p, mobile: e.target.value }))}
-                className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                value={displayEmail}
+                readOnly
+                className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-sm bg-gray-50 text-gray-500 cursor-not-allowed"
               />
             </div>
 
@@ -188,6 +159,9 @@ export default function Account() {
                 </div>
                 {passError && (
                   <p className="text-xs text-red-500 font-medium">{passError}</p>
+                )}
+                {passMsg && (
+                  <p className="text-xs text-amber-600 font-medium">{passMsg}</p>
                 )}
               </div>
             </div>

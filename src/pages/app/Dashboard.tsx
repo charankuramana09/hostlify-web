@@ -1,12 +1,14 @@
-import { Link } from 'react-router-dom'
-import { CreditCard, Home, Building2, Bell, ChevronRight, UtensilsCrossed, Megaphone, Wrench, Gift, CalendarClock, AlertCircle } from 'lucide-react'
+import { Link, useNavigate } from 'react-router-dom'
+import { useQuery } from '@tanstack/react-query'
+import { CreditCard, Home, Building2, Bell, ChevronRight, UtensilsCrossed, Megaphone, Wrench, Gift, CalendarClock, AlertCircle, UserCheck } from 'lucide-react'
 import StatCard from '../../components/ui/StatCard'
+import { useAuthStore } from '../../store/authStore'
+import { getMyBooking, getHostellerProfile, getCurrentDue, getAnnouncements, getProfileCompletion } from '../../api/hosteller'
 
-const MOCK_ANNOUNCEMENTS = [
-  { id: 1, title: 'Hostel Fest 2026', date: 'Mar 5', preview: 'Annual fest on March 20th. Food stalls, cultural programs and games.', category: 'Event' },
-  { id: 2, title: 'Water Supply Interruption', date: 'Mar 3', preview: 'Water supply interrupted on March 10th, 10 AM – 2 PM.', category: 'Maintenance' },
-  { id: 3, title: 'April Fee Reminder', date: 'Mar 1', preview: 'Fee deadline is April 1st. Late charge of ₹200 applies after.', category: 'Fee' },
-]
+function fmtDate(d: string) {
+  if (!d) return '—'
+  return new Date(d).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })
+}
 
 const CATEGORY_DOT: Record<string, string> = {
   Event: 'bg-purple-400',
@@ -25,6 +27,48 @@ const QUICK_LINKS = [
 ]
 
 export default function Dashboard() {
+  const navigate = useNavigate()
+  const { hostelId, hostellerProfileId, email } = useAuthStore()
+
+  const { data: booking } = useQuery({
+    queryKey: ['my-booking'],
+    queryFn: getMyBooking,
+  })
+
+  const { data: profile } = useQuery({
+    queryKey: ['profile', hostellerProfileId],
+    queryFn: () => getHostellerProfile(hostellerProfileId!),
+    enabled: !!hostellerProfileId,
+  })
+
+  const { data: currentDue } = useQuery({
+    queryKey: ['current-due'],
+    queryFn: getCurrentDue,
+  })
+
+  const { data: announcements } = useQuery({
+    queryKey: ['announcements', hostelId],
+    queryFn: () => getAnnouncements(hostelId!),
+    enabled: !!hostelId,
+  })
+
+  const { data: profileCompletion } = useQuery({
+    queryKey: ['profile-completion'],
+    queryFn: getProfileCompletion,
+    enabled: !!hostellerProfileId,
+  })
+
+  const displayName = profile?.name ?? email ?? '...'
+  const roomNumber = booking?.room?.roomNumber ?? '...'
+  const hostelName = booking?.hostel?.name ?? '...'
+  const joinDate = booking?.checkInDate ? fmtDate(booking.checkInDate) : '...'
+
+  const dueAmount = currentDue?.amount != null ? `₹${currentDue.amount.toLocaleString()}` : '—'
+  const dueDateStr = currentDue?.dueDate ? fmtDate(currentDue.dueDate) : '—'
+  const daysLeft = currentDue?.daysLeft ?? null
+
+  const topAnnouncements = ((announcements ?? []) as any[]).slice(0, 3)
+
   return (
     <div className="space-y-6">
       {/* Welcome banner */}
@@ -36,32 +80,67 @@ export default function Dashboard() {
           className="absolute top-0 right-0 w-64 h-64 rounded-full opacity-10 pointer-events-none"
           style={{ background: 'radial-gradient(circle, #3aaee8, transparent)', transform: 'translate(30%, -30%)' }}
         />
-        <p className="text-sm font-medium" style={{ color: 'rgba(255,255,255,0.6)' }}>Welcome back, Arjun 👋</p>
+        <p className="text-sm font-medium" style={{ color: 'rgba(255,255,255,0.6)' }}>Welcome back, {displayName} 👋</p>
         <h1 className="text-2xl font-bold mt-0.5 tracking-tight">Your Hostel at a Glance</h1>
-        <p className="text-sm mt-1" style={{ color: 'rgba(255,255,255,0.5)' }}>Sunrise Hostel · Room A-101 · Active Resident</p>
+        <p className="text-sm mt-1" style={{ color: 'rgba(255,255,255,0.5)' }}>{hostelName} · Room {roomNumber} · Active Resident</p>
       </div>
+
+      {/* Profile completion banner */}
+      {profileCompletion && profileCompletion.completionPercent < 100 && (
+        <div className="rounded-2xl border border-amber-200 bg-amber-50 p-5">
+          <div className="flex items-start justify-between gap-4 flex-wrap">
+            <div className="flex items-start gap-3">
+              <div className="w-9 h-9 rounded-xl bg-amber-100 flex items-center justify-center shrink-0">
+                <UserCheck size={18} className="text-amber-600" />
+              </div>
+              <div>
+                <p className="font-semibold text-amber-900 text-sm">Complete your profile</p>
+                {profileCompletion.missingFields?.length > 0 && (
+                  <p className="text-xs text-amber-700 mt-0.5">
+                    Missing: {(profileCompletion.missingFields as string[]).join(', ')}
+                  </p>
+                )}
+                <div className="mt-2 w-48 h-1.5 bg-amber-200 rounded-full overflow-hidden">
+                  <div
+                    className="h-full bg-amber-500 rounded-full transition-all"
+                    style={{ width: `${profileCompletion.completionPercent}%` }}
+                  />
+                </div>
+                <p className="text-xs text-amber-600 mt-1 font-medium">{profileCompletion.completionPercent}% complete</p>
+              </div>
+            </div>
+            <button
+              onClick={() => navigate('/app/profile')}
+              className="shrink-0 px-4 py-2 rounded-xl text-xs font-bold text-white transition-opacity hover:opacity-90"
+              style={{ background: 'linear-gradient(135deg, #b45309, #d97706)' }}
+            >
+              Complete Now
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* Stat cards */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <StatCard
           label="Total Due"
-          value="₹5,000"
-          sub="Due in 23 days · Apr 1, 2026"
+          value={dueAmount}
+          sub={dueDateStr !== '—' ? `Due ${dueDateStr}` : 'No due information'}
           icon={<CreditCard size={20} className="text-indigo-600" />}
           iconBg="bg-indigo-50"
-          trend={{ value: 'On time', up: true }}
+          trend={daysLeft != null ? { value: `${daysLeft} days`, up: daysLeft > 0 } : undefined}
         />
         <StatCard
           label="My Room"
-          value="A-101"
-          sub="Block A · Floor 1"
+          value={roomNumber}
+          sub="Active Resident"
           icon={<Home size={20} className="text-emerald-600" />}
           iconBg="bg-emerald-50"
         />
         <StatCard
           label="Hostel"
-          value="Sunrise"
-          sub="Active Resident · Sep 2025"
+          value={hostelName}
+          sub={joinDate !== '...' ? `Joined ${joinDate}` : 'Active Resident'}
           icon={<Building2 size={20} className="text-purple-600" />}
           iconBg="bg-purple-50"
         />
@@ -75,14 +154,16 @@ export default function Dashboard() {
         >
           <span className="w-2 h-2 rounded-full bg-amber-400 shrink-0 animate-pulse" />
           <p className="text-sm font-semibold text-amber-800">Upcoming Payment</p>
-          <span className="ml-auto text-xs font-semibold text-amber-700 bg-amber-100 px-2.5 py-0.5 rounded-full">
-            23 days left
-          </span>
+          {daysLeft != null && (
+            <span className="ml-auto text-xs font-semibold text-amber-700 bg-amber-100 px-2.5 py-0.5 rounded-full">
+              {daysLeft} days left
+            </span>
+          )}
         </div>
         <div className="flex items-center justify-between gap-4 px-5 py-4 flex-wrap">
           <div>
-            <p className="text-xs text-gray-400 font-medium">Monthly Hostel Fee – April 2026</p>
-            <p className="text-3xl font-bold text-gray-900 mt-1 tracking-tight">₹5,000</p>
+            <p className="text-xs text-gray-400 font-medium">{currentDue?.description ?? 'Monthly Hostel Fee'}</p>
+            <p className="text-3xl font-bold text-gray-900 mt-1 tracking-tight">{dueAmount}</p>
           </div>
           <Link
             to="/app/dues"
@@ -113,16 +194,19 @@ export default function Dashboard() {
             </Link>
           </div>
           <div className="divide-y divide-gray-50">
-            {MOCK_ANNOUNCEMENTS.map((a) => (
+            {topAnnouncements.length === 0 && (
+              <div className="px-5 py-4 text-xs text-gray-400">No announcements</div>
+            )}
+            {topAnnouncements.map((a) => (
               <div key={a.id} className="px-5 py-3.5 hover:bg-gray-50/70 transition-colors">
                 <div className="flex items-start gap-3">
                   <span className={`w-1.5 h-1.5 rounded-full mt-2 shrink-0 ${CATEGORY_DOT[a.category] ?? 'bg-gray-300'}`} />
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center justify-between gap-2">
                       <p className="font-semibold text-gray-800 text-sm truncate">{a.title}</p>
-                      <span className="text-xs text-gray-400 whitespace-nowrap shrink-0">{a.date}</span>
+                      <span className="text-xs text-gray-400 whitespace-nowrap shrink-0">{fmtDate(a.validFrom)}</span>
                     </div>
-                    <p className="text-xs text-gray-500 mt-0.5 line-clamp-1">{a.preview}</p>
+                    <p className="text-xs text-gray-500 mt-0.5 line-clamp-1">{a.content}</p>
                   </div>
                 </div>
               </div>

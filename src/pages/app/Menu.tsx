@@ -1,21 +1,60 @@
+import { useQuery } from '@tanstack/react-query'
 import { Coffee, Sun, Moon, UtensilsCrossed } from 'lucide-react'
 import PageHeader from '../../components/ui/PageHeader'
+import { useAuthStore } from '../../store/authStore'
+import { getCurrentMenu, getMenuItems } from '../../api/hosteller'
 
-const WEEKLY_MENU = [
-  { day: 'Monday',    breakfast: 'Idli, Sambar, Chutney',              lunch: 'Rice, Dal, Sabzi, Curd',           dinner: 'Chapati, Paneer Curry, Dal' },
-  { day: 'Tuesday',   breakfast: 'Poha, Tea',                          lunch: 'Rice, Rajma, Salad',               dinner: 'Chapati, Mixed Veg, Rice' },
-  { day: 'Wednesday', breakfast: 'Paratha, Curd',                      lunch: 'Rice, Sambar, Papad',              dinner: 'Chapati, Egg Curry, Dal' },
-  { day: 'Thursday',  breakfast: 'Upma, Tea',                          lunch: 'Rice, Dal, Aloo Sabzi',            dinner: 'Chapati, Kadai Chicken, Rice' },
-  { day: 'Friday',    breakfast: 'Puri, Chhole',                       lunch: 'Biryani, Raita',                   dinner: 'Chapati, Fish Curry, Dal' },
-  { day: 'Saturday',  breakfast: 'Dosa, Sambar',                       lunch: 'Rice, Dal Makhani, Salad',         dinner: 'Fried Rice, Manchurian, Soup' },
-  { day: 'Sunday',    breakfast: 'Bread, Omelette, Tea',               lunch: 'Special Meal – Butter Chicken, Naan', dinner: 'Chapati, Paneer Butter Masala, Sweet' },
-]
+const DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
 
 const TODAY = new Date().toLocaleDateString('en-US', { weekday: 'long' })
 
-const todayRow = WEEKLY_MENU.find((r) => r.day === TODAY)
-
 export default function Menu() {
+  const { hostelId } = useAuthStore()
+
+  const { data: menu, isLoading: menuLoading, error: menuError } = useQuery({
+    queryKey: ['current-menu', hostelId],
+    queryFn: () => getCurrentMenu(hostelId!),
+    enabled: !!hostelId,
+  })
+
+  const { data: items, isLoading: itemsLoading } = useQuery({
+    queryKey: ['menu-items', menu?.id],
+    queryFn: () => getMenuItems(menu!.id),
+    enabled: !!menu?.id,
+  })
+
+  const isLoading = menuLoading || itemsLoading
+
+  if (isLoading) return (
+    <div className="flex items-center justify-center py-20">
+      <div className="w-8 h-8 rounded-full border-4 border-indigo-200 border-t-indigo-600 animate-spin" />
+    </div>
+  )
+
+  if (menuError) return <div className="text-center py-20 text-gray-400">Failed to load data</div>
+
+  if (!menu) return (
+    <div className="space-y-6">
+      <PageHeader title="Weekly Menu" subtitle="Hostel mess schedule for this week" />
+      <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-12 text-center">
+        <div className="w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center mx-auto mb-3">
+          <UtensilsCrossed size={22} className="text-gray-300" />
+        </div>
+        <p className="font-semibold text-gray-500 text-sm">No menu available for this week</p>
+        <p className="text-xs text-gray-400 mt-1">Check back later when the menu is updated</p>
+      </div>
+    </div>
+  )
+
+  const menuRows = DAYS.map((day) => ({
+    day,
+    breakfast: items?.find((i: any) => i.dayOfWeek === day && i.mealType?.toUpperCase() === 'BREAKFAST')?.items ?? '—',
+    lunch: items?.find((i: any) => i.dayOfWeek === day && i.mealType?.toUpperCase() === 'LUNCH')?.items ?? '—',
+    dinner: items?.find((i: any) => i.dayOfWeek === day && i.mealType?.toUpperCase() === 'DINNER')?.items ?? '—',
+  }))
+
+  const todayRow = menuRows.find((r) => r.day === TODAY)
+
   return (
     <div className="space-y-6">
       <PageHeader title="Weekly Menu" subtitle="Hostel mess schedule for this week" />
@@ -86,7 +125,7 @@ export default function Menu() {
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-50">
-              {WEEKLY_MENU.map((row) => {
+              {menuRows.map((row) => {
                 const isToday = row.day === TODAY
                 return (
                   <tr

@@ -1,17 +1,13 @@
 import { useState } from 'react'
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { MessageSquare } from 'lucide-react'
 import Badge from '../../components/ui/Badge'
 import PageHeader from '../../components/ui/PageHeader'
+import { getHostelComplaints, resolveComplaint } from '../../api/staff'
+import { useAuthStore } from '../../store/authStore'
+import { useToastStore } from '../../store/toastStore'
 
 const STATUSES = ['ALL', 'OPEN', 'IN_PROGRESS', 'RESOLVED', 'CLOSED']
-
-const MOCK_COMPLAINTS = [
-  { id: 1, hostellerName: 'Arjun Sharma', roomNumber: 'A-101', title: 'AC not working',      category: 'Maintenance', status: 'IN_PROGRESS', createdAt: 'Mar 7, 2026' },
-  { id: 2, hostellerName: 'Priya Singh',  roomNumber: 'A-102', title: 'Washroom not clean',  category: 'Cleanliness', status: 'RESOLVED',    createdAt: 'Mar 2, 2026' },
-  { id: 3, hostellerName: 'Ravi Kumar',   roomNumber: 'B-201', title: 'Food quality issue',  category: 'Food',        status: 'OPEN',        createdAt: 'Feb 28, 2026' },
-  { id: 4, hostellerName: 'Sneha Patel',  roomNumber: 'B-202', title: 'Noisy neighbours',    category: 'Noise',       status: 'CLOSED',      createdAt: 'Feb 20, 2026' },
-  { id: 5, hostellerName: 'Ananya Iyer',  roomNumber: 'C-302', title: 'WiFi slow in room',   category: 'Other',       status: 'OPEN',        createdAt: 'Mar 9, 2026' },
-]
 
 const AVATAR_COLORS = [
   'bg-indigo-500', 'bg-emerald-500', 'bg-purple-500',
@@ -32,16 +28,47 @@ function getInitials(name: string) {
 }
 
 export default function AdminComplaints() {
+  const { activeHostelId } = useAuthStore()
+  const queryClient = useQueryClient()
+  const { show } = useToastStore()
   const [statusFilter, setStatusFilter] = useState('ALL')
 
+  const { data: complaints = [], isLoading } = useQuery({
+    queryKey: ['complaints', activeHostelId],
+    queryFn: () => getHostelComplaints(activeHostelId!),
+    enabled: !!activeHostelId,
+  })
+
+  const resolveMut = useMutation({
+    mutationFn: ({ id, status }: { id: number; status: string }) => {
+      const payload: Record<string, unknown> = { status }
+      if (status === 'RESOLVED') {
+        payload.resolution = 'Resolved by staff'
+      }
+      return resolveComplaint(id, payload)
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['complaints', activeHostelId] })
+      show('success', 'Complaint updated', 'Status has been updated.')
+    },
+    onError: () => {
+      show('error', 'Update failed', 'Could not update complaint status.')
+    },
+  })
+
   const filtered = statusFilter === 'ALL'
-    ? MOCK_COMPLAINTS
-    : MOCK_COMPLAINTS.filter((c) => c.status === statusFilter)
+    ? complaints
+    : complaints.filter((c: any) => c.status === statusFilter)
 
   function updateStatus(id: number, status: string) {
-    // TODO: call updateComplaintStatus() API
-    console.log('Update complaint', id, 'to', status)
+    resolveMut.mutate({ id, status })
   }
+
+  if (isLoading) return (
+    <div className="flex items-center justify-center py-20">
+      <div className="w-8 h-8 rounded-full border-4 border-indigo-200 border-t-indigo-600 animate-spin" />
+    </div>
+  )
 
   return (
     <div className="space-y-6">
@@ -82,14 +109,14 @@ export default function AdminComplaints() {
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-50">
-              {filtered.map((c, i) => (
+              {filtered.map((c: any, i: number) => (
                 <tr key={c.id} className="hover:bg-gray-50/70 transition-colors">
                   <td className="px-5 py-3.5">
                     <div className="flex items-center gap-3">
                       <div
                         className={`w-9 h-9 rounded-xl flex items-center justify-center text-xs font-bold text-white shrink-0 ${AVATAR_COLORS[i % AVATAR_COLORS.length]}`}
                       >
-                        {getInitials(c.hostellerName)}
+                        {getInitials(c.hostellerName ?? '??')}
                       </div>
                       <div>
                         <p className="font-semibold text-gray-800">{c.hostellerName}</p>
@@ -103,7 +130,9 @@ export default function AdminComplaints() {
                       {c.category}
                     </span>
                   </td>
-                  <td className="px-5 py-3.5 text-gray-500 whitespace-nowrap">{c.createdAt}</td>
+                  <td className="px-5 py-3.5 text-gray-500 whitespace-nowrap">
+                    {c.createdAt ? new Date(c.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }) : '—'}
+                  </td>
                   <td className="px-5 py-3.5">
                     <Badge status={c.status} />
                   </td>
@@ -111,7 +140,8 @@ export default function AdminComplaints() {
                     <select
                       value={c.status}
                       onChange={(e) => updateStatus(c.id, e.target.value)}
-                      className="text-xs border border-gray-200 rounded-xl px-2.5 py-1.5 bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500 text-gray-700 font-medium"
+                      disabled={resolveMut.isPending}
+                      className="text-xs border border-gray-200 rounded-xl px-2.5 py-1.5 bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500 text-gray-700 font-medium disabled:opacity-60"
                     >
                       <option value="OPEN">Open</option>
                       <option value="IN_PROGRESS">In Progress</option>

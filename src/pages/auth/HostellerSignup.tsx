@@ -1,14 +1,12 @@
 import { useState, type FormEvent, type ChangeEvent } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import { useMutation } from '@tanstack/react-query'
+import axios from 'axios'
 import { registerHosteller } from '../../api/auth'
-import { useAuthStore } from '../../store/authStore'
 import { STRINGS } from '../../constants/strings'
 import { Button, Input } from '../../components/common/index'
 
 export default function HostellerSignup() {
-    const navigate = useNavigate()
-    const setAuth = useAuthStore((s) => s.setAuth)
     const [form, setForm] = useState({
         firstName: '',
         lastName: '',
@@ -16,13 +14,12 @@ export default function HostellerSignup() {
         password: '',
         mobile: '',
     })
+    const [registered, setRegistered] = useState(false)
 
     const { mutate, isPending, error } = useMutation({
         mutationFn: registerHosteller,
-        onSuccess: (response) => {
-            const { accessToken, refreshToken, role } = response.data
-            setAuth({ accessToken, refreshToken, role })
-            navigate('/app/dashboard')
+        onSuccess: () => {
+            setRegistered(true)
         },
     })
 
@@ -36,7 +33,28 @@ export default function HostellerSignup() {
         setForm(prev => ({ ...prev, [id]: value }))
     }
 
-    const errorMsg = error instanceof Error ? error.message : error ? 'Registration failed. Please try again.' : null
+    const errorMsg = error
+        ? axios.isAxiosError(error)
+            ? (error.response?.data?.message ?? 'Registration failed. Please try again.')
+            : (error as Error).message
+        : null
+
+    if (registered) {
+        return (
+            <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
+                <div className="w-full max-w-md bg-white rounded-2xl shadow-sm border border-gray-100 p-10 text-center">
+                    <div className="w-14 h-14 rounded-full bg-green-100 flex items-center justify-center mx-auto mb-5 text-2xl">✓</div>
+                    <h2 className="text-xl font-bold text-gray-900 mb-2">Registration Successful!</h2>
+                    <p className="text-[14px] text-gray-500 mb-6">
+                        Your account is pending admin approval. You will be notified once a bed is allocated and your account is activated.
+                    </p>
+                    <Link to="/auth/login" className="inline-block py-2.5 px-6 rounded-xl bg-indigo-600 text-white text-sm font-semibold hover:bg-indigo-700 transition-colors">
+                        Back to Login
+                    </Link>
+                </div>
+            </div>
+        )
+    }
 
     return (
         <div className="min-h-screen bg-gray-50 flex flex-col">

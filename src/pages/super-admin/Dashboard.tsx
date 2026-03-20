@@ -1,17 +1,29 @@
+import { useQuery } from '@tanstack/react-query'
 import { Building2, Users, TrendingUp, AlertCircle } from 'lucide-react'
 import StatCard from '../../components/ui/StatCard'
-
-const MOCK_HOSTELS = [
-  { id: 1, name: 'Sunrise Hostel',      city: 'Bangalore', total: 120, occupied: 98,  revenue: 490000 },
-  { id: 2, name: 'Green Valley Hostel', city: 'Hyderabad', total: 80,  occupied: 72,  revenue: 360000 },
-  { id: 3, name: 'Blue Ridge Hostel',   city: 'Chennai',   total: 60,  occupied: 55,  revenue: 275000 },
-]
-
-const totalOccupied  = MOCK_HOSTELS.reduce((s, h) => s + h.occupied, 0)
-const totalCapacity  = MOCK_HOSTELS.reduce((s, h) => s + h.total, 0)
-const totalRevenue   = MOCK_HOSTELS.reduce((s, h) => s + h.revenue, 0)
+import { getSADashboard } from '../../api/superadmin'
 
 export default function SuperAdminDashboard() {
+  const { data: dashboard, isLoading: dashLoading } = useQuery({
+    queryKey: ['sa-dashboard'],
+    queryFn: getSADashboard,
+  })
+
+  if (dashLoading)
+    return (
+      <div className="flex items-center justify-center py-20">
+        <div className="w-8 h-8 rounded-full border-4 border-indigo-200 border-t-indigo-600 animate-spin" />
+      </div>
+    )
+
+  const hostels: Array<{ id: number; name: string; city: string; total: number; occupied: number; revenue: number }> =
+    dashboard?.hostels ?? []
+
+  const totalOccupied = hostels.reduce((s: number, h: { occupied: number }) => s + h.occupied, 0)
+  const totalCapacity = hostels.reduce((s: number, h: { total: number }) => s + h.total, 0)
+  const totalRevenue = hostels.reduce((s: number, h: { revenue: number }) => s + h.revenue, 0)
+  const cities = new Set(hostels.map((h: { city: string }) => h.city)).size
+
   return (
     <div className="space-y-6">
       {/* Welcome banner */}
@@ -26,7 +38,7 @@ export default function SuperAdminDashboard() {
         <p className="text-sm font-medium" style={{ color: 'rgba(255,255,255,0.6)' }}>Super Admin 👋</p>
         <h1 className="text-2xl font-bold mt-0.5 tracking-tight">Network Overview</h1>
         <p className="text-sm mt-1" style={{ color: 'rgba(255,255,255,0.5)' }}>
-          {MOCK_HOSTELS.length} hostels across {new Set(MOCK_HOSTELS.map(h => h.city)).size} cities
+          {hostels.length} hostels across {cities} cities
         </p>
       </div>
 
@@ -34,30 +46,30 @@ export default function SuperAdminDashboard() {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <StatCard
           label="Total Hostels"
-          value={MOCK_HOSTELS.length}
-          sub="Across 3 cities"
+          value={dashboard?.totalHostels ?? hostels.length}
+          sub={`Across ${cities} cities`}
           icon={<Building2 size={20} className="text-purple-600" />}
           iconBg="bg-purple-50"
         />
         <StatCard
           label="Total Residents"
-          value={totalOccupied}
-          sub={`${totalCapacity - totalOccupied} beds available`}
+          value={dashboard?.totalResidents ?? totalOccupied}
+          sub={`${totalCapacity - (dashboard?.totalResidents ?? totalOccupied)} beds available`}
           icon={<Users size={20} className="text-indigo-600" />}
           iconBg="bg-indigo-50"
-          trend={{ value: `${Math.round((totalOccupied / totalCapacity) * 100)}% full`, up: true }}
+          trend={{ value: `${totalCapacity > 0 ? Math.round(((dashboard?.totalResidents ?? totalOccupied) / totalCapacity) * 100) : 0}% full`, up: true }}
         />
         <StatCard
           label="Monthly Revenue"
-          value={`₹${(totalRevenue / 100000).toFixed(1)}L`}
-          sub="April 2026 · All hostels"
+          value={`₹${((dashboard?.monthlyRevenue ?? totalRevenue) / 100000).toFixed(1)}L`}
+          sub="Current month · All hostels"
           icon={<TrendingUp size={20} className="text-emerald-600" />}
           iconBg="bg-emerald-50"
           trend={{ value: '+3.8%', up: true }}
         />
         <StatCard
           label="Open Complaints"
-          value="21"
+          value={dashboard?.openComplaints ?? 0}
           sub="Across all hostels"
           icon={<AlertCircle size={20} className="text-amber-600" />}
           iconBg="bg-amber-50"
@@ -72,7 +84,7 @@ export default function SuperAdminDashboard() {
           </div>
           <h2 className="font-semibold text-gray-800 text-sm">Hostel Breakdown</h2>
           <span className="ml-auto text-xs font-bold bg-gray-100 text-gray-500 px-2 py-0.5 rounded-full">
-            {MOCK_HOSTELS.length} hostels
+            {hostels.length} hostels
           </span>
         </div>
         <div className="overflow-x-auto">
@@ -87,8 +99,8 @@ export default function SuperAdminDashboard() {
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-50">
-              {MOCK_HOSTELS.map((h) => {
-                const rate = Math.round((h.occupied / h.total) * 100)
+              {hostels.map((h) => {
+                const rate = h.total > 0 ? Math.round((h.occupied / h.total) * 100) : 0
                 return (
                   <tr key={h.id} className="hover:bg-gray-50/70 transition-colors">
                     <td className="px-5 py-4">
@@ -138,36 +150,43 @@ export default function SuperAdminDashboard() {
                   </tr>
                 )
               })}
+              {hostels.length === 0 && (
+                <tr>
+                  <td colSpan={5} className="px-5 py-10 text-center text-sm text-gray-400">No hostel data available</td>
+                </tr>
+              )}
             </tbody>
-            <tfoot>
-              <tr className="border-t-2 border-gray-200 bg-gray-50">
-                <td colSpan={2} className="px-5 py-3.5 font-bold text-gray-700">Total</td>
-                <td className="px-5 py-3.5">
-                  <div className="flex items-center gap-3">
-                    <div className="w-28 bg-gray-200 rounded-full h-2 overflow-hidden">
-                      <div
-                        className="h-2 rounded-full"
-                        style={{
-                          width: `${Math.round((totalOccupied / totalCapacity) * 100)}%`,
-                          background: 'linear-gradient(90deg, #7c3aed, #a78bfa)',
-                        }}
-                      />
+            {hostels.length > 0 && (
+              <tfoot>
+                <tr className="border-t-2 border-gray-200 bg-gray-50">
+                  <td colSpan={2} className="px-5 py-3.5 font-bold text-gray-700">Total</td>
+                  <td className="px-5 py-3.5">
+                    <div className="flex items-center gap-3">
+                      <div className="w-28 bg-gray-200 rounded-full h-2 overflow-hidden">
+                        <div
+                          className="h-2 rounded-full"
+                          style={{
+                            width: `${totalCapacity > 0 ? Math.round((totalOccupied / totalCapacity) * 100) : 0}%`,
+                            background: 'linear-gradient(90deg, #7c3aed, #a78bfa)',
+                          }}
+                        />
+                      </div>
+                      <span className="text-xs text-gray-600 font-semibold">
+                        {totalOccupied}/{totalCapacity}
+                      </span>
                     </div>
-                    <span className="text-xs text-gray-600 font-semibold">
-                      {totalOccupied}/{totalCapacity}
+                  </td>
+                  <td className="px-5 py-3.5">
+                    <span className="text-xs font-bold px-2.5 py-1 rounded-full bg-purple-50 text-purple-700">
+                      {totalCapacity > 0 ? Math.round((totalOccupied / totalCapacity) * 100) : 0}%
                     </span>
-                  </div>
-                </td>
-                <td className="px-5 py-3.5">
-                  <span className="text-xs font-bold px-2.5 py-1 rounded-full bg-purple-50 text-purple-700">
-                    {Math.round((totalOccupied / totalCapacity) * 100)}%
-                  </span>
-                </td>
-                <td className="px-5 py-3.5 text-right font-bold text-gray-900 text-base">
-                  ₹{totalRevenue.toLocaleString()}
-                </td>
-              </tr>
-            </tfoot>
+                  </td>
+                  <td className="px-5 py-3.5 text-right font-bold text-gray-900 text-base">
+                    ₹{totalRevenue.toLocaleString()}
+                  </td>
+                </tr>
+              </tfoot>
+            )}
           </table>
         </div>
       </div>

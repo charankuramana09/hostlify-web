@@ -24,6 +24,15 @@ export interface AuthData {
   accessToken: string
   refreshToken: string
   role: string
+  subRole?: string
+  email?: string
+  // Hosteller context
+  hostelId?: number
+  hostellerProfileId?: number
+  bookingId?: number
+  // Staff context
+  hostelIds?: number[]
+  ownerId?: number
 }
 
 export const registerHosteller = (data: RegisterPayload) =>

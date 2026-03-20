@@ -1,17 +1,11 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
+import { useQuery } from '@tanstack/react-query'
 import { Search, Users } from 'lucide-react'
 import Badge from '../../components/ui/Badge'
 import PageHeader from '../../components/ui/PageHeader'
-
-const MOCK_MEMBERS = [
-  { id: 1, name: 'Arjun Sharma',  email: 'arjun@example.com',  phone: '9876543210', roomNumber: 'A-101', status: 'ACTIVE',   joinDate: 'Sep 1, 2025' },
-  { id: 2, name: 'Priya Singh',   email: 'priya@example.com',  phone: '9876543211', roomNumber: 'A-102', status: 'ACTIVE',   joinDate: 'Sep 1, 2025' },
-  { id: 3, name: 'Ravi Kumar',    email: 'ravi@example.com',   phone: '9876543212', roomNumber: 'B-201', status: 'ACTIVE',   joinDate: 'Jan 15, 2026' },
-  { id: 4, name: 'Sneha Patel',   email: 'sneha@example.com',  phone: '9876543213', roomNumber: 'B-202', status: 'ACTIVE',   joinDate: 'Feb 5, 2026' },
-  { id: 5, name: 'Mohit Verma',   email: 'mohit@example.com',  phone: '9876543214', roomNumber: 'C-301', status: 'INACTIVE', joinDate: 'Jul 1, 2025' },
-  { id: 6, name: 'Ananya Iyer',   email: 'ananya@example.com', phone: '9876543215', roomNumber: 'C-302', status: 'ACTIVE',   joinDate: 'Sep 1, 2025' },
-]
+import { getMembers } from '../../api/staff'
+import { useAuthStore } from '../../store/authStore'
 
 const AVATAR_COLORS = [
   'bg-indigo-500', 'bg-emerald-500', 'bg-purple-500',
@@ -23,23 +17,36 @@ function getInitials(name: string) {
 }
 
 export default function Members() {
+  const { activeHostelId } = useAuthStore()
   const [search, setSearch] = useState('')
   const [statusFilter, setStatusFilter] = useState('ALL')
 
-  const filtered = MOCK_MEMBERS.filter((m) => {
+  const { data: members = [], isLoading } = useQuery({
+    queryKey: ['members', activeHostelId],
+    queryFn: () => getMembers(activeHostelId!),
+    enabled: !!activeHostelId,
+  })
+
+  const filtered = members.filter((m: any) => {
     const matchSearch =
-      m.name.toLowerCase().includes(search.toLowerCase()) ||
-      m.email.toLowerCase().includes(search.toLowerCase()) ||
-      m.roomNumber.toLowerCase().includes(search.toLowerCase())
+      (m.name ?? '').toLowerCase().includes(search.toLowerCase()) ||
+      (m.email ?? '').toLowerCase().includes(search.toLowerCase()) ||
+      (m.roomNumber ?? '').toLowerCase().includes(search.toLowerCase())
     const matchStatus = statusFilter === 'ALL' || m.status === statusFilter
     return matchSearch && matchStatus
   })
+
+  if (isLoading) return (
+    <div className="flex items-center justify-center py-20">
+      <div className="w-8 h-8 rounded-full border-4 border-indigo-200 border-t-indigo-600 animate-spin" />
+    </div>
+  )
 
   return (
     <div className="space-y-6">
       <PageHeader
         title="Members"
-        subtitle={`${MOCK_MEMBERS.length} total residents`}
+        subtitle={`${members.length} total residents`}
         count={filtered.length}
       />
 
@@ -85,14 +92,14 @@ export default function Members() {
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-50">
-              {filtered.map((m, i) => (
+              {filtered.map((m: any, i: number) => (
                 <tr key={m.id} className="hover:bg-gray-50/70 transition-colors">
                   <td className="px-5 py-3.5">
                     <div className="flex items-center gap-3">
                       <div
                         className={`w-9 h-9 rounded-xl flex items-center justify-center text-xs font-bold text-white shrink-0 ${AVATAR_COLORS[i % AVATAR_COLORS.length]}`}
                       >
-                        {getInitials(m.name)}
+                        {getInitials(m.name ?? '??')}
                       </div>
                       <div>
                         <Link to={`/admin/members/${m.id}`} className="font-semibold text-gray-800 hover:text-emerald-600 transition-colors">{m.name}</Link>
@@ -102,11 +109,13 @@ export default function Members() {
                   </td>
                   <td className="px-5 py-3.5">
                     <span className="font-mono text-xs font-bold bg-gray-100 text-gray-700 px-2.5 py-1 rounded-lg tracking-wider">
-                      {m.roomNumber}
+                      {m.roomNumber ?? '—'}
                     </span>
                   </td>
-                  <td className="px-5 py-3.5 text-gray-600 font-medium">{m.phone}</td>
-                  <td className="px-5 py-3.5 text-gray-500">{m.joinDate}</td>
+                  <td className="px-5 py-3.5 text-gray-600 font-medium">{m.phone ?? '—'}</td>
+                  <td className="px-5 py-3.5 text-gray-500">
+                    {m.joinDate ? new Date(m.joinDate).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }) : '—'}
+                  </td>
                   <td className="px-5 py-3.5">
                     <Badge status={m.status} />
                   </td>

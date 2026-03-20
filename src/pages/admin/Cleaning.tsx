@@ -1,26 +1,11 @@
 import { useState } from 'react'
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { SprayCan, Clock, CheckCircle2 } from 'lucide-react'
 import Badge from '../../components/ui/Badge'
 import PageHeader from '../../components/ui/PageHeader'
 import StatCard from '../../components/ui/StatCard'
-
-interface CleaningRequest {
-  id: number
-  memberName: string
-  room: string
-  requestedDate: string
-  preferredSlot: string
-  notes: string
-  status: 'PENDING' | 'SCHEDULED' | 'COMPLETED'
-}
-
-const MOCK_CLEANING: CleaningRequest[] = [
-  { id: 1, memberName: 'Arjun Sharma', room: 'A-101', requestedDate: 'Mar 14, 2026', preferredSlot: '10:00 AM – 12:00 PM', notes: 'Deep clean required, bathroom especially', status: 'PENDING' },
-  { id: 2, memberName: 'Priya Singh', room: 'A-102', requestedDate: 'Mar 13, 2026', preferredSlot: '2:00 PM – 4:00 PM', notes: 'Regular cleaning only', status: 'SCHEDULED' },
-  { id: 3, memberName: 'Ravi Kumar', room: 'B-201', requestedDate: 'Mar 12, 2026', preferredSlot: '9:00 AM – 11:00 AM', notes: 'Window cleaning needed', status: 'COMPLETED' },
-  { id: 4, memberName: 'Sneha Patel', room: 'B-202', requestedDate: 'Mar 11, 2026', preferredSlot: '11:00 AM – 1:00 PM', notes: 'Furniture dusting and mopping', status: 'PENDING' },
-  { id: 5, memberName: 'Ananya Iyer', room: 'C-302', requestedDate: 'Mar 10, 2026', preferredSlot: '3:00 PM – 5:00 PM', notes: 'Full room cleaning', status: 'COMPLETED' },
-]
+import { getHostelCleaning, updateCleaningStatus } from '../../api/staff'
+import { useAuthStore } from '../../store/authStore'
 
 const AVATAR_COLORS = [
   'bg-indigo-500', 'bg-emerald-500', 'bg-purple-500',
@@ -34,12 +19,27 @@ function getInitials(name: string) {
 type TabType = 'PENDING' | 'SCHEDULED' | 'COMPLETED'
 
 export default function Cleaning() {
-  const [requests, setRequests] = useState<CleaningRequest[]>(MOCK_CLEANING)
+  const { activeHostelId } = useAuthStore()
+  const queryClient = useQueryClient()
   const [activeTab, setActiveTab] = useState<TabType>('PENDING')
 
-  const pending = requests.filter((r) => r.status === 'PENDING')
-  const scheduled = requests.filter((r) => r.status === 'SCHEDULED')
-  const completed = requests.filter((r) => r.status === 'COMPLETED')
+  const { data: requests = [], isLoading } = useQuery({
+    queryKey: ['cleaning', activeHostelId],
+    queryFn: () => getHostelCleaning(activeHostelId!),
+    enabled: !!activeHostelId,
+  })
+
+  const updateMut = useMutation({
+    mutationFn: ({ id, status }: { id: number; status: string }) =>
+      updateCleaningStatus(id, status),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['cleaning', activeHostelId] })
+    },
+  })
+
+  const pending = requests.filter((r: any) => r.status === 'PENDING')
+  const scheduled = requests.filter((r: any) => r.status === 'SCHEDULED')
+  const completed = requests.filter((r: any) => r.status === 'COMPLETED')
 
   const tabItems: { key: TabType; label: string; count: number }[] = [
     { key: 'PENDING', label: 'Pending', count: pending.length },
@@ -47,15 +47,21 @@ export default function Cleaning() {
     { key: 'COMPLETED', label: 'Completed', count: completed.length },
   ]
 
-  const displayed = requests.filter((r) => r.status === activeTab)
+  const displayed = requests.filter((r: any) => r.status === activeTab)
 
   function handleSchedule(id: number) {
-    setRequests((prev) => prev.map((r) => r.id === id ? { ...r, status: 'SCHEDULED' as const } : r))
+    updateMut.mutate({ id, status: 'SCHEDULED' })
   }
 
   function handleComplete(id: number) {
-    setRequests((prev) => prev.map((r) => r.id === id ? { ...r, status: 'COMPLETED' as const } : r))
+    updateMut.mutate({ id, status: 'COMPLETED' })
   }
+
+  if (isLoading) return (
+    <div className="flex items-center justify-center py-20">
+      <div className="w-8 h-8 rounded-full border-4 border-indigo-200 border-t-indigo-600 animate-spin" />
+    </div>
+  )
 
   return (
     <div className="space-y-6">
@@ -123,27 +129,27 @@ export default function Cleaning() {
         </div>
       ) : (
         <div className="space-y-3">
-          {displayed.map((req, i) => (
+          {displayed.map((req: any, i: number) => (
             <div key={req.id} className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
               <div className="flex items-start gap-4">
                 <div className={`w-10 h-10 rounded-xl flex items-center justify-center text-xs font-bold text-white shrink-0 ${AVATAR_COLORS[i % AVATAR_COLORS.length]}`}>
-                  {getInitials(req.memberName)}
+                  {getInitials(req.hostellerName ?? req.memberName ?? '??')}
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center justify-between gap-2 flex-wrap">
                     <div>
-                      <p className="font-bold text-gray-800 text-sm">{req.memberName}</p>
+                      <p className="font-bold text-gray-800 text-sm">{req.hostellerName ?? req.memberName}</p>
                       <span className="font-mono text-xs font-bold bg-gray-100 text-gray-600 px-2 py-0.5 rounded-lg tracking-wider">
-                        {req.room}
+                        {req.roomNumber ?? req.room}
                       </span>
                     </div>
                     <Badge status={req.status} />
                   </div>
                   <div className="flex items-center gap-3 mt-2.5 flex-wrap">
-                    <span className="text-xs text-gray-400">Requested: <span className="font-medium text-gray-600">{req.requestedDate}</span></span>
+                    <span className="text-xs text-gray-400">Requested: <span className="font-medium text-gray-600">{req.preferredDate ?? req.requestedDate}</span></span>
                     <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-blue-50 text-blue-700 text-xs font-semibold">
                       <Clock size={11} />
-                      {req.preferredSlot}
+                      {req.timeSlot ?? req.preferredSlot ?? '—'}
                     </span>
                   </div>
                   <p className="text-sm text-gray-500 mt-2 leading-relaxed">{req.notes}</p>
@@ -151,7 +157,8 @@ export default function Cleaning() {
                     {req.status === 'PENDING' && (
                       <button
                         onClick={() => handleSchedule(req.id)}
-                        className="px-4 py-1.5 rounded-xl text-white text-xs font-semibold shadow-sm hover:opacity-90 transition-opacity"
+                        disabled={updateMut.isPending}
+                        className="px-4 py-1.5 rounded-xl text-white text-xs font-semibold shadow-sm hover:opacity-90 transition-opacity disabled:opacity-60"
                         style={{ background: 'linear-gradient(135deg, #3b82f6, #60a5fa)' }}
                       >
                         Schedule Cleaning
@@ -160,7 +167,8 @@ export default function Cleaning() {
                     {req.status === 'SCHEDULED' && (
                       <button
                         onClick={() => handleComplete(req.id)}
-                        className="px-4 py-1.5 rounded-xl text-white text-xs font-semibold shadow-sm hover:opacity-90 transition-opacity"
+                        disabled={updateMut.isPending}
+                        className="px-4 py-1.5 rounded-xl text-white text-xs font-semibold shadow-sm hover:opacity-90 transition-opacity disabled:opacity-60"
                         style={{ background: 'linear-gradient(135deg, #059669, #34d399)' }}
                       >
                         Mark Complete

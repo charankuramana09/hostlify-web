@@ -15,7 +15,8 @@ const CONFIG: Record<string, { bg: string; dot: string; text: string; label?: st
 
 const DEFAULT = { bg: 'bg-gray-100', dot: 'bg-gray-400', text: 'text-gray-500' }
 
-export default function Badge({ status }: { status: string }) {
+export default function Badge({ status }: { status?: string | null }) {
+  if (!status) return null
   const cfg = CONFIG[status] ?? DEFAULT
   const label = cfg.label ?? status.replace(/_/g, ' ')
   return (

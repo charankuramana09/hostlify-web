@@ -11,7 +11,6 @@ interface LoginFormProps {
   error?: string | null
   otherPortals?: { label: string; to: string }[]
   signupLink?: { label: string; to: string }
-  onDemoAccess?: () => void
 }
 
 export default function LoginForm({
@@ -21,7 +20,6 @@ export default function LoginForm({
   error,
   otherPortals,
   signupLink,
-  onDemoAccess,
 }: LoginFormProps) {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -93,23 +91,6 @@ export default function LoginForm({
           </Button>
         </form>
 
-        {onDemoAccess && (
-          <div className="mt-4">
-            <div className="relative flex items-center gap-3 my-1">
-              <div className="flex-1 h-px bg-gray-100" />
-              <span className="text-xs text-gray-300 font-medium shrink-0">or</span>
-              <div className="flex-1 h-px bg-gray-100" />
-            </div>
-            <button
-              type="button"
-              onClick={onDemoAccess}
-              className="w-full mt-3 py-2.5 rounded-xl border-2 border-dashed border-gray-200 text-sm font-semibold text-gray-400 hover:border-indigo-300 hover:text-indigo-500 hover:bg-indigo-50/50 transition-all"
-            >
-              ⚡ Demo Access — skip login
-            </button>
-          </div>
-        )}
-
         {signupLink && (
           <div className="mt-5 text-center text-[13px] text-gray-400">
             {STRINGS.auth.newResident}{' '}
@@ -121,12 +102,18 @@ export default function LoginForm({
 
         {otherPortals && otherPortals.length > 0 && (
           <div className="mt-6 pt-4 border-t border-gray-100 text-center">
-            <span className="text-xs text-gray-400">
-              {otherPortals[0].label.includes('Staff') ? STRINGS.auth.isStaff : STRINGS.auth.isHosteller}{' '}
-            </span>
-            <Link to={otherPortals[0].to} className="text-xs text-brand-600 font-medium hover:underline">
-              {otherPortals[0].label} →
-            </Link>
+            <p className="text-xs text-gray-400 mb-2">Other portals</p>
+            <div className="flex items-center justify-center gap-3 flex-wrap">
+              {otherPortals.map((portal) => (
+                <Link
+                  key={portal.to}
+                  to={portal.to}
+                  className="text-xs text-brand-600 font-medium hover:underline"
+                >
+                  {portal.label} →
+                </Link>
+              ))}
+            </div>
           </div>
         )}
       </div>

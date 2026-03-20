@@ -1,16 +1,16 @@
 import { useState } from 'react'
+import { useQuery } from '@tanstack/react-query'
 import { Megaphone } from 'lucide-react'
 import PageHeader from '../../components/ui/PageHeader'
+import { useAuthStore } from '../../store/authStore'
+import { getAnnouncements } from '../../api/hosteller'
+
+function fmtDate(d: string) {
+  if (!d) return '—'
+  return new Date(d).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })
+}
 
 const CATEGORIES = ['All', 'General', 'Maintenance', 'Event', 'Fee']
-
-const MOCK_ANNOUNCEMENTS = [
-  { id: 1, title: 'Hostel Fest 2026',         category: 'Event',       content: 'Annual hostel fest scheduled for March 20th. Food stalls, cultural programs, and games. All residents are invited. Register by March 15th.', publishedAt: 'Mar 5, 2026' },
-  { id: 2, title: 'Water Supply Interruption', category: 'Maintenance', content: 'Water supply will be interrupted on March 10th from 10 AM to 2 PM due to pipeline maintenance. Please store water in advance.',             publishedAt: 'Mar 3, 2026' },
-  { id: 3, title: 'April Fee Reminder',         category: 'Fee',         content: 'April fee payment deadline is April 1st. A late charge of ₹200 will be applied after the deadline. Pay online or at the office.',              publishedAt: 'Mar 1, 2026' },
-  { id: 4, title: 'New Mess Timings',           category: 'General',     content: 'Effective March 15th, dinner will be served from 7:00 PM to 9:00 PM (previously 6:30 PM to 8:30 PM). Breakfast and lunch timings remain unchanged.', publishedAt: 'Feb 28, 2026' },
-  { id: 5, title: 'Gym Hours Extended',         category: 'General',     content: 'The hostel gym will now be open from 5:00 AM to 10:00 PM on weekdays. Weekend hours remain 6:00 AM to 9:00 PM.',                              publishedAt: 'Feb 20, 2026' },
-]
 
 const CATEGORY_CONFIG: Record<string, { badge: string; border: string; dot: string }> = {
   General:     { badge: 'bg-gray-100 text-gray-600',    border: 'border-l-gray-300',   dot: 'bg-gray-400' },
@@ -22,11 +22,28 @@ const CATEGORY_CONFIG: Record<string, { badge: string; border: string; dot: stri
 const DEFAULT_CONFIG = { badge: 'bg-gray-100 text-gray-600', border: 'border-l-gray-300', dot: 'bg-gray-400' }
 
 export default function Announcements() {
+  const { hostelId } = useAuthStore()
   const [activeCategory, setActiveCategory] = useState('All')
 
+  const { data: announcements, isLoading, error } = useQuery({
+    queryKey: ['announcements', hostelId],
+    queryFn: () => getAnnouncements(hostelId!),
+    enabled: !!hostelId,
+  })
+
+  const announcementsList = announcements ?? []
+
   const filtered = activeCategory === 'All'
-    ? MOCK_ANNOUNCEMENTS
-    : MOCK_ANNOUNCEMENTS.filter((a) => a.category === activeCategory)
+    ? announcementsList
+    : announcementsList.filter((a: any) => a.category === activeCategory)
+
+  if (isLoading) return (
+    <div className="flex items-center justify-center py-20">
+      <div className="w-8 h-8 rounded-full border-4 border-indigo-200 border-t-indigo-600 animate-spin" />
+    </div>
+  )
+
+  if (error) return <div className="text-center py-20 text-gray-400">Failed to load data</div>
 
   return (
     <div className="space-y-6">
@@ -55,7 +72,7 @@ export default function Announcements() {
 
       {/* Announcement cards */}
       <div className="space-y-3">
-        {filtered.map((a) => {
+        {filtered.map((a: any) => {
           const cfg = CATEGORY_CONFIG[a.category] ?? DEFAULT_CONFIG
           return (
             <div
@@ -71,7 +88,7 @@ export default function Announcements() {
                   </span>
                 </div>
                 <span className="text-xs font-medium text-gray-400 whitespace-nowrap shrink-0 bg-gray-50 px-2.5 py-1 rounded-lg">
-                  {a.publishedAt}
+                  {fmtDate(a.validFrom)}
                 </span>
               </div>
               <p className="text-sm text-gray-600 leading-relaxed pl-3.5">{a.content}</p>

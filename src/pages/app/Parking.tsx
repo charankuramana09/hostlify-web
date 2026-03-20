@@ -1,25 +1,62 @@
 import { useState } from 'react'
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { Plus, X, Car, CheckCircle2 } from 'lucide-react'
 import Badge from '../../components/ui/Badge'
 import PageHeader from '../../components/ui/PageHeader'
+import { getMyParking, registerParking, deregisterParking } from '../../api/hosteller'
 
-const MOCK_MY_SLOT = { vehicleNumber: 'KA-01-AB-1234', type: 'Car', slot: 'P-07', since: 'Mar 1, 2026', status: 'ACTIVE' }
-const MOCK_REQUESTS = [
-  { id: 1, vehicleNumber: 'KA-01-AB-1234', type: 'Car', slot: 'P-07', requestedDate: 'Feb 28, 2026', status: 'ACTIVE' },
-]
+function fmtDate(d: string) {
+  if (!d) return '—'
+  return new Date(d).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })
+}
 
 const VEHICLE_TYPES = ['Car', 'Bike', 'Scooter']
 
 export default function Parking() {
+  const queryClient = useQueryClient()
   const [showForm, setShowForm] = useState(false)
   const [form, setForm] = useState({ vehicleNumber: '', type: '', notes: '' })
 
+  const { data: parkingData, isLoading, error } = useQuery({
+    queryKey: ['my-parking'],
+    queryFn: getMyParking,
+  })
+
+  const registerMutation = useMutation({
+    mutationFn: registerParking,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['my-parking'] })
+      setShowForm(false)
+      setForm({ vehicleNumber: '', type: '', notes: '' })
+    },
+  })
+
+  const deregisterMutation = useMutation({
+    mutationFn: (id: number) => deregisterParking(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['my-parking'] })
+    },
+  })
+
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
-    // TODO: call requestParking API
-    setShowForm(false)
-    setForm({ vehicleNumber: '', type: '', notes: '' })
+    registerMutation.mutate({
+      vehicleNumber: form.vehicleNumber,
+      vehicleType: form.type,
+      notes: form.notes,
+    })
   }
+
+  const parkingList = parkingData ?? []
+  const activeSlot = parkingList.find((p: any) => p.status === 'ACTIVE')
+
+  if (isLoading) return (
+    <div className="flex items-center justify-center py-20">
+      <div className="w-8 h-8 rounded-full border-4 border-indigo-200 border-t-indigo-600 animate-spin" />
+    </div>
+  )
+
+  if (error) return <div className="text-center py-20 text-gray-400">Failed to load data</div>
 
   return (
     <div className="space-y-6">
@@ -38,37 +75,45 @@ export default function Parking() {
       />
 
       {/* Active Slot Card */}
-      <div className="bg-gradient-to-br from-emerald-50 to-teal-50 rounded-2xl border border-emerald-100 shadow-sm p-5">
-        <div className="flex items-start justify-between gap-4">
-          <div className="flex items-center gap-3">
-            <div className="w-11 h-11 rounded-xl bg-emerald-500 flex items-center justify-center shadow-md shrink-0">
-              <CheckCircle2 size={22} className="text-white" />
+      {activeSlot && (
+        <div className="bg-gradient-to-br from-emerald-50 to-teal-50 rounded-2xl border border-emerald-100 shadow-sm p-5">
+          <div className="flex items-start justify-between gap-4">
+            <div className="flex items-center gap-3">
+              <div className="w-11 h-11 rounded-xl bg-emerald-500 flex items-center justify-center shadow-md shrink-0">
+                <CheckCircle2 size={22} className="text-white" />
+              </div>
+              <div>
+                <p className="text-xs font-semibold text-emerald-700 uppercase tracking-wide mb-0.5">Active Slot</p>
+                <h3 className="text-lg font-bold text-gray-900 leading-tight">
+                  {activeSlot.slotNumber ?? activeSlot.slot ?? '—'}
+                </h3>
+              </div>
+            </div>
+            <Badge status={activeSlot.status} />
+          </div>
+          <div className="grid grid-cols-3 gap-4 mt-4 pt-4 border-t border-emerald-100">
+            <div>
+              <p className="text-xs text-emerald-600 font-medium">Vehicle Number</p>
+              <p className="font-mono text-sm font-bold text-gray-800 mt-0.5">{activeSlot.vehicleNumber}</p>
             </div>
             <div>
-              <p className="text-xs font-semibold text-emerald-700 uppercase tracking-wide mb-0.5">Active Slot</p>
-              <h3 className="text-lg font-bold text-gray-900 leading-tight">{MOCK_MY_SLOT.slot}</h3>
+              <p className="text-xs text-emerald-600 font-medium">Type</p>
+              <p className="text-sm font-semibold text-gray-800 mt-0.5">{activeSlot.vehicleType ?? activeSlot.type ?? '—'}</p>
+            </div>
+            <div>
+              <p className="text-xs text-emerald-600 font-medium">Since</p>
+              <p className="text-sm font-semibold text-gray-800 mt-0.5">{fmtDate(activeSlot.requestedDate ?? activeSlot.createdAt)}</p>
             </div>
           </div>
-          <Badge status={MOCK_MY_SLOT.status} />
+          <button
+            onClick={() => deregisterMutation.mutate(activeSlot.id)}
+            disabled={deregisterMutation.isPending}
+            className="mt-4 px-4 py-2 rounded-xl text-sm font-semibold text-red-600 border border-red-200 bg-white hover:bg-red-50 transition-colors disabled:opacity-60"
+          >
+            {deregisterMutation.isPending ? 'Removing…' : 'Remove Slot'}
+          </button>
         </div>
-        <div className="grid grid-cols-3 gap-4 mt-4 pt-4 border-t border-emerald-100">
-          <div>
-            <p className="text-xs text-emerald-600 font-medium">Vehicle Number</p>
-            <p className="font-mono text-sm font-bold text-gray-800 mt-0.5">{MOCK_MY_SLOT.vehicleNumber}</p>
-          </div>
-          <div>
-            <p className="text-xs text-emerald-600 font-medium">Type</p>
-            <p className="text-sm font-semibold text-gray-800 mt-0.5">{MOCK_MY_SLOT.type}</p>
-          </div>
-          <div>
-            <p className="text-xs text-emerald-600 font-medium">Since</p>
-            <p className="text-sm font-semibold text-gray-800 mt-0.5">{MOCK_MY_SLOT.since}</p>
-          </div>
-        </div>
-        <button className="mt-4 px-4 py-2 rounded-xl text-sm font-semibold text-red-600 border border-red-200 bg-white hover:bg-red-50 transition-colors">
-          Remove Slot
-        </button>
-      </div>
+      )}
 
       {/* New Request Form */}
       {showForm && (
@@ -140,10 +185,11 @@ export default function Parking() {
               </button>
               <button
                 type="submit"
-                className="px-5 py-2 text-sm rounded-xl font-semibold text-white transition-opacity hover:opacity-90"
+                disabled={registerMutation.isPending}
+                className="px-5 py-2 text-sm rounded-xl font-semibold text-white transition-opacity hover:opacity-90 disabled:opacity-60"
                 style={{ background: 'linear-gradient(135deg, #1d6ea8, #1a8fd1)' }}
               >
-                Submit Request
+                {registerMutation.isPending ? 'Submitting…' : 'Submit Request'}
               </button>
             </div>
           </form>
@@ -158,7 +204,7 @@ export default function Parking() {
           </div>
           <h2 className="font-semibold text-gray-800 text-sm">My Parking Requests</h2>
           <span className="ml-auto text-xs font-bold bg-gray-100 text-gray-500 px-2 py-0.5 rounded-full">
-            {MOCK_REQUESTS.length}
+            {parkingList.length}
           </span>
         </div>
         <div className="overflow-x-auto">
@@ -173,7 +219,7 @@ export default function Parking() {
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-50">
-              {MOCK_REQUESTS.map((r) => (
+              {parkingList.map((r: any) => (
                 <tr key={r.id} className="hover:bg-gray-50/70 transition-colors">
                   <td className="px-5 py-3.5">
                     <span className="font-mono text-xs font-bold bg-gray-100 text-gray-700 px-2.5 py-1 rounded-lg tracking-wider">
@@ -182,16 +228,21 @@ export default function Parking() {
                   </td>
                   <td className="px-5 py-3.5">
                     <span className="text-xs font-semibold bg-indigo-50 text-indigo-700 px-2.5 py-1 rounded-full">
-                      {r.type}
+                      {r.vehicleType ?? r.type ?? '—'}
                     </span>
                   </td>
-                  <td className="px-5 py-3.5 font-semibold text-gray-700">{r.slot || '—'}</td>
-                  <td className="px-5 py-3.5 text-gray-500">{r.requestedDate}</td>
+                  <td className="px-5 py-3.5 font-semibold text-gray-700">{r.slotNumber ?? r.slot ?? '—'}</td>
+                  <td className="px-5 py-3.5 text-gray-500">{fmtDate(r.requestedDate ?? r.createdAt)}</td>
                   <td className="px-5 py-3.5">
                     <Badge status={r.status} />
                   </td>
                 </tr>
               ))}
+              {parkingList.length === 0 && (
+                <tr>
+                  <td colSpan={5} className="px-5 py-8 text-center text-sm text-gray-400">No parking requests</td>
+                </tr>
+              )}
             </tbody>
           </table>
         </div>

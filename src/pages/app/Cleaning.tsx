@@ -1,12 +1,14 @@
 import { useState } from 'react'
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { Plus, X, SprayCan, Calendar } from 'lucide-react'
 import Badge from '../../components/ui/Badge'
 import PageHeader from '../../components/ui/PageHeader'
+import { getMyCleaning, requestCleaning } from '../../api/hosteller'
 
-const MOCK_MY_CLEANING = [
-  { id: 1, preferredDate: 'Mar 16, 2026', slot: 'Morning 9–11 AM', notes: 'Please clean bathroom thoroughly', status: 'SCHEDULED', requestedOn: 'Mar 14, 2026' },
-  { id: 2, preferredDate: 'Mar 10, 2026', slot: 'Afternoon 1–3 PM', notes: 'Regular cleaning', status: 'COMPLETED', requestedOn: 'Mar 9, 2026' },
-]
+function fmtDate(d: string) {
+  if (!d) return '—'
+  return new Date(d).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })
+}
 
 const TIME_SLOTS = ['Morning 9–11 AM', 'Afternoon 1–3 PM', 'Evening 4–6 PM']
 
@@ -17,22 +19,49 @@ const SLOT_COLORS: Record<string, string> = {
 }
 
 export default function Cleaning() {
+  const queryClient = useQueryClient()
   const [showForm, setShowForm] = useState(false)
   const [form, setForm] = useState({ preferredDate: '', slot: '', notes: '' })
 
+  const { data: cleaningData, isLoading, error } = useQuery({
+    queryKey: ['my-cleaning'],
+    queryFn: getMyCleaning,
+  })
+
+  const requestMutation = useMutation({
+    mutationFn: requestCleaning,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['my-cleaning'] })
+      setShowForm(false)
+      setForm({ preferredDate: '', slot: '', notes: '' })
+    },
+  })
+
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
-    // TODO: call requestCleaning API
-    setShowForm(false)
-    setForm({ preferredDate: '', slot: '', notes: '' })
+    requestMutation.mutate({
+      preferredDate: form.preferredDate,
+      timeSlot: form.slot,
+      notes: form.notes,
+    })
   }
+
+  const cleaningList = cleaningData ?? []
+
+  if (isLoading) return (
+    <div className="flex items-center justify-center py-20">
+      <div className="w-8 h-8 rounded-full border-4 border-indigo-200 border-t-indigo-600 animate-spin" />
+    </div>
+  )
+
+  if (error) return <div className="text-center py-20 text-gray-400">Failed to load data</div>
 
   return (
     <div className="space-y-6">
       <PageHeader
         title="Cleaning Requests"
         subtitle="Request room cleaning service"
-        count={MOCK_MY_CLEANING.length}
+        count={cleaningList.length}
         action={
           <button
             onClick={() => setShowForm(!showForm)}
@@ -114,10 +143,11 @@ export default function Cleaning() {
               </button>
               <button
                 type="submit"
-                className="px-5 py-2 text-sm rounded-xl font-semibold text-white transition-opacity hover:opacity-90"
+                disabled={requestMutation.isPending}
+                className="px-5 py-2 text-sm rounded-xl font-semibold text-white transition-opacity hover:opacity-90 disabled:opacity-60"
                 style={{ background: 'linear-gradient(135deg, #1d6ea8, #1a8fd1)' }}
               >
-                Submit Request
+                {requestMutation.isPending ? 'Submitting…' : 'Submit Request'}
               </button>
             </div>
           </form>
@@ -126,7 +156,7 @@ export default function Cleaning() {
 
       {/* My Requests Cards */}
       <div className="space-y-3">
-        {MOCK_MY_CLEANING.map((r) => (
+        {cleaningList.map((r: any) => (
           <div key={r.id} className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 hover:shadow-md transition-all duration-200">
             <div className="flex items-start justify-between gap-4 mb-3">
               <div className="flex items-center gap-3">
@@ -134,8 +164,8 @@ export default function Cleaning() {
                   <Calendar size={16} className="text-indigo-600" />
                 </div>
                 <div>
-                  <p className="font-semibold text-gray-900 text-sm">{r.preferredDate}</p>
-                  <p className="text-xs text-gray-400 mt-0.5">Requested on {r.requestedOn}</p>
+                  <p className="font-semibold text-gray-900 text-sm">{fmtDate(r.preferredDate)}</p>
+                  <p className="text-xs text-gray-400 mt-0.5">Requested on {fmtDate(r.createdAt)}</p>
                 </div>
               </div>
               <div className="flex items-center gap-2 shrink-0">
@@ -143,8 +173,8 @@ export default function Cleaning() {
               </div>
             </div>
             <div className="flex items-center gap-3 flex-wrap">
-              <span className={`text-xs px-2.5 py-1 rounded-full font-semibold ${SLOT_COLORS[r.slot] ?? 'bg-gray-100 text-gray-600'}`}>
-                {r.slot}
+              <span className={`text-xs px-2.5 py-1 rounded-full font-semibold ${SLOT_COLORS[r.timeSlot] ?? SLOT_COLORS[r.slot] ?? 'bg-gray-100 text-gray-600'}`}>
+                {r.timeSlot ?? r.slot ?? '—'}
               </span>
               {r.notes && (
                 <p className="text-sm text-gray-500 flex-1">{r.notes}</p>
@@ -159,7 +189,7 @@ export default function Cleaning() {
             )}
           </div>
         ))}
-        {MOCK_MY_CLEANING.length === 0 && (
+        {cleaningList.length === 0 && (
           <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-12 text-center">
             <div className="w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center mx-auto mb-3">
               <SprayCan size={22} className="text-gray-300" />

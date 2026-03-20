@@ -4,6 +4,8 @@ import Badge from '../../components/ui/Badge'
 import PageHeader from '../../components/ui/PageHeader'
 import StatCard from '../../components/ui/StatCard'
 
+// TODO: No super-admin complaints endpoint exists in the API yet.
+// Replace MOCK_SA_COMPLAINTS with a real API call when the endpoint is available.
 const MOCK_SA_COMPLAINTS = [
   { id: 1, hostel: 'Sunrise Hostel',        owner: 'Vikram Mehta',  member: 'Arjun Sharma', title: 'AC not working',     category: 'Maintenance', status: 'IN_PROGRESS', priority: 'HIGH',   date: 'Mar 9, 2026' },
   { id: 2, hostel: 'Green Valley Hostel',   owner: 'Vikram Mehta',  member: 'Pooja Singh',  title: 'Food quality issue', category: 'Food',        status: 'OPEN',        priority: 'MEDIUM', date: 'Mar 7, 2026' },

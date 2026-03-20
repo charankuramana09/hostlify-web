@@ -1,16 +1,18 @@
 import { useState } from 'react'
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { Plus, X, MessageSquare } from 'lucide-react'
 import Badge from '../../components/ui/Badge'
 import PageHeader from '../../components/ui/PageHeader'
+import { useAuthStore } from '../../store/authStore'
+import { useToastStore } from '../../store/toastStore'
+import { getMyComplaints, createComplaint } from '../../api/hosteller'
+
+function fmtDate(d: string) {
+  if (!d) return '—'
+  return new Date(d).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })
+}
 
 const CATEGORIES = ['Maintenance', 'Cleanliness', 'Food', 'Noise', 'Security', 'Other']
-
-const MOCK_COMPLAINTS = [
-  { id: 1, title: 'AC not working in room', category: 'Maintenance', status: 'IN_PROGRESS', createdAt: 'Mar 7, 2026', description: 'The AC in my room has stopped working since last week. It shows error code E3.' },
-  { id: 2, title: 'Washroom not clean', category: 'Cleanliness', status: 'RESOLVED', createdAt: 'Mar 2, 2026', description: 'The common washroom on floor 1 was not cleaned for 2 days.' },
-  { id: 3, title: 'Food quality issue in dinner', category: 'Food', status: 'OPEN', createdAt: 'Feb 28, 2026', description: 'The dinner on Feb 27 had stale vegetables. Please improve quality.' },
-  { id: 4, title: 'Noisy neighbours after 11 PM', category: 'Noise', status: 'CLOSED', createdAt: 'Feb 20, 2026', description: 'Room B-203 residents make loud noise after 11 PM on weekends.' },
-]
 
 const CATEGORY_COLORS: Record<string, string> = {
   Maintenance: 'bg-blue-50 text-blue-700',
@@ -22,27 +24,75 @@ const CATEGORY_COLORS: Record<string, string> = {
 }
 
 export default function Complaints() {
+  const { hostellerProfileId, hostelId } = useAuthStore()
+  const queryClient = useQueryClient()
+  const { show } = useToastStore()
+
   const [showForm, setShowForm] = useState(false)
   const [activeCategory, setActiveCategory] = useState('All')
   const [form, setForm] = useState({ title: '', category: '', description: '' })
+  const [errors, setErrors] = useState<Partial<typeof form>>({})
+
+  const { data: complaints, isLoading, error } = useQuery({
+    queryKey: ['my-complaints', hostellerProfileId],
+    queryFn: () => getMyComplaints(hostellerProfileId!),
+    enabled: !!hostellerProfileId,
+  })
+
+  const createMutation = useMutation({
+    mutationFn: createComplaint,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['my-complaints', hostellerProfileId] })
+      setShowForm(false)
+      setForm({ title: '', category: '', description: '' })
+      show('success', 'Complaint submitted', 'Your complaint has been registered.')
+    },
+    onError: () => {
+      show('error', 'Failed to submit', 'Could not submit your complaint. Please try again.')
+    },
+  })
+
+  function validate() {
+    const e: Partial<typeof form> = {}
+    if (!form.title.trim())       e.title       = 'Title is required'
+    if (!form.category)           e.category    = 'Category is required'
+    if (!form.description.trim()) e.description = 'Description is required'
+    setErrors(e)
+    return Object.keys(e).length === 0
+  }
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
-    // TODO: call createComplaint() API
-    setShowForm(false)
-    setForm({ title: '', category: '', description: '' })
+    if (!validate()) return
+    createMutation.mutate({
+      title: form.title,
+      category: form.category,
+      description: form.description,
+      hostellerProfileId,
+      hostelId,
+    })
   }
 
+  const complaintsList = complaints ?? []
+
   const filtered = activeCategory === 'All'
-    ? MOCK_COMPLAINTS
-    : MOCK_COMPLAINTS.filter((c) => c.category === activeCategory)
+    ? complaintsList
+    : complaintsList.filter((c: any) => c.category === activeCategory)
+
+  if (isLoading) return (
+    <div className="flex items-center justify-center py-20">
+      <div className="w-8 h-8 rounded-full border-4 border-indigo-200 border-t-indigo-600 animate-spin" />
+    </div>
+  )
+
+  if (error) return <div className="text-center py-20 text-gray-400">Failed to load data</div>
 
   return (
     <div className="space-y-6">
       <PageHeader
         title="Complaints"
         subtitle="Raise and track your complaints"
-        count={MOCK_COMPLAINTS.length}
+        count={complaintsList.length}
         action={
           <button
             onClick={() => setShowForm(!showForm)}
@@ -96,38 +146,38 @@ export default function Complaints() {
               <div>
                 <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1.5">Title</label>
                 <input
-                  required
                   value={form.title}
-                  onChange={(e) => setForm((f) => ({ ...f, title: e.target.value }))}
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-gray-50 focus:bg-white transition-colors"
+                  onChange={(e) => { setForm((f) => ({ ...f, title: e.target.value })); setErrors((er) => ({ ...er, title: undefined })) }}
+                  className={`w-full px-3.5 py-2.5 rounded-xl border text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-gray-50 focus:bg-white transition-colors ${errors.title ? 'border-red-400' : 'border-gray-200'}`}
                   placeholder="Brief title of the issue"
                 />
+                {errors.title && <p className="mt-1 text-xs text-red-500">{errors.title}</p>}
               </div>
               <div>
                 <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1.5">Category</label>
                 <select
-                  required
                   value={form.category}
-                  onChange={(e) => setForm((f) => ({ ...f, category: e.target.value }))}
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-gray-50 focus:bg-white transition-colors"
+                  onChange={(e) => { setForm((f) => ({ ...f, category: e.target.value })); setErrors((er) => ({ ...er, category: undefined })) }}
+                  className={`w-full px-3.5 py-2.5 rounded-xl border text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-gray-50 focus:bg-white transition-colors ${errors.category ? 'border-red-400' : 'border-gray-200'}`}
                 >
                   <option value="">Select category</option>
                   {CATEGORIES.map((c) => (
                     <option key={c} value={c}>{c}</option>
                   ))}
                 </select>
+                {errors.category && <p className="mt-1 text-xs text-red-500">{errors.category}</p>}
               </div>
             </div>
             <div>
               <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1.5">Description</label>
               <textarea
-                required
                 rows={3}
                 value={form.description}
-                onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))}
-                className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 resize-none bg-gray-50 focus:bg-white transition-colors"
+                onChange={(e) => { setForm((f) => ({ ...f, description: e.target.value })); setErrors((er) => ({ ...er, description: undefined })) }}
+                className={`w-full px-3.5 py-2.5 rounded-xl border text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 resize-none bg-gray-50 focus:bg-white transition-colors ${errors.description ? 'border-red-400' : 'border-gray-200'}`}
                 placeholder="Describe the issue in detail…"
               />
+              {errors.description && <p className="mt-1 text-xs text-red-500">{errors.description}</p>}
             </div>
             <div className="flex justify-end gap-3 pt-1">
               <button
@@ -139,10 +189,11 @@ export default function Complaints() {
               </button>
               <button
                 type="submit"
-                className="px-5 py-2 text-sm rounded-xl font-semibold text-white transition-opacity hover:opacity-90"
+                disabled={createMutation.isPending}
+                className="px-5 py-2 text-sm rounded-xl font-semibold text-white transition-opacity hover:opacity-90 disabled:opacity-60"
                 style={{ background: 'linear-gradient(135deg, #1d6ea8, #1a8fd1)' }}
               >
-                Submit
+                {createMutation.isPending ? 'Submitting…' : 'Submit'}
               </button>
             </div>
           </form>
@@ -151,7 +202,7 @@ export default function Complaints() {
 
       {/* Complaints cards */}
       <div className="space-y-3">
-        {filtered.map((c) => (
+        {filtered.map((c: any) => (
           <div
             key={c.id}
             className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 hover:shadow-md transition-all duration-200"
@@ -168,7 +219,7 @@ export default function Complaints() {
               </div>
             </div>
             <p className="text-sm text-gray-500 leading-relaxed line-clamp-2">{c.description}</p>
-            <p className="text-xs text-gray-400 mt-2.5 font-medium">Submitted {c.createdAt}</p>
+            <p className="text-xs text-gray-400 mt-2.5 font-medium">Submitted {fmtDate(c.createdAt)}</p>
           </div>
         ))}
         {filtered.length === 0 && (

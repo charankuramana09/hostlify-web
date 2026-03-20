@@ -1,5 +1,6 @@
 import { useNavigate } from 'react-router-dom'
 import { useMutation } from '@tanstack/react-query'
+import axios from 'axios'
 import LoginForm from '../../components/auth/LoginForm'
 import { loginHosteller } from '../../api/auth'
 import { useAuthStore } from '../../store/authStore'
@@ -13,18 +14,17 @@ export default function HostellerLogin() {
     mutationFn: ({ email, password }: { email: string; password: string }) =>
       loginHosteller({ email, password }),
     onSuccess: (response) => {
-      const { accessToken, refreshToken, role } = response.data
-      setAuth({ accessToken, refreshToken, role })
+      const { accessToken, refreshToken, role, subRole, email, hostelId, hostellerProfileId, bookingId } = response.data
+      setAuth({ accessToken, refreshToken, role, subRole, email, hostelId, hostellerProfileId, bookingId })
       navigate('/app/dashboard')
     },
   })
 
-  const errorMsg = error instanceof Error ? error.message : error ? 'Login failed. Please try again.' : null
-
-  function handleDemoAccess() {
-    setAuth({ accessToken: 'demo-token', refreshToken: 'demo-refresh', role: 'HOSTELLER' })
-    navigate('/app/dashboard')
-  }
+  const errorMsg = error
+    ? axios.isAxiosError(error)
+      ? (error.response?.data?.message ?? 'Login failed. Please try again.')
+      : (error as Error).message
+    : null
 
   return (
     <LoginForm
@@ -32,7 +32,6 @@ export default function HostellerLogin() {
       onSubmit={(email, password) => mutate({ email, password })}
       isLoading={isPending}
       error={errorMsg}
-      onDemoAccess={handleDemoAccess}
       signupLink={{ label: STRINGS.auth.signUp, to: '/auth/signup' }}
       otherPortals={[
         { label: STRINGS.auth.staffPortal, to: '/auth/staff/login' },

@@ -10,11 +10,15 @@ import {
   Bell,
   Car,
   SprayCan,
+  Compass,
+  CalendarClock,
 } from 'lucide-react'
 import PortalLayout, { type NavItem } from './PortalLayout'
 
 const navItems: NavItem[] = [
   { label: 'Dashboard', to: '/app/dashboard', icon: LayoutDashboard },
+  { label: 'Discover Hostel', to: '/app/discover', icon: Compass },
+  { label: 'Booking Status', to: '/app/booking-status', icon: CalendarClock },
   { label: 'My Dues', to: '/app/dues', icon: CreditCard },
   { label: 'My Profile', to: '/app/profile', icon: User },
   { label: 'Complaints', to: '/app/complaints', icon: MessageSquare },

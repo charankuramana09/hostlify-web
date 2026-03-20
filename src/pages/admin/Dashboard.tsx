@@ -1,7 +1,10 @@
 import { Link } from 'react-router-dom'
+import { useQuery } from '@tanstack/react-query'
 import { Users, Home, ClipboardList, MessageSquare, TrendingUp, ChevronRight } from 'lucide-react'
 import StatCard from '../../components/ui/StatCard'
 import Badge from '../../components/ui/Badge'
+import { getStaffDashboard } from '../../api/staff'
+import { useAuthStore } from '../../store/authStore'
 
 const RECENT_ACTIVITY = [
   { id: 1, text: 'Ravi Kumar allocated to room B-204',       time: '2h ago', type: 'ALLOCATED' },
@@ -19,6 +22,24 @@ const QUICK_ACTIONS = [
 ]
 
 export default function AdminDashboard() {
+  const { activeHostelId } = useAuthStore()
+
+  const { data, isLoading } = useQuery({
+    queryKey: ['staffDashboard', activeHostelId],
+    queryFn: () => getStaffDashboard(activeHostelId!),
+    enabled: !!activeHostelId,
+  })
+
+  const pendingAllocationsCount = (data?.pendingAllocations ?? []).length
+  const membersCount = (data?.members ?? []).length
+  const pendingDuesCount = (data?.pendingDues ?? []).length
+
+  if (isLoading) return (
+    <div className="flex items-center justify-center py-20">
+      <div className="w-8 h-8 rounded-full border-4 border-indigo-200 border-t-indigo-600 animate-spin" />
+    </div>
+  )
+
   return (
     <div className="space-y-6">
       {/* Welcome banner */}
@@ -32,65 +53,39 @@ export default function AdminDashboard() {
         />
         <p className="text-sm font-medium" style={{ color: 'rgba(255,255,255,0.6)' }}>Staff Portal 👋</p>
         <h1 className="text-2xl font-bold mt-0.5 tracking-tight">Hostel Operations Overview</h1>
-        <p className="text-sm mt-1" style={{ color: 'rgba(255,255,255,0.5)' }}>Sunrise Hostel · Today's summary</p>
+        <p className="text-sm mt-1" style={{ color: 'rgba(255,255,255,0.5)' }}>Today's summary</p>
       </div>
 
       {/* Stat cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <StatCard
-          label="Occupancy"
-          value="98 / 120"
-          sub="22 rooms available"
+          label="Total Members"
+          value={membersCount}
+          sub="Active residents"
           icon={<Home size={20} className="text-emerald-600" />}
           iconBg="bg-emerald-50"
-          trend={{ value: '81.7%', up: true }}
         />
         <StatCard
           label="Pending Allocations"
-          value="5"
+          value={pendingAllocationsCount}
           sub="Awaiting room assignment"
           icon={<ClipboardList size={20} className="text-amber-600" />}
           iconBg="bg-amber-50"
         />
         <StatCard
-          label="Open Complaints"
-          value="8"
-          sub="3 in progress"
+          label="Pending Dues"
+          value={pendingDuesCount}
+          sub="Awaiting payment"
           icon={<MessageSquare size={20} className="text-red-500" />}
           iconBg="bg-red-50"
         />
         <StatCard
           label="Monthly Revenue"
-          value="₹4,90,000"
-          sub="April 2026"
+          value="₹—"
+          sub="See revenue report"
           icon={<TrendingUp size={20} className="text-indigo-600" />}
           iconBg="bg-indigo-50"
-          trend={{ value: '+4.2%', up: true }}
         />
-      </div>
-
-      {/* Occupancy bar */}
-      <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
-        <div className="flex items-center justify-between mb-3">
-          <div className="flex items-center gap-2">
-            <div className="w-7 h-7 rounded-lg bg-emerald-50 flex items-center justify-center">
-              <Home size={14} className="text-emerald-600" />
-            </div>
-            <h2 className="font-semibold text-gray-800 text-sm">Occupancy Rate</h2>
-          </div>
-          <span className="text-sm font-bold text-emerald-600 bg-emerald-50 px-3 py-1 rounded-full">81.7%</span>
-        </div>
-        <div className="w-full bg-gray-100 rounded-full h-3 overflow-hidden">
-          <div
-            className="h-3 rounded-full transition-all"
-            style={{ width: '81.7%', background: 'linear-gradient(90deg, #059669, #34d399)' }}
-          />
-        </div>
-        <div className="flex justify-between text-xs text-gray-400 mt-2">
-          <span className="font-medium">0 beds</span>
-          <span className="text-gray-500 font-medium">98 occupied · 22 available · 120 total</span>
-          <span className="font-medium">120 beds</span>
-        </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">

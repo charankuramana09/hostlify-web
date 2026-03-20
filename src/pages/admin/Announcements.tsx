@@ -1,14 +1,12 @@
 import { useState } from 'react'
 import { Plus, X, Megaphone } from 'lucide-react'
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import PageHeader from '../../components/ui/PageHeader'
+import { getAllAnnouncements, createAnnouncement, deleteAnnouncement } from '../../api/staff'
+import { useAuthStore } from '../../store/authStore'
+import { useToastStore } from '../../store/toastStore'
 
 const CATEGORIES = ['General', 'Maintenance', 'Event', 'Fee', 'Emergency']
-
-const MOCK_ANNOUNCEMENTS = [
-  { id: 1, title: 'Hostel Fest 2026',          content: 'Annual hostel fest scheduled for March 20th. Food stalls, cultural programs, and games. All residents invited.', category: 'Event',       publishedAt: 'Mar 5, 2026', publishedBy: 'Staff A' },
-  { id: 2, title: 'Water Supply Interruption',  content: 'Water supply will be interrupted on March 10th from 10 AM to 2 PM.',                                             category: 'Maintenance', publishedAt: 'Mar 3, 2026', publishedBy: 'Staff B' },
-  { id: 3, title: 'April Fee Reminder',          content: 'April fee deadline is April 1st. Pay on time to avoid late charges.',                                             category: 'Fee',         publishedAt: 'Mar 1, 2026', publishedBy: 'Staff A' },
-]
 
 const CATEGORY_CONFIG: Record<string, { badge: string; border: string; dot: string }> = {
   General:     { badge: 'bg-gray-100 text-gray-600',     border: 'border-l-gray-300',    dot: 'bg-gray-400' },
@@ -21,15 +19,52 @@ const CATEGORY_CONFIG: Record<string, { badge: string; border: string; dot: stri
 const DEFAULT_CONFIG = { badge: 'bg-gray-100 text-gray-600', border: 'border-l-gray-300', dot: 'bg-gray-400' }
 
 export default function AdminAnnouncements() {
+  const { activeHostelId } = useAuthStore()
+  const queryClient = useQueryClient()
+  const { show } = useToastStore()
   const [showForm, setShowForm] = useState(false)
   const [form, setForm] = useState({ title: '', content: '', category: '' })
 
+  const { data: announcements = [], isLoading } = useQuery({
+    queryKey: ['announcements', activeHostelId],
+    queryFn: () => getAllAnnouncements(activeHostelId!),
+    enabled: !!activeHostelId,
+  })
+
+  const createMut = useMutation({
+    mutationFn: (data: Record<string, unknown>) => createAnnouncement(data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['announcements', activeHostelId] })
+      setShowForm(false)
+      setForm({ title: '', content: '', category: '' })
+      show('success', 'Announcement published', 'Your announcement has been posted.')
+    },
+    onError: () => {
+      show('error', 'Failed to publish', 'Could not publish the announcement. Please try again.')
+    },
+  })
+
+  const deleteMut = useMutation({
+    mutationFn: (id: number) => deleteAnnouncement(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['announcements', activeHostelId] })
+      show('success', 'Announcement deleted')
+    },
+    onError: () => {
+      show('error', 'Failed to delete announcement')
+    },
+  })
+
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
-    // TODO: call createAnnouncement() API
-    setShowForm(false)
-    setForm({ title: '', content: '', category: '' })
+    createMut.mutate({ title: form.title, content: form.content, category: form.category || undefined })
   }
+
+  if (isLoading) return (
+    <div className="flex items-center justify-center py-20">
+      <div className="w-8 h-8 rounded-full border-4 border-indigo-200 border-t-indigo-600 animate-spin" />
+    </div>
+  )
 
   return (
     <div className="space-y-6">
@@ -113,10 +148,11 @@ export default function AdminAnnouncements() {
               </button>
               <button
                 type="submit"
-                className="px-5 py-2 text-sm rounded-xl font-semibold text-white transition-opacity hover:opacity-90"
+                disabled={createMut.isPending}
+                className="px-5 py-2 text-sm rounded-xl font-semibold text-white transition-opacity hover:opacity-90 disabled:opacity-60"
                 style={{ background: 'linear-gradient(135deg, #059669, #34d399)' }}
               >
-                Publish
+                {createMut.isPending ? 'Publishing…' : 'Publish'}
               </button>
             </div>
           </form>
@@ -125,7 +161,15 @@ export default function AdminAnnouncements() {
 
       {/* Announcement cards */}
       <div className="space-y-3">
-        {MOCK_ANNOUNCEMENTS.map((a) => {
+        {announcements.length === 0 && (
+          <div className="bg-white rounded-2xl border border-gray-100 shadow-sm py-16 flex flex-col items-center gap-2">
+            <div className="w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center">
+              <Megaphone size={20} className="text-gray-300" />
+            </div>
+            <p className="font-semibold text-gray-400 text-sm">No announcements yet</p>
+          </div>
+        )}
+        {announcements.map((a: any) => {
           const cfg = CATEGORY_CONFIG[a.category] ?? DEFAULT_CONFIG
           return (
             <div
@@ -140,12 +184,20 @@ export default function AdminAnnouncements() {
                     {a.category}
                   </span>
                 </div>
-                <span className="text-xs font-medium text-gray-400 whitespace-nowrap shrink-0 bg-gray-50 px-2.5 py-1 rounded-lg">
-                  {a.publishedAt}
-                </span>
+                <div className="flex items-center gap-2 shrink-0">
+                  <span className="text-xs font-medium text-gray-400 whitespace-nowrap bg-gray-50 px-2.5 py-1 rounded-lg">
+                    {a.validFrom ? new Date(a.validFrom).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }) : '—'}
+                  </span>
+                  <button
+                    onClick={() => deleteMut.mutate(a.id)}
+                    disabled={deleteMut.isPending}
+                    className="w-7 h-7 rounded-lg bg-gray-100 flex items-center justify-center text-gray-400 hover:text-red-500 hover:bg-red-50 transition-colors"
+                  >
+                    <X size={13} />
+                  </button>
+                </div>
               </div>
               <p className="text-sm text-gray-600 leading-relaxed pl-3.5">{a.content}</p>
-              <p className="text-xs text-gray-400 mt-2 pl-3.5 font-medium">Published by {a.publishedBy}</p>
             </div>
           )
         })}

@@ -1,20 +1,16 @@
-import { useNavigate } from 'react-router-dom'
+import { useState } from 'react'
+import { useNavigate, useParams } from 'react-router-dom'
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { ArrowLeft } from 'lucide-react'
 import Badge from '../../components/ui/Badge'
-
-const MOCK_OWNER = {
-  id: 1, name: 'Vikram Mehta', email: 'vikram@sunrise.com', phone: '9876500001',
-  plan: 'PROFESSIONAL', status: 'ACTIVE', since: 'Jan 15, 2025',
-  planExpiry: 'Jan 15, 2027', hostels: 2, members: 170, revenue: 1125000,
-  hostelsData: [
-    { name: 'Sunrise Hostel',       city: 'Bangalore', members: 98, capacity: 120, status: 'ACTIVE' },
-    { name: 'Green Valley Hostel',  city: 'Hyderabad', members: 72, capacity: 80,  status: 'ACTIVE' },
-  ],
-  features: {
-    onlinePayments: true, referral: true, parking: true,
-    cleaning: false, employees: true, advancedReports: false,
-  },
-}
+import {
+  getOwnerById,
+  getOwnerHostels,
+  getSubscription,
+  getFeatureFlags,
+  suspendOwner,
+  resetOwnerPassword,
+} from '../../api/superadmin'
 
 const PLAN_CHIP: Record<string, string> = {
   STARTER: 'bg-gray-100 text-gray-600',
@@ -33,6 +29,78 @@ const FEATURE_LABELS: Record<string, string> = {
 
 export default function OwnerDetail() {
   const navigate = useNavigate()
+  const { id } = useParams<{ id: string }>()
+  const ownerId = Number(id)
+  const queryClient = useQueryClient()
+  const [resetPasswordInput, setResetPasswordInput] = useState('')
+
+  const { data: owner, isLoading: ownerLoading } = useQuery({
+    queryKey: ['sa-owner', ownerId],
+    queryFn: () => getOwnerById(ownerId),
+    enabled: !!ownerId,
+  })
+
+  const { data: hostelsData, isLoading: hostelsLoading } = useQuery({
+    queryKey: ['sa-owner-hostels', ownerId],
+    queryFn: () => getOwnerHostels(ownerId),
+    enabled: !!ownerId,
+  })
+
+  const { data: subscription, isLoading: subLoading } = useQuery({
+    queryKey: ['sa-subscription', ownerId],
+    queryFn: () => getSubscription(ownerId),
+    enabled: !!ownerId,
+  })
+
+  const { data: featureFlagsData, isLoading: flagsLoading } = useQuery({
+    queryKey: ['sa-feature-flags', ownerId],
+    queryFn: () => getFeatureFlags(ownerId),
+    enabled: !!ownerId,
+  })
+
+  const suspendMutation = useMutation({
+    mutationFn: () => suspendOwner(ownerId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['sa-owner', ownerId] })
+      queryClient.invalidateQueries({ queryKey: ['sa-owners'] })
+    },
+  })
+
+  const resetPasswordMutation = useMutation({
+    mutationFn: (newPassword: string) => resetOwnerPassword(ownerId, newPassword),
+  })
+
+  if (ownerLoading || hostelsLoading || subLoading || flagsLoading)
+    return (
+      <div className="flex items-center justify-center py-20">
+        <div className="w-8 h-8 rounded-full border-4 border-indigo-200 border-t-indigo-600 animate-spin" />
+      </div>
+    )
+
+  const ownerData = owner ?? {}
+  const hostels: Array<{
+    name: string
+    city: string
+    members: number
+    capacity: number
+    status: string
+  }> = hostelsData ?? []
+
+  const plan: string = subscription?.plan ?? ownerData.plan ?? 'STARTER'
+  const planExpiry: string = subscription?.expiryDate ?? ownerData.planExpiry ?? '-'
+
+  const features: Record<string, boolean> = (() => {
+    if (Array.isArray(featureFlagsData)) {
+      return featureFlagsData.reduce((acc: Record<string, boolean>, f: { key: string; enabled: boolean }) => {
+        acc[f.key] = f.enabled
+        return acc
+      }, {})
+    }
+    return featureFlagsData ?? {}
+  })()
+
+  const ownerName: string = (ownerData.name ?? `${ownerData.firstName ?? ''} ${ownerData.lastName ?? ''}`.trim()) || 'Owner'
+  const initials = ownerName.split(' ').map((n: string) => n[0]).join('').toUpperCase().slice(0, 2)
 
   return (
     <div className="space-y-6">
@@ -60,11 +128,15 @@ export default function OwnerDetail() {
               className="w-16 h-16 rounded-2xl flex items-center justify-center text-xl font-bold text-white shadow-lg border-4 border-white shrink-0"
               style={{ background: 'linear-gradient(135deg, #4f46e5, #7c3aed)' }}
             >
-              {MOCK_OWNER.name.split(' ').map((n) => n[0]).join('').toUpperCase().slice(0, 2)}
+              {initials}
             </div>
             <div className="flex gap-2">
-              <button className="px-4 py-2 rounded-xl text-sm font-semibold text-red-600 border border-red-200 hover:bg-red-50 transition-colors">
-                Suspend Account
+              <button
+                onClick={() => suspendMutation.mutate()}
+                disabled={suspendMutation.isPending}
+                className="px-4 py-2 rounded-xl text-sm font-semibold text-red-600 border border-red-200 hover:bg-red-50 transition-colors disabled:opacity-60"
+              >
+                {suspendMutation.isPending ? 'Suspending...' : 'Suspend Account'}
               </button>
               <button
                 className="px-4 py-2 rounded-xl text-sm font-semibold text-white transition-opacity hover:opacity-90"
@@ -75,22 +147,22 @@ export default function OwnerDetail() {
             </div>
           </div>
           <div className="flex items-center gap-3 flex-wrap">
-            <h2 className="text-xl font-bold text-gray-900">{MOCK_OWNER.name}</h2>
-            <span className={`text-xs px-2.5 py-1 rounded-full font-semibold ${PLAN_CHIP[MOCK_OWNER.plan] ?? 'bg-gray-100 text-gray-600'}`}>
-              {MOCK_OWNER.plan}
+            <h2 className="text-xl font-bold text-gray-900">{ownerName}</h2>
+            <span className={`text-xs px-2.5 py-1 rounded-full font-semibold ${PLAN_CHIP[plan] ?? 'bg-gray-100 text-gray-600'}`}>
+              {plan}
             </span>
-            <Badge status={MOCK_OWNER.status} />
+            <Badge status={ownerData.status ?? 'ACTIVE'} />
           </div>
-          <p className="text-sm text-gray-500 mt-1">{MOCK_OWNER.email} · {MOCK_OWNER.phone}</p>
+          <p className="text-sm text-gray-500 mt-1">{ownerData.email ?? ''} · {ownerData.phone ?? ownerData.mobile ?? ''}</p>
         </div>
 
         {/* Mini Stats */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-px bg-gray-100 border-t border-gray-100">
           {[
-            { label: 'Hostels', value: MOCK_OWNER.hostels },
-            { label: 'Members', value: MOCK_OWNER.members },
-            { label: 'Revenue', value: `₹${(MOCK_OWNER.revenue / 100000).toFixed(2)}L` },
-            { label: 'Plan Expiry', value: MOCK_OWNER.planExpiry },
+            { label: 'Hostels', value: ownerData.hostels ?? hostels.length },
+            { label: 'Members', value: ownerData.members ?? hostels.reduce((s: number, h: { members: number }) => s + h.members, 0) },
+            { label: 'Revenue', value: `₹${((ownerData.revenue ?? 0) / 100000).toFixed(2)}L` },
+            { label: 'Plan Expiry', value: planExpiry },
           ].map((s) => (
             <div key={s.label} className="bg-white px-5 py-3.5 text-center">
               <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide">{s.label}</p>
@@ -118,8 +190,8 @@ export default function OwnerDetail() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-50">
-                {MOCK_OWNER.hostelsData.map((h) => {
-                  const rate = Math.round((h.members / h.capacity) * 100)
+                {hostels.map((h) => {
+                  const rate = h.capacity > 0 ? Math.round((h.members / h.capacity) * 100) : 0
                   return (
                     <tr key={h.name} className="hover:bg-gray-50/70 transition-colors">
                       <td className="px-5 py-3.5 font-medium text-gray-800">{h.name}</td>
@@ -142,6 +214,11 @@ export default function OwnerDetail() {
                     </tr>
                   )
                 })}
+                {hostels.length === 0 && (
+                  <tr>
+                    <td colSpan={4} className="px-5 py-8 text-center text-sm text-gray-400">No hostels found</td>
+                  </tr>
+                )}
               </tbody>
             </table>
           </div>
@@ -153,7 +230,7 @@ export default function OwnerDetail() {
             <h3 className="font-semibold text-gray-800 text-sm">Feature Flags</h3>
           </div>
           <div className="divide-y divide-gray-50">
-            {Object.entries(MOCK_OWNER.features).map(([key, enabled]) => (
+            {Object.entries(features).map(([key, enabled]) => (
               <div key={key} className="flex items-center justify-between px-5 py-3.5">
                 <span className="text-sm font-medium text-gray-700">{FEATURE_LABELS[key] ?? key}</span>
                 <span
@@ -165,8 +242,43 @@ export default function OwnerDetail() {
                 </span>
               </div>
             ))}
+            {Object.keys(features).length === 0 && (
+              <div className="px-5 py-8 text-center text-sm text-gray-400">No feature flags configured</div>
+            )}
           </div>
         </div>
+      </div>
+
+      {/* Reset Password */}
+      <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+        <div className="px-5 py-4 border-b border-gray-50">
+          <h3 className="font-semibold text-gray-800 text-sm">Reset Owner Password</h3>
+        </div>
+        <div className="p-5 flex items-center gap-3">
+          <input
+            type="password"
+            value={resetPasswordInput}
+            onChange={(e) => setResetPasswordInput(e.target.value)}
+            placeholder="New password"
+            className="flex-1 px-3.5 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500 bg-gray-50 focus:bg-white transition-colors"
+          />
+          <button
+            onClick={() => {
+              if (resetPasswordInput) resetPasswordMutation.mutate(resetPasswordInput)
+            }}
+            disabled={resetPasswordMutation.isPending || !resetPasswordInput}
+            className="px-4 py-2.5 rounded-xl text-sm font-semibold text-white transition-opacity hover:opacity-90 disabled:opacity-60"
+            style={{ background: 'linear-gradient(135deg, #1a0a2e 0%, #7c3aed 100%)' }}
+          >
+            {resetPasswordMutation.isPending ? 'Resetting...' : 'Reset Password'}
+          </button>
+        </div>
+        {resetPasswordMutation.isSuccess && (
+          <p className="px-5 pb-4 text-sm text-emerald-600 font-medium">Password reset successfully.</p>
+        )}
+        {resetPasswordMutation.isError && (
+          <p className="px-5 pb-4 text-sm text-red-500 font-medium">Failed to reset password. Please try again.</p>
+        )}
       </div>
     </div>
   )

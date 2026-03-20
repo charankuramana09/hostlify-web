@@ -1,24 +1,19 @@
 import { useState } from 'react'
+import { useQuery } from '@tanstack/react-query'
 import { Copy, Check, Users, Gift, ChevronRight, Star } from 'lucide-react'
 import PageHeader from '../../components/ui/PageHeader'
 import StatCard from '../../components/ui/StatCard'
+import { getMyReferralCode, getMyReferrals } from '../../api/hosteller'
 
-const MOCK_REFERRAL = {
-  code: 'ARJUN2026',
-  referredCount: 3,
-  reward: "₹500 off next month's fee",
+function fmtDate(d: string) {
+  if (!d) return '—'
+  return new Date(d).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })
 }
-
-const MOCK_REFERRED = [
-  { id: 1, name: 'Ravi Kumar',  joinDate: 'Jan 15, 2026', status: 'Joined' },
-  { id: 2, name: 'Priya Singh', joinDate: 'Feb 5, 2026',  status: 'Joined' },
-  { id: 3, name: 'Anil Mehta',  joinDate: 'Mar 1, 2026',  status: 'Pending' },
-]
 
 const HOW_IT_WORKS = [
   { step: '1', title: 'Share your code', desc: 'Send your unique referral code to a friend.' },
   { step: '2', title: 'Friend joins',     desc: 'Your friend applies using your code and gets ₹200 off.' },
-  { step: '3', title: 'Earn reward',      desc: 'You get ₹500 off your next month\'s fee automatically.' },
+  { step: '3', title: 'Earn reward',      desc: "You get ₹500 off your next month's fee automatically." },
 ]
 
 function getInitials(name: string) {
@@ -30,11 +25,32 @@ const AVATAR_COLORS = ['bg-indigo-500', 'bg-emerald-500', 'bg-purple-500', 'bg-r
 export default function Referral() {
   const [copied, setCopied] = useState(false)
 
+  const { data: referralData, isLoading: referralLoading } = useQuery({
+    queryKey: ['my-referral-code'],
+    queryFn: getMyReferralCode,
+  })
+
+  const { data: referrals, isLoading: referralsLoading } = useQuery({
+    queryKey: ['my-referrals'],
+    queryFn: getMyReferrals,
+  })
+
   function copyCode() {
-    navigator.clipboard.writeText(MOCK_REFERRAL.code)
+    const code = referralData?.code
+    if (!code) return
+    navigator.clipboard.writeText(code)
     setCopied(true)
     setTimeout(() => setCopied(false), 2000)
   }
+
+  const referralsList = referrals ?? []
+  const isLoading = referralLoading || referralsLoading
+
+  if (isLoading) return (
+    <div className="flex items-center justify-center py-20">
+      <div className="w-8 h-8 rounded-full border-4 border-indigo-200 border-t-indigo-600 animate-spin" />
+    </div>
+  )
 
   return (
     <div className="space-y-6">
@@ -61,7 +77,7 @@ export default function Referral() {
               className="text-3xl font-black tracking-[0.2em] font-mono"
               style={{ letterSpacing: '0.15em' }}
             >
-              {MOCK_REFERRAL.code}
+              {referralData?.code ?? '...'}
             </p>
             <p className="text-sm mt-2" style={{ color: 'rgba(255,255,255,0.55)' }}>
               Share this code · Friends get ₹200 off · You get ₹500 off
@@ -69,7 +85,8 @@ export default function Referral() {
           </div>
           <button
             onClick={copyCode}
-            className={`flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold transition-all shrink-0 ${
+            disabled={!referralData?.code}
+            className={`flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold transition-all shrink-0 disabled:opacity-50 ${
               copied
                 ? 'bg-emerald-500 text-white'
                 : 'bg-white text-indigo-700 hover:bg-indigo-50'
@@ -85,14 +102,14 @@ export default function Referral() {
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <StatCard
           label="Total Referred"
-          value={MOCK_REFERRAL.referredCount}
+          value={referralData?.referredCount ?? referralsList.length}
           sub="Friends who joined via your code"
           icon={<Users size={20} className="text-indigo-600" />}
           iconBg="bg-indigo-50"
         />
         <StatCard
           label="Your Reward"
-          value={MOCK_REFERRAL.reward}
+          value={referralData?.reward ?? '—'}
           sub="Applied automatically on next due"
           icon={<Gift size={20} className="text-emerald-600" />}
           iconBg="bg-emerald-50"
@@ -134,10 +151,10 @@ export default function Referral() {
             </div>
             <h2 className="font-semibold text-gray-800 text-sm">Referred Friends</h2>
             <span className="ml-auto text-xs font-bold bg-gray-100 text-gray-500 px-2 py-0.5 rounded-full">
-              {MOCK_REFERRED.length}
+              {referralsList.length}
             </span>
           </div>
-          {MOCK_REFERRED.length === 0 ? (
+          {referralsList.length === 0 ? (
             <div className="p-10 text-center">
               <div className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center mx-auto mb-2">
                 <Users size={18} className="text-gray-300" />
@@ -147,21 +164,21 @@ export default function Referral() {
             </div>
           ) : (
             <div className="divide-y divide-gray-50">
-              {MOCK_REFERRED.map((r, i) => (
+              {referralsList.map((r: any, i: number) => (
                 <div key={r.id} className="flex items-center gap-3 px-5 py-3.5 hover:bg-gray-50/70 transition-colors">
                   <div
                     className={`w-9 h-9 rounded-xl flex items-center justify-center text-xs font-bold text-white shrink-0 ${AVATAR_COLORS[i % AVATAR_COLORS.length]}`}
                   >
-                    {getInitials(r.name)}
+                    {getInitials(r.name ?? 'U')}
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="font-semibold text-gray-800 text-sm">{r.name}</p>
-                    <p className="text-xs text-gray-400 mt-0.5">Joined {r.joinDate}</p>
+                    <p className="font-semibold text-gray-800 text-sm">{r.name ?? '—'}</p>
+                    <p className="text-xs text-gray-400 mt-0.5">Joined {fmtDate(r.joinDate ?? r.createdAt)}</p>
                   </div>
                   <div className="flex items-center gap-1.5">
                     <span
                       className={`text-xs font-semibold px-2.5 py-1 rounded-full ${
-                        r.status === 'Joined'
+                        r.status === 'Joined' || r.status === 'JOINED'
                           ? 'bg-emerald-50 text-emerald-700'
                           : 'bg-amber-50 text-amber-700'
                       }`}
