@@ -13,8 +13,10 @@ export default function HostellerSignup() {
         email: '',
         password: '',
         mobile: '',
+        referralCode: '',
     })
     const [registered, setRegistered] = useState(false)
+    const [mobileErr, setMobileErr] = useState<string | null>(null)
 
     const { mutate, isPending, error } = useMutation({
         mutationFn: registerHosteller,
@@ -25,11 +27,24 @@ export default function HostellerSignup() {
 
     function handleSubmit(e: FormEvent) {
         e.preventDefault()
-        mutate(form)
+        // Indian mobile: exactly 10 digits, starting 6-9
+        if (!/^[6-9]\d{9}$/.test(form.mobile)) {
+            setMobileErr('Enter a valid 10-digit mobile number (starting 6–9).')
+            return
+        }
+        setMobileErr(null)
+        mutate({ ...form, referralCode: form.referralCode.trim() || undefined } as any)
     }
 
     const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
         const { id, value } = e.target
+        if (id === 'mobile') {
+            // keep digits only, max 10
+            const digits = value.replace(/\D/g, '').slice(0, 10)
+            setForm(prev => ({ ...prev, mobile: digits }))
+            if (mobileErr) setMobileErr(null)
+            return
+        }
         setForm(prev => ({ ...prev, [id]: value }))
     }
 
@@ -48,7 +63,7 @@ export default function HostellerSignup() {
                     <p className="text-[14px] text-gray-500 mb-6">
                         Your account is pending admin approval. You will be notified once a bed is allocated and your account is activated.
                     </p>
-                    <Link to="/auth/login" className="inline-block py-2.5 px-6 rounded-xl bg-indigo-600 text-white text-sm font-semibold hover:bg-indigo-700 transition-colors">
+                    <Link to="/auth/login" className="inline-block py-2.5 px-6 rounded-xl bg-brand-600 text-white text-sm font-semibold hover:bg-brand-700 transition-colors">
                         Back to Login
                     </Link>
                 </div>
@@ -129,11 +144,15 @@ export default function HostellerSignup() {
                                 id="mobile"
                                 label={STRINGS.auth.mobile}
                                 type="tel"
+                                inputMode="numeric"
+                                maxLength={10}
                                 required
                                 prefix="+91"
                                 value={form.mobile}
                                 onChange={handleChange}
                                 placeholder="9876543210"
+                                error={mobileErr ?? undefined}
+                                hint={mobileErr ? undefined : '10-digit number, no spaces'}
                             />
                         </div>
 
@@ -147,6 +166,15 @@ export default function HostellerSignup() {
                             placeholder={STRINGS.auth.passwordPlaceholder}
                         />
 
+                        <Input
+                            id="referralCode"
+                            label="Referral Code (optional)"
+                            value={form.referralCode}
+                            onChange={handleChange}
+                            placeholder="Have a code? Enter it here"
+                            hint="Get rewards if a friend referred you"
+                        />
+
                         <div className="mt-8 flex items-center justify-between border-t border-gray-100 pt-6">
                             <Link to="/auth/login" className="text-[13px] text-gray-500 hover:text-gray-900 font-medium">
                                 {STRINGS.common.back} to Login
@@ -157,7 +185,7 @@ export default function HostellerSignup() {
                                 isLoading={isPending}
                                 className="px-8"
                             >
-                                {STRINGS.common.continue} →
+                                Sign Up
                             </Button>
                         </div>
                     </form>

@@ -53,7 +53,7 @@ export default function ForgotPassword() {
             {[1, 2, 3].map((s) => (
               <div
                 key={s}
-                className={`flex-1 h-1 transition-all ${s <= step ? 'bg-indigo-500' : 'bg-gray-100'}`}
+                className={`flex-1 h-1 transition-all ${s <= step ? 'bg-brand-500' : 'bg-gray-100'}`}
               />
             ))}
           </div>
@@ -74,7 +74,7 @@ export default function ForgotPassword() {
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       placeholder="you@example.com"
-                      className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-gray-50 focus:bg-white transition-colors"
+                      className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand-400 bg-gray-50 focus:bg-white transition-colors"
                     />
                   </div>
                 </div>
@@ -101,7 +101,7 @@ export default function ForgotPassword() {
                     onChange={(e) => setOtp(e.target.value)}
                     placeholder="6-digit OTP"
                     maxLength={6}
-                    className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-sm text-center tracking-[0.3em] font-bold focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-gray-50 focus:bg-white transition-colors"
+                    className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-sm text-center tracking-[0.3em] font-bold focus:outline-none focus:ring-2 focus:ring-brand-400 bg-gray-50 focus:bg-white transition-colors"
                   />
                 </div>
                 <div>
@@ -114,7 +114,7 @@ export default function ForgotPassword() {
                     value={newPassword}
                     onChange={(e) => setNewPassword(e.target.value)}
                     placeholder="Min 8 characters"
-                    className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-gray-50 focus:bg-white transition-colors"
+                    className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand-400 bg-gray-50 focus:bg-white transition-colors"
                   />
                 </div>
                 <div>
@@ -127,7 +127,7 @@ export default function ForgotPassword() {
                     value={confirmPassword}
                     onChange={(e) => setConfirmPassword(e.target.value)}
                     placeholder="Repeat new password"
-                    className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-gray-50 focus:bg-white transition-colors"
+                    className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand-400 bg-gray-50 focus:bg-white transition-colors"
                   />
                 </div>
                 {error && (

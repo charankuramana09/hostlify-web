@@ -20,7 +20,7 @@ function getInitials(name: string) {
   return name.split(' ').map((n) => n[0]).join('').toUpperCase().slice(0, 2)
 }
 
-const AVATAR_COLORS = ['bg-indigo-500', 'bg-emerald-500', 'bg-purple-500', 'bg-rose-500']
+const AVATAR_COLORS = ['bg-brand-500', 'bg-emerald-500', 'bg-purple-500', 'bg-rose-500']
 
 export default function Referral() {
   const [copied, setCopied] = useState(false)
@@ -48,7 +48,7 @@ export default function Referral() {
 
   if (isLoading) return (
     <div className="flex items-center justify-center py-20">
-      <div className="w-8 h-8 rounded-full border-4 border-indigo-200 border-t-indigo-600 animate-spin" />
+      <div className="w-8 h-8 rounded-full border-4 border-brand-200 border-t-brand-600 animate-spin" />
     </div>
   )
 
@@ -89,7 +89,7 @@ export default function Referral() {
             className={`flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold transition-all shrink-0 disabled:opacity-50 ${
               copied
                 ? 'bg-emerald-500 text-white'
-                : 'bg-white text-indigo-700 hover:bg-indigo-50'
+                : 'bg-white text-brand-700 hover:bg-brand-50'
             }`}
           >
             {copied ? <Check size={15} /> : <Copy size={15} />}
@@ -104,8 +104,8 @@ export default function Referral() {
           label="Total Referred"
           value={referralData?.referredCount ?? referralsList.length}
           sub="Friends who joined via your code"
-          icon={<Users size={20} className="text-indigo-600" />}
-          iconBg="bg-indigo-50"
+          icon={<Users size={20} className="text-brand-600" />}
+          iconBg="bg-brand-50"
         />
         <StatCard
           label="Your Reward"
@@ -146,8 +146,8 @@ export default function Referral() {
         {/* Referred friends */}
         <div className="lg:col-span-3 bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
           <div className="flex items-center gap-2 px-5 py-4 border-b border-gray-50">
-            <div className="w-7 h-7 rounded-lg bg-indigo-50 flex items-center justify-center">
-              <Users size={13} className="text-indigo-600" />
+            <div className="w-7 h-7 rounded-lg bg-brand-50 flex items-center justify-center">
+              <Users size={13} className="text-brand-600" />
             </div>
             <h2 className="font-semibold text-gray-800 text-sm">Referred Friends</h2>
             <span className="ml-auto text-xs font-bold bg-gray-100 text-gray-500 px-2 py-0.5 rounded-full">

@@ -8,7 +8,7 @@ import { getHostelCleaning, updateCleaningStatus } from '../../api/staff'
 import { useAuthStore } from '../../store/authStore'
 
 const AVATAR_COLORS = [
-  'bg-indigo-500', 'bg-emerald-500', 'bg-purple-500',
+  'bg-brand-500', 'bg-emerald-500', 'bg-purple-500',
   'bg-rose-500', 'bg-amber-500', 'bg-teal-500',
 ]
 
@@ -59,7 +59,7 @@ export default function Cleaning() {
 
   if (isLoading) return (
     <div className="flex items-center justify-center py-20">
-      <div className="w-8 h-8 rounded-full border-4 border-indigo-200 border-t-indigo-600 animate-spin" />
+      <div className="w-8 h-8 rounded-full border-4 border-brand-200 border-t-brand-600 animate-spin" />
     </div>
   )
 
@@ -159,7 +159,7 @@ export default function Cleaning() {
                         onClick={() => handleSchedule(req.id)}
                         disabled={updateMut.isPending}
                         className="px-4 py-1.5 rounded-xl text-white text-xs font-semibold shadow-sm hover:opacity-90 transition-opacity disabled:opacity-60"
-                        style={{ background: 'linear-gradient(135deg, #3b82f6, #60a5fa)' }}
+                        style={{ background: 'linear-gradient(135deg, #1d6ea8, #1a8fd1)' }}
                       >
                         Schedule Cleaning
                       </button>
@@ -169,7 +169,7 @@ export default function Cleaning() {
                         onClick={() => handleComplete(req.id)}
                         disabled={updateMut.isPending}
                         className="px-4 py-1.5 rounded-xl text-white text-xs font-semibold shadow-sm hover:opacity-90 transition-opacity disabled:opacity-60"
-                        style={{ background: 'linear-gradient(135deg, #059669, #34d399)' }}
+                        style={{ background: 'linear-gradient(135deg, #1d6ea8, #1a8fd1)' }}
                       >
                         Mark Complete
                       </button>

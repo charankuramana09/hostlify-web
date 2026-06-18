@@ -2,7 +2,7 @@ import axios from 'axios'
 import { useAuthStore } from '../store/authStore'
 import { useToastStore } from '../store/toastStore'
 
-const BASE_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:8080/api/v1'
+const BASE_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:8090/api/v1'
 
 export const apiClient = axios.create({
   baseURL: BASE_URL,
@@ -10,8 +10,11 @@ export const apiClient = axios.create({
 })
 
 apiClient.interceptors.request.use((config) => {
+  // Never send a (possibly stale/expired) token to auth endpoints — it could block login/refresh.
+  const isAuthEndpoint = config.url?.startsWith('/auth/')
   const token = localStorage.getItem('hostlify-access-token')
-  if (token) config.headers.Authorization = `Bearer ${token}`
+  if (token && !isAuthEndpoint) config.headers.Authorization = `Bearer ${token}`
+  else if (isAuthEndpoint && config.headers) delete config.headers.Authorization
   return config
 })
 

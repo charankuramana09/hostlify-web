@@ -52,7 +52,7 @@ export default function Parking() {
 
   if (isLoading) return (
     <div className="flex items-center justify-center py-20">
-      <div className="w-8 h-8 rounded-full border-4 border-indigo-200 border-t-indigo-600 animate-spin" />
+      <div className="w-8 h-8 rounded-full border-4 border-brand-200 border-t-brand-600 animate-spin" />
     </div>
   )
 
@@ -61,7 +61,7 @@ export default function Parking() {
   return (
     <div className="space-y-6">
       <PageHeader
-        title="Parking"
+        title="Vehicle Parking"
         subtitle="Request a vehicle parking slot"
         action={
           <button
@@ -117,11 +117,11 @@ export default function Parking() {
 
       {/* New Request Form */}
       {showForm && (
-        <div className="bg-white rounded-2xl border border-indigo-100 shadow-sm overflow-hidden">
-          <div className="flex items-center justify-between px-5 py-4 border-b border-indigo-50">
+        <div className="bg-white rounded-2xl border border-brand-100 shadow-sm overflow-hidden">
+          <div className="flex items-center justify-between px-5 py-4 border-b border-brand-50">
             <div className="flex items-center gap-2">
-              <div className="w-7 h-7 rounded-lg bg-indigo-50 flex items-center justify-center">
-                <Car size={14} className="text-indigo-600" />
+              <div className="w-7 h-7 rounded-lg bg-brand-50 flex items-center justify-center">
+                <Car size={14} className="text-brand-600" />
               </div>
               <h3 className="font-semibold text-gray-800 text-sm">New Parking Request</h3>
             </div>
@@ -143,7 +143,7 @@ export default function Parking() {
                   value={form.vehicleNumber}
                   onChange={(e) => setForm((f) => ({ ...f, vehicleNumber: e.target.value.toUpperCase() }))}
                   placeholder="KA-01-AB-1234"
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-gray-50 focus:bg-white transition-colors"
+                  className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-brand-400 bg-gray-50 focus:bg-white transition-colors"
                 />
               </div>
               <div>
@@ -154,7 +154,7 @@ export default function Parking() {
                   required
                   value={form.type}
                   onChange={(e) => setForm((f) => ({ ...f, type: e.target.value }))}
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-gray-50 focus:bg-white transition-colors"
+                  className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand-400 bg-gray-50 focus:bg-white transition-colors"
                 >
                   <option value="">Select type</option>
                   {VEHICLE_TYPES.map((t) => (
@@ -172,7 +172,7 @@ export default function Parking() {
                 value={form.notes}
                 onChange={(e) => setForm((f) => ({ ...f, notes: e.target.value }))}
                 placeholder="Any additional details…"
-                className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 resize-none bg-gray-50 focus:bg-white transition-colors"
+                className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand-400 resize-none bg-gray-50 focus:bg-white transition-colors"
               />
             </div>
             <div className="flex justify-end gap-3 pt-1">
@@ -199,8 +199,8 @@ export default function Parking() {
       {/* My Requests Table */}
       <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
         <div className="flex items-center gap-2.5 px-5 py-4 border-b border-gray-50">
-          <div className="w-7 h-7 rounded-lg bg-indigo-50 flex items-center justify-center">
-            <Car size={14} className="text-indigo-600" />
+          <div className="w-7 h-7 rounded-lg bg-brand-50 flex items-center justify-center">
+            <Car size={14} className="text-brand-600" />
           </div>
           <h2 className="font-semibold text-gray-800 text-sm">My Parking Requests</h2>
           <span className="ml-auto text-xs font-bold bg-gray-100 text-gray-500 px-2 py-0.5 rounded-full">
@@ -227,7 +227,7 @@ export default function Parking() {
                     </span>
                   </td>
                   <td className="px-5 py-3.5">
-                    <span className="text-xs font-semibold bg-indigo-50 text-indigo-700 px-2.5 py-1 rounded-full">
+                    <span className="text-xs font-semibold bg-brand-50 text-brand-700 px-2.5 py-1 rounded-full">
                       {r.vehicleType ?? r.type ?? '—'}
                     </span>
                   </td>

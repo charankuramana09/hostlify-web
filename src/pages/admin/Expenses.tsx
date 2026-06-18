@@ -6,21 +6,29 @@ import { getExpenses, getExpenseSummary, addExpense } from '../../api/staff'
 import { useAuthStore } from '../../store/authStore'
 import { useToastStore } from '../../store/toastStore'
 
-const EXPENSE_CATEGORIES = ['GROCERIES', 'UTILITIES', 'MAINTENANCE', 'SALARY', 'MISCELLANEOUS']
+const EXPENSE_CATEGORIES = [
+  'Gas Bill',
+  'Electricity Bill',
+  'Building/Apartment Rent',
+  'Vegetables',
+  'Meat/Eggs',
+  'Other Expenses',
+]
 const PAYMENT_MODES = ['CASH', 'ONLINE', 'CHEQUE']
 
 const CATEGORY_CHIP: Record<string, string> = {
-  GROCERIES:     'bg-orange-50 text-orange-700',
-  UTILITIES:     'bg-amber-50 text-amber-700',
-  MAINTENANCE:   'bg-blue-50 text-blue-700',
-  SALARY:        'bg-emerald-50 text-emerald-700',
+  'Gas Bill':                'bg-orange-50 text-orange-700',
+  'Electricity Bill':        'bg-amber-50 text-amber-700',
+  'Building/Apartment Rent': 'bg-blue-50 text-blue-700',
+  'Vegetables':              'bg-emerald-50 text-emerald-700',
+  'Meat/Eggs':               'bg-rose-50 text-rose-700',
+  'Other Expenses':          'bg-gray-100 text-gray-600',
+  // payroll (auto-included from salary records)
+  'Salary/Payroll':          'bg-purple-50 text-purple-700',
+  // legacy labels (older data)
+  GROCERIES: 'bg-orange-50 text-orange-700', UTILITIES: 'bg-amber-50 text-amber-700',
+  MAINTENANCE: 'bg-blue-50 text-blue-700', SALARY: 'bg-emerald-50 text-emerald-700',
   MISCELLANEOUS: 'bg-gray-100 text-gray-600',
-  // legacy labels
-  Maintenance:   'bg-blue-50 text-blue-700',
-  Cleaning:      'bg-teal-50 text-teal-700',
-  'Food & Mess': 'bg-orange-50 text-orange-700',
-  Security:      'bg-red-50 text-red-700',
-  Other:         'bg-gray-100 text-gray-600',
 }
 
 const today = new Date().toISOString().split('T')[0]
@@ -99,7 +107,7 @@ export default function Expenses() {
 
   if (isLoading) return (
     <div className="flex items-center justify-center py-20">
-      <div className="w-8 h-8 rounded-full border-4 border-indigo-200 border-t-indigo-600 animate-spin" />
+      <div className="w-8 h-8 rounded-full border-4 border-brand-200 border-t-brand-600 animate-spin" />
     </div>
   )
 
@@ -112,7 +120,7 @@ export default function Expenses() {
           <button
             onClick={() => setShowForm(!showForm)}
             className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold text-white transition-opacity hover:opacity-90"
-            style={{ background: 'linear-gradient(135deg, #059669, #34d399)' }}
+            style={{ background: 'linear-gradient(135deg, #1d6ea8, #1a8fd1)' }}
           >
             <Plus size={16} /> Add Expense
           </button>
@@ -122,11 +130,11 @@ export default function Expenses() {
       {/* Total summary card */}
       <div
         className="rounded-2xl p-6 text-white relative overflow-hidden"
-        style={{ background: 'linear-gradient(135deg, #0f2d4a 0%, #059669 100%)' }}
+        style={{ background: 'linear-gradient(135deg, #0f2d4a 0%, #1d6ea8 100%)' }}
       >
         <div
           className="absolute top-0 right-0 w-56 h-56 rounded-full opacity-10 pointer-events-none"
-          style={{ background: 'radial-gradient(circle, #34d399, transparent)', transform: 'translate(30%, -30%)' }}
+          style={{ background: 'radial-gradient(circle, #3aaee8, transparent)', transform: 'translate(30%, -30%)' }}
         />
         <div className="flex items-center gap-2 mb-2">
           <div className="w-7 h-7 rounded-lg bg-white/15 flex items-center justify-center">
@@ -178,7 +186,7 @@ export default function Expenses() {
                   required
                   value={form.category}
                   onChange={(e) => setForm((f) => ({ ...f, category: e.target.value }))}
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-gray-50 focus:bg-white transition-colors"
+                  className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand-400 bg-gray-50 focus:bg-white transition-colors"
                 >
                   <option value="">Select category</option>
                   {EXPENSE_CATEGORIES.map((c) => <option key={c} value={c}>{c}</option>)}
@@ -191,7 +199,7 @@ export default function Expenses() {
                   required
                   value={form.amount}
                   onChange={(e) => setForm((f) => ({ ...f, amount: e.target.value }))}
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-gray-50 focus:bg-white transition-colors"
+                  className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand-400 bg-gray-50 focus:bg-white transition-colors"
                   placeholder="0"
                 />
               </div>
@@ -203,7 +211,7 @@ export default function Expenses() {
                   required
                   value={form.description}
                   onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))}
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-gray-50 focus:bg-white transition-colors"
+                  className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand-400 bg-gray-50 focus:bg-white transition-colors"
                   placeholder="Brief description"
                 />
               </div>
@@ -214,7 +222,7 @@ export default function Expenses() {
                   required
                   value={form.expenseDate}
                   onChange={(e) => setForm((f) => ({ ...f, expenseDate: e.target.value }))}
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-gray-50 focus:bg-white transition-colors"
+                  className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand-400 bg-gray-50 focus:bg-white transition-colors"
                 />
               </div>
               <div>
@@ -222,7 +230,7 @@ export default function Expenses() {
                 <select
                   value={form.paymentMode}
                   onChange={(e) => setForm((f) => ({ ...f, paymentMode: e.target.value }))}
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-gray-50 focus:bg-white transition-colors"
+                  className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand-400 bg-gray-50 focus:bg-white transition-colors"
                 >
                   {PAYMENT_MODES.map((m) => <option key={m} value={m}>{m}</option>)}
                 </select>
@@ -240,7 +248,7 @@ export default function Expenses() {
                 type="submit"
                 disabled={addMut.isPending || !isValid()}
                 className="px-5 py-2 text-sm rounded-xl font-semibold text-white transition-opacity hover:opacity-90 disabled:opacity-60"
-                style={{ background: 'linear-gradient(135deg, #059669, #34d399)' }}
+                style={{ background: 'linear-gradient(135deg, #1d6ea8, #1a8fd1)' }}
               >
                 {addMut.isPending ? 'Adding…' : 'Add'}
               </button>

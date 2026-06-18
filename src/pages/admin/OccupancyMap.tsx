@@ -25,7 +25,7 @@ interface Floor {
 }
 
 const STATUS_CONFIG = {
-  occupied: { bg: 'bg-indigo-100', text: 'text-indigo-700', border: 'border-indigo-200', dot: 'bg-indigo-500', label: 'Occupied' },
+  occupied: { bg: 'bg-brand-100', text: 'text-brand-700', border: 'border-brand-200', dot: 'bg-brand-500', label: 'Occupied' },
   available: { bg: 'bg-emerald-50', text: 'text-emerald-700', border: 'border-emerald-200', dot: 'bg-emerald-500', label: 'Available' },
   reserved: { bg: 'bg-amber-50', text: 'text-amber-700', border: 'border-amber-200', dot: 'bg-amber-400', label: 'Reserved' },
 }
@@ -59,7 +59,7 @@ function FloorCard({ floor }: { floor: Floor }) {
           </div>
         </div>
         <div className="flex items-center gap-4 text-xs font-semibold">
-          <span className="text-indigo-600 bg-indigo-50 px-2.5 py-1 rounded-full">{occupiedBeds} Occupied</span>
+          <span className="text-brand-600 bg-brand-50 px-2.5 py-1 rounded-full">{occupiedBeds} Occupied</span>
           <span className="text-emerald-600 bg-emerald-50 px-2.5 py-1 rounded-full">{availableBeds} Available</span>
           {reservedBeds > 0 && (
             <span className="text-amber-600 bg-amber-50 px-2.5 py-1 rounded-full">{reservedBeds} Reserved</span>
@@ -76,7 +76,7 @@ function FloorCard({ floor }: { floor: Floor }) {
         <div className="w-full bg-gray-100 rounded-full h-2 overflow-hidden">
           <div
             className="h-2 rounded-full transition-all"
-            style={{ width: `${occupancyPct}%`, background: 'linear-gradient(90deg, #059669, #34d399)' }}
+            style={{ width: `${occupancyPct}%`, background: 'linear-gradient(90deg, #1d6ea8, #1a8fd1)' }}
           />
         </div>
       </div>
@@ -136,7 +136,7 @@ export default function OccupancyMap() {
 
   if (isLoading) return (
     <div className="flex items-center justify-center py-20">
-      <div className="w-8 h-8 rounded-full border-4 border-indigo-200 border-t-indigo-600 animate-spin" />
+      <div className="w-8 h-8 rounded-full border-4 border-brand-200 border-t-brand-600 animate-spin" />
     </div>
   )
 

@@ -81,7 +81,7 @@ export default function Maintenance() {
 
   if (isLoading) return (
     <div className="flex items-center justify-center py-20">
-      <div className="w-8 h-8 rounded-full border-4 border-indigo-200 border-t-indigo-600 animate-spin" />
+      <div className="w-8 h-8 rounded-full border-4 border-brand-200 border-t-brand-600 animate-spin" />
     </div>
   )
 
@@ -95,7 +95,7 @@ export default function Maintenance() {
           <button
             onClick={() => setShowForm(!showForm)}
             className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold text-white transition-opacity hover:opacity-90"
-            style={{ background: 'linear-gradient(135deg, #0f2d4a 0%, #059669 100%)' }}
+            style={{ background: 'linear-gradient(135deg, #0f2d4a 0%, #1d6ea8 100%)' }}
           >
             <Plus size={16} /> Add Log
           </button>
@@ -152,7 +152,7 @@ export default function Maintenance() {
                   required
                   value={form.category}
                   onChange={(e) => setForm((f) => ({ ...f, category: e.target.value }))}
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-gray-50 focus:bg-white transition-colors"
+                  className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand-400 bg-gray-50 focus:bg-white transition-colors"
                 >
                   <option value="">Select category</option>
                   {MAINTENANCE_CATEGORIES.map((c) => (
@@ -167,7 +167,7 @@ export default function Maintenance() {
                   value={form.title}
                   onChange={(e) => setForm((f) => ({ ...f, title: e.target.value }))}
                   placeholder="e.g. Leaking pipe in Room 201"
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-gray-50 focus:bg-white transition-colors"
+                  className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand-400 bg-gray-50 focus:bg-white transition-colors"
                 />
               </div>
               <div className="sm:col-span-2">
@@ -177,7 +177,7 @@ export default function Maintenance() {
                   value={form.description}
                   onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))}
                   placeholder="Additional details about the issue"
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-gray-50 focus:bg-white transition-colors resize-none"
+                  className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand-400 bg-gray-50 focus:bg-white transition-colors resize-none"
                 />
               </div>
               <div>
@@ -187,7 +187,7 @@ export default function Maintenance() {
                   value={form.assignedTo}
                   onChange={(e) => setForm((f) => ({ ...f, assignedTo: e.target.value }))}
                   placeholder="Vendor or In-house"
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-gray-50 focus:bg-white transition-colors"
+                  className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand-400 bg-gray-50 focus:bg-white transition-colors"
                 />
               </div>
               <div>
@@ -197,7 +197,7 @@ export default function Maintenance() {
                   value={form.estCost}
                   onChange={(e) => setForm((f) => ({ ...f, estCost: e.target.value }))}
                   placeholder="0"
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-gray-50 focus:bg-white transition-colors"
+                  className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand-400 bg-gray-50 focus:bg-white transition-colors"
                 />
               </div>
               <div>
@@ -205,7 +205,7 @@ export default function Maintenance() {
                 <select
                   value={form.status}
                   onChange={(e) => setForm((f) => ({ ...f, status: e.target.value }))}
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-gray-50 focus:bg-white transition-colors"
+                  className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand-400 bg-gray-50 focus:bg-white transition-colors"
                 >
                   {STATUS_OPTIONS.map((s) => (
                     <option key={s} value={s}>{s.replace('_', ' ')}</option>
@@ -225,7 +225,7 @@ export default function Maintenance() {
                 type="submit"
                 disabled={createMut.isPending}
                 className="px-5 py-2 text-sm rounded-xl font-semibold text-white transition-opacity hover:opacity-90 disabled:opacity-60"
-                style={{ background: 'linear-gradient(135deg, #0f2d4a 0%, #059669 100%)' }}
+                style={{ background: 'linear-gradient(135deg, #0f2d4a 0%, #1d6ea8 100%)' }}
               >
                 {createMut.isPending ? 'Adding…' : 'Add Log'}
               </button>
@@ -282,7 +282,7 @@ export default function Maintenance() {
                       value={l.status}
                       onChange={(e) => statusMut.mutate({ id: l.id, status: e.target.value })}
                       disabled={statusMut.isPending}
-                      className="text-xs font-semibold border border-gray-200 bg-white rounded-lg px-2 py-1.5 focus:outline-none focus:ring-2 focus:ring-emerald-500 disabled:opacity-60 cursor-pointer"
+                      className="text-xs font-semibold border border-gray-200 bg-white rounded-lg px-2 py-1.5 focus:outline-none focus:ring-2 focus:ring-brand-400 disabled:opacity-60 cursor-pointer"
                     >
                       {STATUS_OPTIONS.map((s) => (
                         <option key={s} value={s}>{s.replace('_', ' ')}</option>

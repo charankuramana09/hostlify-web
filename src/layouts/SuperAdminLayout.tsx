@@ -1,7 +1,7 @@
 import { LayoutDashboard, Users, BarChart3, MapPin, MessageSquare, UserCircle } from 'lucide-react'
-import PortalLayout, { type NavItem } from './PortalLayout'
+import PortalLayout, { type NavEntry, type NavItem } from './PortalLayout'
 
-const navItems: NavItem[] = [
+const navItems: NavEntry[] = [
   { label: 'Dashboard',  to: '/super-admin/dashboard',  icon: LayoutDashboard },
   { label: 'Owners',     to: '/super-admin/owners',     icon: Users },
   { label: 'Revenue',    to: '/super-admin/revenue',    icon: BarChart3 },
@@ -10,11 +10,13 @@ const navItems: NavItem[] = [
   { label: 'My Account', to: '/super-admin/account',    icon: UserCircle },
 ]
 
+const bottomNav: NavItem[] = [
+  { label: 'Home',    to: '/super-admin/dashboard', icon: LayoutDashboard },
+  { label: 'Owners',  to: '/super-admin/owners',    icon: Users },
+  { label: 'Revenue', to: '/super-admin/revenue',   icon: BarChart3 },
+  { label: 'Account', to: '/super-admin/account',   icon: UserCircle },
+]
+
 export default function SuperAdminLayout() {
-  return (
-    <PortalLayout
-      navItems={navItems}
-      portalName="Super Admin"
-    />
-  )
+  return <PortalLayout navItems={navItems} portalName="Super Admin" bottomNav={bottomNav} profilePath="/super-admin/account" />
 }

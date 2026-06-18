@@ -18,7 +18,7 @@ const QUICK_ACTIONS = [
   { label: 'Pending Allocations', to: '/admin/allocations', bg: 'bg-amber-50',   border: 'border-amber-100',   text: 'text-amber-700',   icon: ClipboardList },
   { label: 'Record Payment',      to: '/admin/payments',    bg: 'bg-emerald-50', border: 'border-emerald-100', text: 'text-emerald-700', icon: TrendingUp },
   { label: 'View Complaints',     to: '/admin/complaints',  bg: 'bg-red-50',     border: 'border-red-100',     text: 'text-red-600',     icon: MessageSquare },
-  { label: 'Post Announcement',   to: '/admin/announcements',bg: 'bg-indigo-50', border: 'border-indigo-100',  text: 'text-indigo-700',  icon: Users },
+  { label: 'Post Announcement',   to: '/admin/announcements',bg: 'bg-brand-50', border: 'border-brand-100',  text: 'text-brand-700',  icon: Users },
 ]
 
 export default function AdminDashboard() {
@@ -36,7 +36,7 @@ export default function AdminDashboard() {
 
   if (isLoading) return (
     <div className="flex items-center justify-center py-20">
-      <div className="w-8 h-8 rounded-full border-4 border-indigo-200 border-t-indigo-600 animate-spin" />
+      <div className="w-8 h-8 rounded-full border-4 border-brand-200 border-t-brand-600 animate-spin" />
     </div>
   )
 
@@ -45,11 +45,11 @@ export default function AdminDashboard() {
       {/* Welcome banner */}
       <div
         className="rounded-2xl p-6 text-white relative overflow-hidden"
-        style={{ background: 'linear-gradient(135deg, #0f2d4a 0%, #059669 100%)' }}
+        style={{ background: 'linear-gradient(135deg, #0f2d4a 0%, #1d6ea8 100%)' }}
       >
         <div
           className="absolute top-0 right-0 w-64 h-64 rounded-full opacity-10 pointer-events-none"
-          style={{ background: 'radial-gradient(circle, #34d399, transparent)', transform: 'translate(30%, -30%)' }}
+          style={{ background: 'radial-gradient(circle, #3aaee8, transparent)', transform: 'translate(30%, -30%)' }}
         />
         <p className="text-sm font-medium" style={{ color: 'rgba(255,255,255,0.6)' }}>Staff Portal 👋</p>
         <h1 className="text-2xl font-bold mt-0.5 tracking-tight">Hostel Operations Overview</h1>
@@ -83,8 +83,8 @@ export default function AdminDashboard() {
           label="Monthly Revenue"
           value="₹—"
           sub="See revenue report"
-          icon={<TrendingUp size={20} className="text-indigo-600" />}
-          iconBg="bg-indigo-50"
+          icon={<TrendingUp size={20} className="text-brand-600" />}
+          iconBg="bg-brand-50"
         />
       </div>
 
@@ -116,8 +116,8 @@ export default function AdminDashboard() {
         {/* Recent activity */}
         <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
           <div className="flex items-center gap-2 px-5 py-4 border-b border-gray-50">
-            <div className="w-7 h-7 rounded-lg bg-indigo-50 flex items-center justify-center">
-              <Users size={13} className="text-indigo-600" />
+            <div className="w-7 h-7 rounded-lg bg-brand-50 flex items-center justify-center">
+              <Users size={13} className="text-brand-600" />
             </div>
             <h2 className="font-semibold text-gray-800 text-sm">Recent Activity</h2>
           </div>

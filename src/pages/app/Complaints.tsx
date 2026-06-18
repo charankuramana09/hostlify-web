@@ -81,7 +81,7 @@ export default function Complaints() {
 
   if (isLoading) return (
     <div className="flex items-center justify-center py-20">
-      <div className="w-8 h-8 rounded-full border-4 border-indigo-200 border-t-indigo-600 animate-spin" />
+      <div className="w-8 h-8 rounded-full border-4 border-brand-200 border-t-brand-600 animate-spin" />
     </div>
   )
 
@@ -112,8 +112,8 @@ export default function Complaints() {
             onClick={() => setActiveCategory(cat)}
             className={`px-4 py-1.5 rounded-full text-sm font-medium transition-colors ${
               activeCategory === cat
-                ? 'bg-indigo-600 text-white shadow-sm'
-                : 'bg-white border border-gray-200 text-gray-600 hover:border-indigo-300 hover:text-indigo-600'
+                ? 'bg-brand-600 text-white shadow-sm'
+                : 'bg-white border border-gray-200 text-gray-600 hover:border-brand-300 hover:text-brand-600'
             }`}
           >
             {cat}
@@ -123,14 +123,14 @@ export default function Complaints() {
 
       {/* New complaint form card */}
       {showForm && (
-        <div className="bg-white rounded-2xl border border-indigo-100 shadow-sm overflow-hidden">
+        <div className="bg-white rounded-2xl border border-brand-100 shadow-sm overflow-hidden">
           <div
             className="flex items-center justify-between px-5 py-4"
             style={{ borderBottom: '1px solid #e0e7ff' }}
           >
             <div className="flex items-center gap-2">
-              <div className="w-7 h-7 rounded-lg bg-indigo-50 flex items-center justify-center">
-                <MessageSquare size={14} className="text-indigo-600" />
+              <div className="w-7 h-7 rounded-lg bg-brand-50 flex items-center justify-center">
+                <MessageSquare size={14} className="text-brand-600" />
               </div>
               <h3 className="font-semibold text-gray-800 text-sm">New Complaint</h3>
             </div>
@@ -148,7 +148,7 @@ export default function Complaints() {
                 <input
                   value={form.title}
                   onChange={(e) => { setForm((f) => ({ ...f, title: e.target.value })); setErrors((er) => ({ ...er, title: undefined })) }}
-                  className={`w-full px-3.5 py-2.5 rounded-xl border text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-gray-50 focus:bg-white transition-colors ${errors.title ? 'border-red-400' : 'border-gray-200'}`}
+                  className={`w-full px-3.5 py-2.5 rounded-xl border text-sm focus:outline-none focus:ring-2 focus:ring-brand-400 bg-gray-50 focus:bg-white transition-colors ${errors.title ? 'border-red-400' : 'border-gray-200'}`}
                   placeholder="Brief title of the issue"
                 />
                 {errors.title && <p className="mt-1 text-xs text-red-500">{errors.title}</p>}
@@ -158,7 +158,7 @@ export default function Complaints() {
                 <select
                   value={form.category}
                   onChange={(e) => { setForm((f) => ({ ...f, category: e.target.value })); setErrors((er) => ({ ...er, category: undefined })) }}
-                  className={`w-full px-3.5 py-2.5 rounded-xl border text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-gray-50 focus:bg-white transition-colors ${errors.category ? 'border-red-400' : 'border-gray-200'}`}
+                  className={`w-full px-3.5 py-2.5 rounded-xl border text-sm focus:outline-none focus:ring-2 focus:ring-brand-400 bg-gray-50 focus:bg-white transition-colors ${errors.category ? 'border-red-400' : 'border-gray-200'}`}
                 >
                   <option value="">Select category</option>
                   {CATEGORIES.map((c) => (
@@ -174,7 +174,7 @@ export default function Complaints() {
                 rows={3}
                 value={form.description}
                 onChange={(e) => { setForm((f) => ({ ...f, description: e.target.value })); setErrors((er) => ({ ...er, description: undefined })) }}
-                className={`w-full px-3.5 py-2.5 rounded-xl border text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 resize-none bg-gray-50 focus:bg-white transition-colors ${errors.description ? 'border-red-400' : 'border-gray-200'}`}
+                className={`w-full px-3.5 py-2.5 rounded-xl border text-sm focus:outline-none focus:ring-2 focus:ring-brand-400 resize-none bg-gray-50 focus:bg-white transition-colors ${errors.description ? 'border-red-400' : 'border-gray-200'}`}
                 placeholder="Describe the issue in detail…"
               />
               {errors.description && <p className="mt-1 text-xs text-red-500">{errors.description}</p>}

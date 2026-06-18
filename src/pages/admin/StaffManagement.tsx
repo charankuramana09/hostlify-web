@@ -4,7 +4,7 @@ import { Plus, X, UserCog, Mail, Phone, Shield, Trash2, Edit2, Briefcase, CheckC
 import PageHeader from '../../components/ui/PageHeader'
 import StatCard from '../../components/ui/StatCard'
 import Badge from '../../components/ui/Badge'
-import { getStaffMembers, createStaffMember, updateStaffMember, deactivateStaffMember, getEmployees, addEmployee, recordSalary } from '../../api/staff'
+import { getStaffMembers, createStaffMember, updateStaffMember, deactivateStaffMember, getEmployees, addEmployee, recordSalary, getPayrollSummary } from '../../api/staff'
 import { useAuthStore } from '../../store/authStore'
 import { useToastStore } from '../../store/toastStore'
 
@@ -13,7 +13,7 @@ const SUB_ROLES = ['MANAGER', 'SUPERVISOR', 'RECEPTIONIST', 'SECURITY', 'CLEANER
 type StaffForm = { email: string; mobile: string; subRole: string; password: string }
 const EMPTY_FORM: StaffForm = { email: '', mobile: '', subRole: 'MANAGER', password: '' }
 
-const AVATAR_COLORS = ['bg-indigo-500', 'bg-emerald-500', 'bg-purple-500', 'bg-rose-500', 'bg-amber-500', 'bg-teal-500']
+const AVATAR_COLORS = ['bg-brand-500', 'bg-emerald-500', 'bg-purple-500', 'bg-rose-500', 'bg-amber-500', 'bg-teal-500']
 
 function getInitials(name: string) {
   return name.split(' ').map((n) => n[0]).join('').toUpperCase().slice(0, 2)
@@ -114,6 +114,15 @@ export default function StaffManagement() {
     enabled: !!activeHostelId && activeTab === 'employees',
   })
 
+  const nowD = new Date()
+  const { data: payroll } = useQuery({
+    queryKey: ['payroll', activeHostelId, nowD.getMonth() + 1, nowD.getFullYear()],
+    queryFn: () => getPayrollSummary(activeHostelId!, nowD.getMonth() + 1, nowD.getFullYear()),
+    enabled: !!activeHostelId && activeTab === 'employees',
+  })
+  const payrollByEmp: Record<number, any> = Object.fromEntries(((payroll?.employees ?? []) as any[]).map((p) => [p.employeeId, p]))
+  const inr = (n: any) => '₹' + Number(n ?? 0).toLocaleString('en-IN')
+
   const addEmpMut = useMutation({
     mutationFn: (data: Record<string, unknown>) => addEmployee(data),
     onSuccess: () => {
@@ -133,6 +142,7 @@ export default function StaffManagement() {
       recordSalary(employeeId, data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['employees', activeHostelId] })
+      queryClient.invalidateQueries({ queryKey: ['payroll', activeHostelId] })
       setConfirmSalaryId(null)
       show('success', 'Salary recorded', 'Salary has been marked as paid.')
     },
@@ -158,13 +168,14 @@ export default function StaffManagement() {
   }
 
   function handleRecordSalary(id: number) {
+    const amount = payrollByEmp[id]?.payable ?? confirmEmployee?.baseSalary ?? confirmEmployee?.salary ?? 0
     salaryMut.mutate({
       employeeId: id,
-      data: { month: now.getMonth() + 1, year: now.getFullYear(), amount: confirmEmployee?.salary },
+      data: { month: now.getMonth() + 1, year: now.getFullYear(), amount },
     })
   }
 
-  const inputCls = 'w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-gray-50 focus:bg-white transition-colors'
+  const inputCls = 'w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand-400 bg-gray-50 focus:bg-white transition-colors'
 
   return (
     <div className="space-y-6">
@@ -200,7 +211,7 @@ export default function StaffManagement() {
             <button
               onClick={openCreate}
               className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold text-white transition-opacity hover:opacity-90"
-              style={{ background: 'linear-gradient(135deg, #0f2d4a 0%, #059669 100%)' }}
+              style={{ background: 'linear-gradient(135deg, #0f2d4a 0%, #1d6ea8 100%)' }}
             >
               <Plus size={16} /> Add Staff
             </button>
@@ -212,8 +223,8 @@ export default function StaffManagement() {
               label="Total Staff"
               value={(staff as any[]).length}
               sub="All staff accounts"
-              icon={<UserCog size={20} className="text-indigo-600" />}
-              iconBg="bg-indigo-50"
+              icon={<UserCog size={20} className="text-brand-600" />}
+              iconBg="bg-brand-50"
             />
             <StatCard
               label="Active"
@@ -229,8 +240,8 @@ export default function StaffManagement() {
             <div className="bg-white rounded-2xl border border-emerald-100 shadow-sm overflow-hidden">
               <div className="flex items-center justify-between px-5 py-4 border-b border-emerald-50">
                 <div className="flex items-center gap-2">
-                  <div className="w-7 h-7 rounded-lg bg-indigo-50 flex items-center justify-center">
-                    <UserCog size={14} className="text-indigo-600" />
+                  <div className="w-7 h-7 rounded-lg bg-brand-50 flex items-center justify-center">
+                    <UserCog size={14} className="text-brand-600" />
                   </div>
                   <h3 className="font-semibold text-gray-800 text-sm">{editId ? 'Edit Staff Member' : 'Add New Staff Member'}</h3>
                 </div>
@@ -303,7 +314,7 @@ export default function StaffManagement() {
                     type="submit"
                     disabled={createMut.isPending || updateMut.isPending}
                     className="px-5 py-2 text-sm rounded-xl font-semibold text-white transition-opacity hover:opacity-90 disabled:opacity-60"
-                    style={{ background: 'linear-gradient(135deg, #0f2d4a 0%, #059669 100%)' }}
+                    style={{ background: 'linear-gradient(135deg, #0f2d4a 0%, #1d6ea8 100%)' }}
                   >
                     {(createMut.isPending || updateMut.isPending) ? 'Saving…' : (editId ? 'Update' : 'Add Staff')}
                   </button>
@@ -315,7 +326,7 @@ export default function StaffManagement() {
           {/* Staff Table */}
           {staffLoading ? (
             <div className="flex items-center justify-center py-20">
-              <div className="w-8 h-8 rounded-full border-4 border-indigo-200 border-t-indigo-600 animate-spin" />
+              <div className="w-8 h-8 rounded-full border-4 border-brand-200 border-t-brand-600 animate-spin" />
             </div>
           ) : (
             <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
@@ -335,7 +346,7 @@ export default function StaffManagement() {
                       <tr key={s.id} className="hover:bg-gray-50/70 transition-colors">
                         <td className="px-5 py-3.5">
                           <div className="flex items-center gap-2.5">
-                            <div className="w-8 h-8 rounded-xl bg-indigo-100 flex items-center justify-center text-xs font-bold text-indigo-700 shrink-0">
+                            <div className="w-8 h-8 rounded-xl bg-brand-100 flex items-center justify-center text-xs font-bold text-brand-700 shrink-0">
                               {(s.email ?? '?')[0].toUpperCase()}
                             </div>
                             <div>
@@ -347,7 +358,7 @@ export default function StaffManagement() {
                           </div>
                         </td>
                         <td className="px-5 py-3.5">
-                          <span className="text-xs font-semibold bg-indigo-50 text-indigo-700 px-2.5 py-1 rounded-full">
+                          <span className="text-xs font-semibold bg-brand-50 text-brand-700 px-2.5 py-1 rounded-full">
                             {s.subRole ?? '—'}
                           </span>
                         </td>
@@ -363,7 +374,7 @@ export default function StaffManagement() {
                           <div className="flex justify-end gap-1.5">
                             <button
                               onClick={() => openEdit(s)}
-                              className="w-7 h-7 rounded-lg bg-indigo-50 flex items-center justify-center text-indigo-600 hover:bg-indigo-100 transition-colors"
+                              className="w-7 h-7 rounded-lg bg-brand-50 flex items-center justify-center text-brand-600 hover:bg-brand-100 transition-colors"
                               title="Edit"
                             >
                               <Edit2 size={12} />
@@ -401,24 +412,31 @@ export default function StaffManagement() {
             <button
               onClick={() => setShowEmpForm(!showEmpForm)}
               className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold text-white transition-opacity hover:opacity-90"
-              style={{ background: 'linear-gradient(135deg, #0f2d4a 0%, #059669 100%)' }}
+              style={{ background: 'linear-gradient(135deg, #0f2d4a 0%, #1d6ea8 100%)' }}
             >
               <Plus size={16} /> Add Employee
             </button>
           </div>
 
-          {/* Stat Cards */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          {/* Payroll stat cards (this month) */}
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <StatCard
-              label="Total Employees"
-              value={(employees as any[]).length}
-              sub="Active staff members"
-              icon={<Briefcase size={20} className="text-emerald-600" />}
+              label="Monthly Payable"
+              value={inr(payroll?.totalPayable)}
+              sub={`${(employees as any[]).length} employees`}
+              icon={<Briefcase size={20} className="text-brand-600" />}
+              iconBg="bg-brand-50"
+            />
+            <StatCard
+              label="Paid"
+              value={inr(payroll?.totalPaid)}
+              sub="This month"
+              icon={<CheckCircle2 size={20} className="text-emerald-600" />}
               iconBg="bg-emerald-50"
             />
             <StatCard
-              label="Pending Salary"
-              value={(employees as any[]).filter((e: any) => e.status === 'PENDING').length}
+              label="Pending"
+              value={inr(payroll?.totalPending)}
               sub="Awaiting payment"
               icon={<Briefcase size={20} className="text-amber-600" />}
               iconBg="bg-amber-50"
@@ -507,7 +525,7 @@ export default function StaffManagement() {
                     type="submit"
                     disabled={addEmpMut.isPending}
                     className="px-5 py-2 text-sm rounded-xl font-semibold text-white transition-opacity hover:opacity-90 disabled:opacity-60"
-                    style={{ background: 'linear-gradient(135deg, #0f2d4a 0%, #059669 100%)' }}
+                    style={{ background: 'linear-gradient(135deg, #0f2d4a 0%, #1d6ea8 100%)' }}
                   >
                     {addEmpMut.isPending ? 'Adding…' : 'Add Employee'}
                   </button>
@@ -519,7 +537,7 @@ export default function StaffManagement() {
           {/* Employee Cards */}
           {empLoading ? (
             <div className="flex items-center justify-center py-20">
-              <div className="w-8 h-8 rounded-full border-4 border-indigo-200 border-t-indigo-600 animate-spin" />
+              <div className="w-8 h-8 rounded-full border-4 border-brand-200 border-t-brand-600 animate-spin" />
             </div>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -537,25 +555,30 @@ export default function StaffManagement() {
                         </span>
                       </div>
                     </div>
-                    <Badge status={emp.status} />
+                    {(() => {
+                      const pr = payrollByEmp[emp.id]
+                      const st = pr?.status === 'PAID' ? 'PAID' : 'PENDING'
+                      return <Badge status={st} />
+                    })()}
                   </div>
                   <div className="flex items-center justify-between mt-3 pt-3 border-t border-gray-50">
                     <div>
-                      <p className="text-xs text-gray-400">Monthly Salary</p>
-                      <p className="text-base font-bold text-gray-900">₹{(emp.salary ?? emp.baseSalary ?? 0).toLocaleString()}</p>
+                      <p className="text-xs text-gray-400">Monthly Payable</p>
+                      <p className="text-base font-bold text-gray-900">{inr(payrollByEmp[emp.id]?.payable ?? emp.baseSalary ?? emp.salary ?? 0)}</p>
                     </div>
                     <div className="text-right">
-                      <p className="text-xs text-gray-400">Last Paid</p>
-                      <p className="text-xs font-medium text-gray-600">{emp.lastPaidDate ?? '—'}</p>
+                      <p className="text-xs text-gray-400">This Month</p>
+                      <p className={`text-xs font-semibold ${payrollByEmp[emp.id]?.status === 'PAID' ? 'text-emerald-600' : 'text-amber-600'}`}>
+                        {payrollByEmp[emp.id]?.status === 'PAID' ? 'Paid' : 'Pending'}
+                      </p>
                     </div>
                   </div>
-                  {emp.status === 'PENDING' && (
+                  {payrollByEmp[emp.id]?.status !== 'PAID' && (
                     <button
                       onClick={() => setConfirmSalaryId(emp.id)}
-                      className="w-full mt-3 py-2 rounded-xl text-sm font-semibold text-white transition-opacity hover:opacity-90"
-                      style={{ background: 'linear-gradient(135deg, #0f2d4a 0%, #059669 100%)' }}
+                      className="w-full mt-3 py-2 rounded-xl text-sm font-semibold text-white transition-opacity hover:opacity-90 brand-gradient"
                     >
-                      Record Salary
+                      Pay Salary
                     </button>
                   )}
                 </div>
@@ -622,7 +645,7 @@ export default function StaffManagement() {
                 onClick={() => handleRecordSalary(confirmSalaryId)}
                 disabled={salaryMut.isPending}
                 className="flex-1 px-4 py-2.5 text-sm text-white rounded-xl font-semibold transition-opacity hover:opacity-90 disabled:opacity-60"
-                style={{ background: 'linear-gradient(135deg, #0f2d4a 0%, #059669 100%)' }}
+                style={{ background: 'linear-gradient(135deg, #0f2d4a 0%, #1d6ea8 100%)' }}
               >
                 {salaryMut.isPending ? 'Processing…' : 'Confirm'}
               </button>

@@ -76,7 +76,7 @@ export default function Service() {
 
   if (isLoading) return (
     <div className="flex items-center justify-center py-20">
-      <div className="w-8 h-8 rounded-full border-4 border-indigo-200 border-t-indigo-600 animate-spin" />
+      <div className="w-8 h-8 rounded-full border-4 border-brand-200 border-t-brand-600 animate-spin" />
     </div>
   )
 
@@ -108,7 +108,7 @@ export default function Service() {
               onClick={() => selectCategory(cat)}
               className={`flex flex-col items-center gap-2 p-3.5 rounded-2xl border transition-all hover:-translate-y-0.5 hover:shadow-sm ${cfg.bg} ${
                 form.category === cat && showForm
-                  ? 'ring-2 ring-indigo-400 border-transparent'
+                  ? 'ring-2 ring-brand-400 border-transparent'
                   : 'border-transparent'
               }`}
             >
@@ -123,14 +123,14 @@ export default function Service() {
 
       {/* New request form */}
       {showForm && (
-        <div className="bg-white rounded-2xl border border-indigo-100 shadow-sm overflow-hidden">
+        <div className="bg-white rounded-2xl border border-brand-100 shadow-sm overflow-hidden">
           <div
             className="flex items-center justify-between px-5 py-4"
             style={{ borderBottom: '1px solid #e0e7ff' }}
           >
             <div className="flex items-center gap-2">
-              <div className="w-7 h-7 rounded-lg bg-indigo-50 flex items-center justify-center">
-                <Wrench size={14} className="text-indigo-600" />
+              <div className="w-7 h-7 rounded-lg bg-brand-50 flex items-center justify-center">
+                <Wrench size={14} className="text-brand-600" />
               </div>
               <h3 className="font-semibold text-gray-800 text-sm">New Service Request</h3>
             </div>
@@ -148,7 +148,7 @@ export default function Service() {
                 required
                 value={form.category}
                 onChange={(e) => setForm((f) => ({ ...f, category: e.target.value }))}
-                className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-gray-50 focus:bg-white transition-colors"
+                className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand-400 bg-gray-50 focus:bg-white transition-colors"
               >
                 <option value="">Select category</option>
                 {SERVICE_CATEGORIES.map((c) => <option key={c} value={c}>{c}</option>)}
@@ -161,7 +161,7 @@ export default function Service() {
                 rows={3}
                 value={form.description}
                 onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))}
-                className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 resize-none bg-gray-50 focus:bg-white transition-colors"
+                className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand-400 resize-none bg-gray-50 focus:bg-white transition-colors"
                 placeholder="Describe the issue…"
               />
             </div>

@@ -4,7 +4,7 @@ import StatCard from '../../components/ui/StatCard'
 import { getOccupancyReport } from '../../api/superadmin'
 
 function getRateColor(rate: number) {
-  if (rate >= 80) return 'linear-gradient(90deg, #059669, #34d399)'
+  if (rate >= 80) return 'linear-gradient(90deg, #1d6ea8, #1a8fd1)'
   if (rate >= 60) return 'linear-gradient(90deg, #d97706, #fbbf24)'
   return 'linear-gradient(90deg, #ef4444, #f87171)'
 }
@@ -24,7 +24,7 @@ export default function Occupancy() {
   if (isLoading)
     return (
       <div className="flex items-center justify-center py-20">
-        <div className="w-8 h-8 rounded-full border-4 border-indigo-200 border-t-indigo-600 animate-spin" />
+        <div className="w-8 h-8 rounded-full border-4 border-brand-200 border-t-brand-600 animate-spin" />
       </div>
     )
 
@@ -67,11 +67,11 @@ export default function Occupancy() {
       {/* Gradient Banner */}
       <div
         className="rounded-2xl p-6 text-white relative overflow-hidden"
-        style={{ background: 'linear-gradient(135deg, #1a0a2e 0%, #7c3aed 100%)' }}
+        style={{ background: 'linear-gradient(135deg, #0f2d4a 0%, #1d6ea8 100%)' }}
       >
         <div
           className="absolute top-0 right-0 w-64 h-64 rounded-full opacity-10 pointer-events-none"
-          style={{ background: 'radial-gradient(circle, #a78bfa, transparent)', transform: 'translate(30%, -30%)' }}
+          style={{ background: 'radial-gradient(circle, #3aaee8, transparent)', transform: 'translate(30%, -30%)' }}
         />
         <p className="text-sm font-medium" style={{ color: 'rgba(255,255,255,0.6)' }}>Super Admin</p>
         <h1 className="text-2xl font-bold mt-0.5 tracking-tight">Occupancy</h1>
@@ -93,8 +93,8 @@ export default function Occupancy() {
           label="Total Beds"
           value={totalBeds}
           sub={`${totalBeds - totalOccupied} currently available`}
-          icon={<MapPin size={20} className="text-indigo-600" />}
-          iconBg="bg-indigo-50"
+          icon={<MapPin size={20} className="text-brand-600" />}
+          iconBg="bg-brand-50"
         />
         <StatCard
           label="Avg Occupancy"

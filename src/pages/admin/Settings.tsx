@@ -3,7 +3,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { Settings, QrCode, Building2, Save, Plus, ChevronDown, ChevronRight, Pencil, X, Check, BedDouble } from 'lucide-react'
 import PageHeader from '../../components/ui/PageHeader'
 import {
-  getHostel, updateHostel, getFloors, createFloor, createRoom, createBed,
+  getHostel, updateHostel, getHostelStructure, createFloor, createRoomWithBeds, createBed,
 } from '../../api/staff'
 import { useAuthStore } from '../../store/authStore'
 import { useToastStore } from '../../store/toastStore'
@@ -56,8 +56,8 @@ export default function AdminSettings() {
   })
 
   const { data: floors = [], isLoading: floorsLoading } = useQuery({
-    queryKey: ['floors', activeHostelId],
-    queryFn: () => getFloors(activeHostelId!),
+    queryKey: ['structure', activeHostelId],
+    queryFn: () => getHostelStructure(activeHostelId!),
     enabled: !!activeHostelId && activeTab === 'floors',
   })
 
@@ -90,7 +90,7 @@ export default function AdminSettings() {
   const addFloorMut = useMutation({
     mutationFn: (data: Record<string, unknown>) => createFloor(activeHostelId!, data),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['floors', activeHostelId] })
+      queryClient.invalidateQueries({ queryKey: ['structure', activeHostelId] })
       setShowAddFloor(false)
       setNewFloorName('')
       show('success', 'Floor added', 'New floor has been created.')
@@ -102,12 +102,13 @@ export default function AdminSettings() {
   })
 
   const addRoomMut = useMutation({
-    mutationFn: ({ floorId, data }: { floorId: number; data: Record<string, unknown> }) => createRoom(floorId, data),
+    mutationFn: ({ floorId, data }: { floorId: number; data: Record<string, unknown> }) =>
+      createRoomWithBeds(activeHostelId!, floorId, data),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['floors', activeHostelId] })
+      queryClient.invalidateQueries({ queryKey: ['structure', activeHostelId] })
       setAddingRoomFloorId(null)
       setNewRoom({ roomNumber: '', type: 'SINGLE', totalBeds: '1' })
-      show('success', 'Room added', 'New room has been created.')
+      show('success', 'Room added', 'New room and its beds have been created.')
     },
     onError: (err: any) => {
       const msg = err?.response?.data?.message ?? 'Failed to add room.'
@@ -118,7 +119,7 @@ export default function AdminSettings() {
   const addBedMut = useMutation({
     mutationFn: ({ roomId, data }: { roomId: number; data: Record<string, unknown> }) => createBed(roomId, data),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['floors', activeHostelId] })
+      queryClient.invalidateQueries({ queryKey: ['structure', activeHostelId] })
       setAddingBedRoomId(null)
       setNewBedLabel('')
       show('success', 'Bed added', 'New bed has been created.')
@@ -171,8 +172,8 @@ export default function AdminSettings() {
       floorId,
       data: {
         roomNumber: newRoom.roomNumber.trim(),
-        type: newRoom.type,
-        totalBeds: Number(newRoom.totalBeds),
+        roomType: newRoom.type,
+        bedsPerRoom: Number(newRoom.totalBeds),
       },
     })
   }
@@ -191,11 +192,11 @@ export default function AdminSettings() {
     { key: 'floors', label: 'Floors & Rooms', icon: Building2 },
   ]
 
-  const inputCls = 'w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-gray-50 focus:bg-white transition-colors'
+  const inputCls = 'w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand-400 bg-gray-50 focus:bg-white transition-colors'
 
   if (hostelLoading) return (
     <div className="flex items-center justify-center py-20">
-      <div className="w-8 h-8 rounded-full border-4 border-indigo-200 border-t-indigo-600 animate-spin" />
+      <div className="w-8 h-8 rounded-full border-4 border-brand-200 border-t-brand-600 animate-spin" />
     </div>
   )
 
@@ -272,7 +273,7 @@ export default function AdminSettings() {
                 type="submit"
                 disabled={updateMut.isPending}
                 className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-white text-sm font-semibold shadow-sm hover:opacity-90 transition-opacity disabled:opacity-60"
-                style={{ background: 'linear-gradient(135deg, #059669, #34d399)' }}
+                style={{ background: 'linear-gradient(135deg, #1d6ea8, #1a8fd1)' }}
               >
                 <Save size={14} />
                 {updateMut.isPending ? 'Saving…' : 'Save Changes'}
@@ -317,7 +318,7 @@ export default function AdminSettings() {
                     }).catch(() => show('info', 'Registration link', url))
                   }}
                   className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-white text-sm font-semibold shadow-sm hover:opacity-90 transition-opacity"
-                  style={{ background: 'linear-gradient(135deg, #059669, #34d399)' }}
+                  style={{ background: 'linear-gradient(135deg, #1d6ea8, #1a8fd1)' }}
                 >
                   Copy Link
                 </button>
@@ -341,7 +342,7 @@ export default function AdminSettings() {
             <button
               onClick={() => setShowAddFloor((v) => !v)}
               className="flex items-center gap-2 px-4 py-2 rounded-xl text-white text-sm font-semibold shadow-sm hover:opacity-90 transition-opacity"
-              style={{ background: 'linear-gradient(135deg, #059669, #34d399)' }}
+              style={{ background: 'linear-gradient(135deg, #1d6ea8, #1a8fd1)' }}
             >
               <Plus size={14} />
               Add Floor
@@ -365,7 +366,7 @@ export default function AdminSettings() {
                   type="submit"
                   disabled={addFloorMut.isPending}
                   className="px-4 py-2.5 rounded-xl text-white text-sm font-semibold hover:opacity-90 disabled:opacity-60"
-                  style={{ background: 'linear-gradient(135deg, #059669, #34d399)' }}
+                  style={{ background: 'linear-gradient(135deg, #1d6ea8, #1a8fd1)' }}
                 >
                   {addFloorMut.isPending ? 'Adding…' : 'Add'}
                 </button>
@@ -382,7 +383,7 @@ export default function AdminSettings() {
 
           {floorsLoading && (
             <div className="flex items-center justify-center py-10">
-              <div className="w-8 h-8 rounded-full border-4 border-indigo-200 border-t-indigo-600 animate-spin" />
+              <div className="w-8 h-8 rounded-full border-4 border-brand-200 border-t-brand-600 animate-spin" />
             </div>
           )}
 
@@ -410,7 +411,7 @@ export default function AdminSettings() {
                           autoFocus
                           value={editFloorName}
                           onChange={(e) => setEditFloorName(e.target.value)}
-                          className="px-2.5 py-1 rounded-lg border border-emerald-300 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 font-semibold text-gray-800 w-44"
+                          className="px-2.5 py-1 rounded-lg border border-emerald-300 text-sm focus:outline-none focus:ring-2 focus:ring-brand-400 font-semibold text-gray-800 w-44"
                         />
                         <button
                           onClick={() => setEditingFloorId(null)}
@@ -432,7 +433,7 @@ export default function AdminSettings() {
                     <span className="text-xs font-semibold bg-gray-100 text-gray-500 px-2 py-0.5 rounded-full">
                       {rooms.length} rooms
                     </span>
-                    <span className="text-xs font-semibold bg-indigo-50 text-indigo-600 px-2 py-0.5 rounded-full">
+                    <span className="text-xs font-semibold bg-brand-50 text-brand-600 px-2 py-0.5 rounded-full">
                       {totalBeds} beds
                     </span>
                   </div>
@@ -490,7 +491,7 @@ export default function AdminSettings() {
                                       {Array.from({ length: totalB }).map((_, idx) => (
                                         <span
                                           key={idx}
-                                          className={`w-4 h-4 rounded-sm ${idx < occupiedB ? 'bg-indigo-400' : 'bg-gray-200'}`}
+                                          className={`w-4 h-4 rounded-sm ${idx < occupiedB ? 'bg-brand-400' : 'bg-gray-200'}`}
                                         />
                                       ))}
                                     </div>
@@ -498,7 +499,7 @@ export default function AdminSettings() {
                                   <td className="px-5 py-3">
                                     <button
                                       onClick={() => { setAddingBedRoomId(isAddingBedHere ? null : room.id); setNewBedLabel('') }}
-                                      className="flex items-center gap-1 text-xs font-semibold text-indigo-600 hover:text-indigo-800 bg-indigo-50 hover:bg-indigo-100 px-2.5 py-1.5 rounded-lg transition-colors whitespace-nowrap"
+                                      className="flex items-center gap-1 text-xs font-semibold text-brand-600 hover:text-brand-800 bg-brand-50 hover:bg-brand-100 px-2.5 py-1.5 rounded-lg transition-colors whitespace-nowrap"
                                     >
                                       <BedDouble size={12} />
                                       Add Bed
@@ -507,18 +508,18 @@ export default function AdminSettings() {
                                 </tr>
                                 {isAddingBedHere && (
                                   <tr key={`${roomNum}-add-bed`}>
-                                    <td colSpan={5} className="px-5 py-3 bg-indigo-50/50">
+                                    <td colSpan={5} className="px-5 py-3 bg-brand-50/50">
                                       <form
                                         onSubmit={(e) => handleAddBed(e, room.id)}
                                         className="flex items-center gap-2"
                                       >
-                                        <span className="text-xs font-semibold text-indigo-600">Bed label (optional):</span>
+                                        <span className="text-xs font-semibold text-brand-600">Bed label (optional):</span>
                                         <input
                                           autoFocus
                                           value={newBedLabel}
                                           onChange={(e) => setNewBedLabel(e.target.value)}
                                           placeholder={`e.g. ${roomNum}-A`}
-                                          className="px-2.5 py-1.5 rounded-lg border border-indigo-200 text-xs focus:outline-none focus:ring-2 focus:ring-indigo-400 w-32"
+                                          className="px-2.5 py-1.5 rounded-lg border border-brand-200 text-xs focus:outline-none focus:ring-2 focus:ring-brand-400 w-32"
                                         />
                                         <button
                                           type="submit"
@@ -564,7 +565,7 @@ export default function AdminSettings() {
                               value={newRoom.roomNumber}
                               onChange={(e) => setNewRoom((r) => ({ ...r, roomNumber: e.target.value }))}
                               placeholder="e.g. 101"
-                              className="px-2.5 py-2 rounded-lg border border-gray-200 text-xs focus:outline-none focus:ring-2 focus:ring-emerald-500 w-24"
+                              className="px-2.5 py-2 rounded-lg border border-gray-200 text-xs focus:outline-none focus:ring-2 focus:ring-brand-400 w-24"
                             />
                           </div>
                           <div>
@@ -572,7 +573,7 @@ export default function AdminSettings() {
                             <select
                               value={newRoom.type}
                               onChange={(e) => setNewRoom((r) => ({ ...r, type: e.target.value }))}
-                              className="px-2.5 py-2 rounded-lg border border-gray-200 text-xs focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-white"
+                              className="px-2.5 py-2 rounded-lg border border-gray-200 text-xs focus:outline-none focus:ring-2 focus:ring-brand-400 bg-white"
                             >
                               <option value="SINGLE">Single</option>
                               <option value="DOUBLE">Double</option>
@@ -588,7 +589,7 @@ export default function AdminSettings() {
                               max={20}
                               value={newRoom.totalBeds}
                               onChange={(e) => setNewRoom((r) => ({ ...r, totalBeds: e.target.value }))}
-                              className="px-2.5 py-2 rounded-lg border border-gray-200 text-xs focus:outline-none focus:ring-2 focus:ring-emerald-500 w-20"
+                              className="px-2.5 py-2 rounded-lg border border-gray-200 text-xs focus:outline-none focus:ring-2 focus:ring-brand-400 w-20"
                             />
                           </div>
                           <div className="flex gap-2">
@@ -596,7 +597,7 @@ export default function AdminSettings() {
                               type="submit"
                               disabled={addRoomMut.isPending}
                               className="px-4 py-2 rounded-lg text-white text-xs font-semibold hover:opacity-90 disabled:opacity-60"
-                              style={{ background: 'linear-gradient(135deg, #059669, #34d399)' }}
+                              style={{ background: 'linear-gradient(135deg, #1d6ea8, #1a8fd1)' }}
                             >
                               {addRoomMut.isPending ? 'Adding…' : 'Add Room'}
                             </button>

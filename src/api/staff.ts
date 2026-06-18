@@ -18,6 +18,10 @@ export const updateHostel = (hostelId: number, data: Record<string, unknown>) =>
 export const getFloors = (hostelId: number) =>
   apiClient.get(`/hostels/${hostelId}/floors`).then((r) => r.data.data)
 
+// Full nested structure: floors → rooms → beds (with occupancy)
+export const getHostelStructure = (hostelId: number) =>
+  apiClient.get(`/hostels/${hostelId}/structure`).then((r) => r.data.data)
+
 export const createFloor = (hostelId: number, data: Record<string, unknown>) =>
   apiClient.post(`/hostels/${hostelId}/floors`, data).then((r) => r.data.data)
 
@@ -26,6 +30,10 @@ export const getRooms = (floorId: number) =>
 
 export const createRoom = (floorId: number, data: Record<string, unknown>) =>
   apiClient.post(`/floors/${floorId}/rooms`, data).then((r) => r.data.data)
+
+// Create a room and auto-generate its beds in one call (staff)
+export const createRoomWithBeds = (hostelId: number, floorId: number, data: Record<string, unknown>) =>
+  apiClient.post(`/hostels/${hostelId}/floors/${floorId}/rooms-with-beds`, data).then((r) => r.data.data)
 
 export const getBeds = (roomId: number) =>
   apiClient.get(`/rooms/${roomId}/beds`).then((r) => r.data.data)
@@ -53,6 +61,14 @@ export const getMemberById = (id: number) =>
 // ─── Payments ─────────────────────────────────────────────────────────────────
 export const getPendingDues = (hostelId: number) =>
   apiClient.get(`/payment/dues/hostel/${hostelId}/pending`).then((r) => r.data.data)
+
+// All dues (paid + unpaid) for the hostel
+export const getAllDues = (hostelId: number) =>
+  apiClient.get(`/payment/dues/hostel/${hostelId}/all`).then((r) => r.data.data)
+
+// All payment transactions received for the hostel
+export const getPaymentRecords = (hostelId: number) =>
+  apiClient.get(`/payment/records/hostel/${hostelId}`).then((r) => r.data.data)
 
 export const recordCashPayment = (data: Record<string, unknown>) =>
   apiClient.post('/payment/cash', data).then((r) => r.data.data)
@@ -110,6 +126,14 @@ export const updateEmployee = (id: number, data: Record<string, unknown>) =>
 
 export const recordSalary = (employeeId: number, data: Record<string, unknown>) =>
   apiClient.post(`/employee/${employeeId}/salary`, data).then((r) => r.data.data)
+
+// Payroll summary: payable/paid/pending per employee for a month
+export const getPayrollSummary = (hostelId: number, month: number, year: number) =>
+  apiClient.get(`/employee/payroll/hostel/${hostelId}?month=${month}&year=${year}`).then((r) => r.data.data)
+
+// Occupancy from leave requests for a date range
+export const getLeaveOccupancy = (hostelId: number, from: string, to: string) =>
+  apiClient.get(`/leaves/occupancy?hostelId=${hostelId}&from=${from}&to=${to}`).then((r) => r.data.data)
 
 // ─── Leave ────────────────────────────────────────────────────────────────────
 export const getPendingLeaves = () =>

@@ -8,7 +8,7 @@ import { getHostelParking, updateParkingSlot } from '../../api/staff'
 import { useAuthStore } from '../../store/authStore'
 
 const AVATAR_COLORS = [
-  'bg-indigo-500', 'bg-emerald-500', 'bg-purple-500',
+  'bg-brand-500', 'bg-emerald-500', 'bg-purple-500',
   'bg-rose-500', 'bg-amber-500', 'bg-teal-500',
 ]
 
@@ -18,7 +18,7 @@ function getInitials(name: string) {
 
 function VehicleTypeChip({ type }: { type: string }) {
   const map: Record<string, { bg: string; text: string }> = {
-    Car: { bg: 'bg-indigo-50', text: 'text-indigo-700' },
+    Car: { bg: 'bg-brand-50', text: 'text-brand-700' },
     Bike: { bg: 'bg-amber-50', text: 'text-amber-700' },
     Scooter: { bg: 'bg-purple-50', text: 'text-purple-700' },
   }
@@ -60,14 +60,14 @@ export default function Parking() {
 
   if (isLoading) return (
     <div className="flex items-center justify-center py-20">
-      <div className="w-8 h-8 rounded-full border-4 border-indigo-200 border-t-indigo-600 animate-spin" />
+      <div className="w-8 h-8 rounded-full border-4 border-brand-200 border-t-brand-600 animate-spin" />
     </div>
   )
 
   return (
     <div className="space-y-6">
       <PageHeader
-        title="Parking Management"
+        title="Vehicle Parking Management"
         subtitle="Vehicle registration and slot allocation"
       />
 
@@ -77,8 +77,8 @@ export default function Parking() {
           label="Total Registered"
           value={totalSlots}
           sub="Registered vehicles"
-          icon={<Car size={20} className="text-indigo-600" />}
-          iconBg="bg-indigo-50"
+          icon={<Car size={20} className="text-brand-600" />}
+          iconBg="bg-brand-50"
         />
         <StatCard
           label="Active"
@@ -138,13 +138,13 @@ export default function Parking() {
                         <input
                           value={newSlot}
                           onChange={(e) => setNewSlot(e.target.value)}
-                          className="w-20 px-2 py-1 border border-gray-200 rounded-lg text-xs font-mono focus:outline-none focus:ring-1 focus:ring-emerald-500"
+                          className="w-20 px-2 py-1 border border-gray-200 rounded-lg text-xs font-mono focus:outline-none focus:ring-1 focus:ring-brand-400"
                           placeholder="P-XX"
                         />
                         <button
                           onClick={() => updateMut.mutate({ recordId: v.id, slotNumber: newSlot })}
                           disabled={updateMut.isPending || !newSlot}
-                          className="text-xs font-semibold text-emerald-600 border border-emerald-200 bg-emerald-50 hover:bg-emerald-600 hover:text-white px-2 py-1 rounded-lg transition-all disabled:opacity-60"
+                          className="text-xs font-semibold text-emerald-600 border border-emerald-200 bg-emerald-50 hover:bg-brand-600 hover:text-white px-2 py-1 rounded-lg transition-all disabled:opacity-60"
                         >
                           Save
                         </button>
@@ -156,7 +156,7 @@ export default function Parking() {
                         </button>
                       </div>
                     ) : (
-                      <span className="font-mono text-xs font-bold bg-indigo-50 text-indigo-700 px-2.5 py-1 rounded-lg">
+                      <span className="font-mono text-xs font-bold bg-brand-50 text-brand-700 px-2.5 py-1 rounded-lg">
                         {v.slotNumber ?? v.slot ?? '—'}
                       </span>
                     )}

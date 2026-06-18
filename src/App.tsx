@@ -69,7 +69,7 @@ const SAAccount = lazy(() => import('./pages/super-admin/Account'))
 function PageLoader() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-gray-50">
-      <div className="w-6 h-6 border-2 border-indigo-500 border-t-transparent rounded-full animate-spin" />
+      <div className="w-6 h-6 border-2 border-brand-500 border-t-transparent rounded-full animate-spin" />
     </div>
   )
 }

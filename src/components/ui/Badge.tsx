@@ -1,16 +1,39 @@
+const GREEN  = { bg: 'bg-emerald-50', dot: 'bg-emerald-500', text: 'text-emerald-700' }
+const AMBER  = { bg: 'bg-amber-50',   dot: 'bg-amber-400',   text: 'text-amber-700' }
+const RED    = { bg: 'bg-red-50',     dot: 'bg-red-500',     text: 'text-red-600' }
+const GRAY   = { bg: 'bg-gray-100',   dot: 'bg-gray-400',    text: 'text-gray-500' }
+const BRAND  = { bg: 'bg-brand-50',   dot: 'bg-brand-500',   text: 'text-brand-700' }
+
 const CONFIG: Record<string, { bg: string; dot: string; text: string; label?: string }> = {
-  OPEN:        { bg: 'bg-amber-50',   dot: 'bg-amber-400',   text: 'text-amber-700' },
-  IN_PROGRESS: { bg: 'bg-blue-50',    dot: 'bg-blue-400',    text: 'text-blue-700',    label: 'In Progress' },
-  RESOLVED:    { bg: 'bg-emerald-50', dot: 'bg-emerald-500', text: 'text-emerald-700' },
-  CLOSED:      { bg: 'bg-gray-100',   dot: 'bg-gray-400',    text: 'text-gray-500' },
-  PENDING:     { bg: 'bg-amber-50',   dot: 'bg-amber-400',   text: 'text-amber-700' },
-  PAID:        { bg: 'bg-emerald-50', dot: 'bg-emerald-500', text: 'text-emerald-700' },
-  OVERDUE:     { bg: 'bg-red-50',     dot: 'bg-red-500',     text: 'text-red-600' },
-  ACTIVE:      { bg: 'bg-emerald-50', dot: 'bg-emerald-500', text: 'text-emerald-700' },
-  INACTIVE:    { bg: 'bg-gray-100',   dot: 'bg-gray-400',    text: 'text-gray-500' },
-  APPROVED:    { bg: 'bg-emerald-50', dot: 'bg-emerald-500', text: 'text-emerald-700' },
-  REJECTED:    { bg: 'bg-red-50',     dot: 'bg-red-500',     text: 'text-red-600' },
-  ALLOCATED:   { bg: 'bg-indigo-50',  dot: 'bg-indigo-500',  text: 'text-indigo-700' },
+  // Complaints / maintenance
+  OPEN:            { ...AMBER },
+  IN_PROGRESS:     { ...BRAND, label: 'In Progress' },
+  RESOLVED:        { ...GREEN },
+  CLOSED:          { ...GRAY },
+  COMPLETED:       { ...GREEN },
+  SCHEDULED:       { ...BRAND },
+  // Payments
+  PENDING:         { ...AMBER },
+  PAID:            { ...GREEN },
+  UNPAID:          { ...AMBER },
+  OVERDUE:         { ...RED },
+  SUCCESS:         { ...GREEN },
+  FAILED:          { ...RED },
+  // Generic lifecycle
+  ACTIVE:          { ...GREEN },
+  INACTIVE:        { ...GRAY },
+  APPROVED:        { ...GREEN },
+  REJECTED:        { ...RED },
+  CANCELLED:       { ...GRAY },
+  EXPIRED:         { ...GRAY },
+  ALLOCATED:       { ...BRAND },
+  // Booking request lifecycle
+  PENDING_APPROVAL:{ ...AMBER, label: 'Pending Approval' },
+  REASSIGNED:      { ...BRAND },
+  // Bed statuses
+  AVAILABLE:       { ...GREEN },
+  RESERVED:        { ...AMBER, label: 'Allocated · Waiting' },
+  OCCUPIED:        { ...RED },
 }
 
 const DEFAULT = { bg: 'bg-gray-100', dot: 'bg-gray-400', text: 'text-gray-500' }

@@ -1,12 +1,29 @@
+import { useState } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import { Users, UserCheck, UserMinus } from 'lucide-react'
 import Badge from '../../components/ui/Badge'
 import PageHeader from '../../components/ui/PageHeader'
-import { getPendingLeaves, reviewLeave } from '../../api/staff'
+import StatCard from '../../components/ui/StatCard'
+import { getPendingLeaves, reviewLeave, getLeaveOccupancy } from '../../api/staff'
 import { useToastStore } from '../../store/toastStore'
+import { useAuthStore } from '../../store/authStore'
+
+function todayISO(offset = 0) {
+  const d = new Date(); d.setDate(d.getDate() + offset); return d.toISOString().split('T')[0]
+}
 
 export default function AdminLeave() {
   const queryClient = useQueryClient()
   const { show } = useToastStore()
+  const { activeHostelId } = useAuthStore()
+
+  const [from, setFrom] = useState(todayISO(0))
+  const [to, setTo] = useState(todayISO(7))
+  const { data: occupancy } = useQuery({
+    queryKey: ['leave-occupancy', activeHostelId, from, to],
+    queryFn: () => getLeaveOccupancy(activeHostelId!, from, to),
+    enabled: !!activeHostelId && !!from && !!to,
+  })
 
   const { data: leaves = [], isLoading } = useQuery({
     queryKey: ['leaves'],
@@ -39,13 +56,47 @@ export default function AdminLeave() {
 
   if (isLoading) return (
     <div className="flex items-center justify-center py-20">
-      <div className="w-8 h-8 rounded-full border-4 border-indigo-200 border-t-indigo-600 animate-spin" />
+      <div className="w-8 h-8 rounded-full border-4 border-brand-200 border-t-brand-600 animate-spin" />
     </div>
   )
 
   return (
     <div className="space-y-6">
-      <PageHeader title="Leave Requests" subtitle="Review and approve leave applications" />
+      <PageHeader title="Leave Requests" subtitle="Review approvals and plan occupancy" />
+
+      {/* Occupancy planner (from approved leaves) */}
+      <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 space-y-4">
+        <div className="flex flex-wrap items-end gap-3">
+          <div>
+            <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1.5">Expected occupancy from</label>
+            <input type="date" value={from} max={to} onChange={(e) => setFrom(e.target.value)}
+              className="px-3.5 py-2 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand-400" />
+          </div>
+          <div>
+            <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1.5">To</label>
+            <input type="date" value={to} min={from} onChange={(e) => setTo(e.target.value)}
+              className="px-3.5 py-2 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand-400" />
+          </div>
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <StatCard label="Total Residents" value={occupancy?.totalResidents ?? 0} sub="Active in hostel"
+            icon={<Users size={20} className="text-brand-600" />} iconBg="bg-brand-50" />
+          <StatCard label="On Leave" value={occupancy?.onLeave ?? 0} sub="Approved leaves in range"
+            icon={<UserMinus size={20} className="text-amber-600" />} iconBg="bg-amber-50" />
+          <StatCard label="Expected Occupancy" value={occupancy?.expectedOccupancy ?? 0} sub="Plan food & resources for"
+            icon={<UserCheck size={20} className="text-emerald-600" />} iconBg="bg-emerald-50" />
+        </div>
+        {(occupancy?.onLeaveResidents?.length ?? 0) > 0 && (
+          <div className="flex flex-wrap gap-2 pt-1">
+            <span className="text-xs font-semibold text-gray-400 self-center">Away:</span>
+            {(occupancy.onLeaveResidents as any[]).map((r) => (
+              <span key={r.hostellerId} className="text-xs font-medium bg-amber-50 text-amber-700 border border-amber-100 px-2.5 py-1 rounded-full">
+                {r.name ?? `#${r.hostellerId}`} · {r.leaveType}
+              </span>
+            ))}
+          </div>
+        )}
+      </div>
 
       {pending.length > 0 && (
         <div className="space-y-3">
@@ -77,7 +128,7 @@ export default function AdminLeave() {
                   <button
                     onClick={() => updateStatus(l.id, 'APPROVED')}
                     disabled={reviewMut.isPending}
-                    className="px-4 py-2 text-sm text-white bg-emerald-600 rounded-lg hover:bg-emerald-700 disabled:opacity-60"
+                    className="px-4 py-2 text-sm text-white bg-brand-600 rounded-lg hover:bg-brand-700 disabled:opacity-60"
                   >
                     Approve
                   </button>

@@ -32,8 +32,8 @@ function HostelCardItem({ hostel, onView }: { hostel: HostelCard; onView: () => 
     <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 flex flex-col gap-3 hover:shadow-md transition-all duration-200">
       <div className="flex items-start justify-between gap-2">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-indigo-50 flex items-center justify-center shrink-0">
-            <Building2 size={18} className="text-indigo-600" />
+          <div className="w-10 h-10 rounded-xl bg-brand-50 flex items-center justify-center shrink-0">
+            <Building2 size={18} className="text-brand-600" />
           </div>
           <div>
             <div className="flex items-center gap-2">
@@ -95,7 +95,7 @@ function HostelCardItem({ hostel, onView }: { hostel: HostelCard; onView: () => 
 function Spinner() {
   return (
     <div className="flex items-center justify-center py-20">
-      <div className="w-8 h-8 rounded-full border-4 border-indigo-200 border-t-indigo-600 animate-spin" />
+      <div className="w-8 h-8 rounded-full border-4 border-brand-200 border-t-brand-600 animate-spin" />
     </div>
   )
 }
@@ -124,8 +124,8 @@ function NearbyTab() {
   if (!requested) {
     return (
       <div className="flex flex-col items-center gap-4 py-16">
-        <div className="w-14 h-14 rounded-2xl bg-indigo-50 flex items-center justify-center">
-          <Compass size={26} className="text-indigo-600" />
+        <div className="w-14 h-14 rounded-2xl bg-brand-50 flex items-center justify-center">
+          <Compass size={26} className="text-brand-600" />
         </div>
         <div className="text-center">
           <p className="font-semibold text-gray-800">Find hostels near you</p>
@@ -147,7 +147,7 @@ function NearbyTab() {
       <div className="flex flex-col items-center gap-3 py-16 text-center">
         <MapPin size={32} className="text-red-300" />
         <p className="text-sm text-red-500 font-medium">{geoError}</p>
-        <button onClick={requestLocation} className="text-sm text-indigo-600 font-semibold hover:underline">
+        <button onClick={requestLocation} className="text-sm text-brand-600 font-semibold hover:underline">
           Try again
         </button>
       </div>
@@ -205,7 +205,7 @@ function SearchTab() {
             placeholder="Search by city (e.g. Hyderabad)"
             value={city}
             onChange={(e) => setCity(e.target.value)}
-            className="w-full pl-9 pr-4 py-2.5 rounded-xl border border-gray-200 text-sm text-gray-800 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-300 focus:border-indigo-400"
+            className="w-full pl-9 pr-4 py-2.5 rounded-xl border border-gray-200 text-sm text-gray-800 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-brand-300 focus:border-brand-400"
           />
         </div>
         <button
@@ -218,7 +218,7 @@ function SearchTab() {
         <button
           type="button"
           onClick={handleBrowseAll}
-          className="px-4 py-2.5 rounded-xl text-sm font-semibold text-indigo-600 border border-indigo-200 hover:bg-indigo-50 transition-colors shrink-0"
+          className="px-4 py-2.5 rounded-xl text-sm font-semibold text-brand-600 border border-brand-200 hover:bg-brand-50 transition-colors shrink-0"
         >
           Browse All
         </button>
@@ -248,8 +248,8 @@ function SearchTab() {
 
       {submitted === null && (
         <div className="flex flex-col items-center gap-4 py-12 text-center">
-          <div className="w-14 h-14 rounded-2xl bg-indigo-50 flex items-center justify-center">
-            <Search size={26} className="text-indigo-400" />
+          <div className="w-14 h-14 rounded-2xl bg-brand-50 flex items-center justify-center">
+            <Search size={26} className="text-brand-400" />
           </div>
           <div>
             <p className="font-semibold text-gray-700">Search for your ideal hostel</p>
@@ -279,7 +279,7 @@ export default function HostelDiscovery() {
             onClick={() => setActiveTab(tab)}
             className={`flex items-center gap-1.5 px-4 py-1.5 rounded-lg text-sm font-semibold transition-all ${
               activeTab === tab
-                ? 'bg-white text-indigo-700 shadow-sm'
+                ? 'bg-white text-brand-700 shadow-sm'
                 : 'text-gray-500 hover:text-gray-700'
             }`}
           >

@@ -98,7 +98,7 @@ export default function AdminMenu() {
 
   if (menuLoading || itemsLoading) return (
     <div className="flex items-center justify-center py-20">
-      <div className="w-8 h-8 rounded-full border-4 border-indigo-200 border-t-indigo-600 animate-spin" />
+      <div className="w-8 h-8 rounded-full border-4 border-brand-200 border-t-brand-600 animate-spin" />
     </div>
   )
 
@@ -116,7 +116,7 @@ export default function AdminMenu() {
               <button
                 onClick={handleSave}
                 disabled={saveMut.isPending}
-                className="flex items-center gap-1.5 px-4 py-2 text-sm text-white bg-emerald-600 rounded-lg hover:bg-emerald-700 disabled:opacity-60"
+                className="flex items-center gap-1.5 px-4 py-2 text-sm text-white bg-brand-600 rounded-lg hover:bg-brand-700 disabled:opacity-60"
               >
                 <Save size={14} /> {saveMut.isPending ? 'Saving…' : 'Save'}
               </button>
@@ -150,7 +150,7 @@ export default function AdminMenu() {
                         <input
                           value={draft[i][field]}
                           onChange={(e) => updateCell(i, field, e.target.value)}
-                          className="w-full px-2.5 py-1.5 rounded border border-gray-200 text-sm focus:outline-none focus:ring-1 focus:ring-emerald-500"
+                          className="w-full px-2.5 py-1.5 rounded border border-gray-200 text-sm focus:outline-none focus:ring-1 focus:ring-brand-400"
                         />
                       ) : (
                         <span className="text-gray-600">{row[field] || '—'}</span>

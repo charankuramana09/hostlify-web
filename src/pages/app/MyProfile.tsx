@@ -1,10 +1,13 @@
 import { useState, useEffect, type FormEvent, type ChangeEvent } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { Save, X, User, Home, Phone, Mail, MapPin, CreditCard } from 'lucide-react'
+import { Save, X, User, Home, Phone, Mail, MapPin, CreditCard, Camera, FileText, ShieldAlert, CheckCircle2 } from 'lucide-react'
 import PageHeader from '../../components/ui/PageHeader'
 import { useAuthStore } from '../../store/authStore'
 import { useToastStore } from '../../store/toastStore'
-import { getHostellerProfile, updateHostellerProfile, getMyBooking } from '../../api/hosteller'
+import {
+  getHostellerProfile, updateHostellerProfile, getMyBooking,
+  getEmergencyContact, saveEmergencyContact, uploadProfilePhoto, uploadIdProof,
+} from '../../api/hosteller'
 
 function fmtDate(d: string) {
   if (!d) return '—'
@@ -12,7 +15,7 @@ function fmtDate(d: string) {
 }
 
 const inputCls =
-  'w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-gray-50 focus:bg-white transition-colors'
+  'w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand-400 bg-gray-50 focus:bg-white transition-colors'
 
 const selectCls = inputCls + ' bg-gray-50'
 
@@ -67,6 +70,41 @@ export default function MyProfile() {
     queryFn: getMyBooking,
   })
 
+  // Emergency contact (separate record)
+  const [emForm, setEmForm] = useState({ name: '', relationship: '', mobile: '', altMobile: '' })
+  const { data: emergency } = useQuery({
+    queryKey: ['emergency', hostellerProfileId],
+    queryFn: () => getEmergencyContact(hostellerProfileId!),
+    enabled: !!hostellerProfileId,
+  })
+  useEffect(() => {
+    if (emergency) setEmForm({
+      name: emergency.name ?? '', relationship: emergency.relationship ?? '',
+      mobile: emergency.mobile ?? '', altMobile: emergency.altMobile ?? '',
+    })
+  }, [emergency])
+
+  const emMutation = useMutation({
+    mutationFn: () => saveEmergencyContact(hostellerProfileId!, emForm),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['emergency', hostellerProfileId] })
+      queryClient.invalidateQueries({ queryKey: ['profile-completion'] })
+      show('success', 'Saved', 'Emergency contact updated.')
+    },
+    onError: () => show('error', 'Save failed', 'Could not save emergency contact.'),
+  })
+
+  const photoMutation = useMutation({
+    mutationFn: (file: File) => uploadProfilePhoto(hostellerProfileId!, file),
+    onSuccess: () => { queryClient.invalidateQueries({ queryKey: ['profile', hostellerProfileId] }); show('success', 'Photo updated', 'Your profile photo was uploaded.') },
+    onError: () => show('error', 'Upload failed', 'Photo storage is not configured. Please try later.'),
+  })
+  const idMutation = useMutation({
+    mutationFn: (file: File) => uploadIdProof(hostellerProfileId!, file),
+    onSuccess: () => { queryClient.invalidateQueries({ queryKey: ['profile', hostellerProfileId] }); show('success', 'ID uploaded', 'Your ID document was uploaded.') },
+    onError: () => show('error', 'Upload failed', 'Document storage is not configured. Please try later.'),
+  })
+
   useEffect(() => {
     if (profile) {
       // support both { name, phone } and { firstName, lastName, mobile } shapes
@@ -116,7 +154,7 @@ export default function MyProfile() {
 
   if (isLoading) return (
     <div className="flex items-center justify-center py-20">
-      <div className="w-8 h-8 rounded-full border-4 border-indigo-200 border-t-indigo-600 animate-spin" />
+      <div className="w-8 h-8 rounded-full border-4 border-brand-200 border-t-brand-600 animate-spin" />
     </div>
   )
 
@@ -151,7 +189,7 @@ export default function MyProfile() {
           ) : (
             <button
               onClick={() => setEditing(true)}
-              className="flex items-center gap-1.5 px-4 py-2 text-sm text-indigo-600 border border-indigo-200 rounded-xl hover:bg-indigo-50 transition-colors"
+              className="flex items-center gap-1.5 px-4 py-2 text-sm text-brand-600 border border-brand-200 rounded-xl hover:bg-brand-50 transition-colors"
             >
               Edit Profile
             </button>
@@ -171,11 +209,25 @@ export default function MyProfile() {
           />
         </div>
         <div className="bg-white px-6 pb-5">
-          <div
-            className="w-20 h-20 rounded-2xl flex items-center justify-center text-white text-2xl font-bold -mt-10 mb-3 border-4 border-white shadow-md"
-            style={{ background: 'linear-gradient(135deg, #1d6ea8, #3aaee8)' }}
-          >
-            {initials}
+          <div className="relative w-20 h-20 -mt-10 mb-3">
+            {profile?.photoUrl ? (
+              <img src={profile.photoUrl} alt="Profile" className="w-20 h-20 rounded-2xl object-cover border-4 border-white shadow-md" />
+            ) : (
+              <div
+                className="w-20 h-20 rounded-2xl flex items-center justify-center text-white text-2xl font-bold border-4 border-white shadow-md"
+                style={{ background: 'linear-gradient(135deg, #1d6ea8, #3aaee8)' }}
+              >
+                {initials}
+              </div>
+            )}
+            <label
+              className="absolute -bottom-1 -right-1 w-7 h-7 rounded-full bg-brand-600 border-2 border-white flex items-center justify-center text-white cursor-pointer hover:bg-brand-700 transition-colors"
+              title="Upload photo"
+            >
+              <Camera size={13} />
+              <input type="file" accept="image/*" className="hidden"
+                onChange={(e) => { const f = e.target.files?.[0]; if (f) photoMutation.mutate(f) }} />
+            </label>
           </div>
           <h2 className="text-xl font-bold text-gray-900">{displayName}</h2>
           <p className="text-sm text-gray-500 mt-0.5 flex items-center gap-1.5">
@@ -187,7 +239,7 @@ export default function MyProfile() {
       <form onSubmit={handleSave} className="space-y-6">
         {/* Personal Details */}
         <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
-          <SectionHeader icon={User} label="Personal Details" color="bg-indigo-500" />
+          <SectionHeader icon={User} label="Personal Details" color="bg-brand-500" />
           <div className="p-5 grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1.5">First Name</label>
@@ -346,6 +398,50 @@ export default function MyProfile() {
               ) : (
                 <p className="text-sm text-gray-800 font-medium py-2.5">{form.idProofNumber || '—'}</p>
               )}
+            </div>
+            <div className="sm:col-span-2">
+              <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1.5">ID Document</label>
+              <div className="flex items-center gap-3">
+                <label className="inline-flex items-center gap-2 px-4 py-2 rounded-xl border border-brand-200 text-brand-600 text-sm font-semibold cursor-pointer hover:bg-brand-50 transition-colors">
+                  <FileText size={14} /> {profile?.idProofUrl ? 'Replace Document' : 'Upload Document'}
+                  <input type="file" accept="image/*,application/pdf" className="hidden"
+                    onChange={(e) => { const f = e.target.files?.[0]; if (f) idMutation.mutate(f) }} />
+                </label>
+                {profile?.idProofUrl
+                  ? <span className="inline-flex items-center gap-1 text-xs font-semibold text-emerald-600"><CheckCircle2 size={13} /> Uploaded</span>
+                  : <span className="text-xs text-gray-400">Aadhaar / PAN / Passport (image or PDF)</span>}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Emergency Contact */}
+        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+          <SectionHeader icon={ShieldAlert} label="Emergency Contact" color="bg-rose-500" />
+          <div className="p-5 grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1.5">Contact Name</label>
+              <input className={inputCls} value={emForm.name} onChange={(e) => setEmForm((f) => ({ ...f, name: e.target.value }))} placeholder="e.g. Suresh Kumar" />
+            </div>
+            <div>
+              <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1.5">Relationship</label>
+              <input className={inputCls} value={emForm.relationship} onChange={(e) => setEmForm((f) => ({ ...f, relationship: e.target.value }))} placeholder="e.g. Father" />
+            </div>
+            <div>
+              <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1.5">Mobile</label>
+              <input className={inputCls} value={emForm.mobile} inputMode="numeric" maxLength={10}
+                onChange={(e) => setEmForm((f) => ({ ...f, mobile: e.target.value.replace(/\D/g, '').slice(0, 10) }))} placeholder="10-digit number" />
+            </div>
+            <div>
+              <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1.5">Alt. Mobile (optional)</label>
+              <input className={inputCls} value={emForm.altMobile} inputMode="numeric" maxLength={10}
+                onChange={(e) => setEmForm((f) => ({ ...f, altMobile: e.target.value.replace(/\D/g, '').slice(0, 10) }))} placeholder="Alternate number" />
+            </div>
+            <div className="sm:col-span-2 flex justify-end">
+              <button type="button" onClick={() => emMutation.mutate()} disabled={emMutation.isPending || !emForm.name || !emForm.relationship || emForm.mobile.length !== 10}
+                className="flex items-center gap-2 px-5 py-2.5 text-sm font-semibold text-white rounded-xl brand-gradient hover:opacity-90 transition-opacity disabled:opacity-50">
+                <Save size={14} /> {emMutation.isPending ? 'Saving…' : 'Save Emergency Contact'}
+              </button>
             </div>
           </div>
         </div>

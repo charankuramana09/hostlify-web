@@ -73,7 +73,7 @@ function ApproveModal({
                 value={monthlyRent}
                 onChange={(e) => setMonthlyRent(e.target.value)}
                 placeholder="e.g. 8000"
-                className="w-full pl-9 pr-4 py-2.5 border border-gray-200 rounded-xl text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-indigo-300 focus:border-indigo-400"
+                className="w-full pl-9 pr-4 py-2.5 border border-gray-200 rounded-xl text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-brand-300 focus:border-brand-400"
               />
             </div>
           </div>
@@ -87,7 +87,7 @@ function ApproveModal({
                 value={advanceAmount}
                 onChange={(e) => setAdvanceAmount(e.target.value)}
                 placeholder="e.g. 16000"
-                className="w-full pl-9 pr-4 py-2.5 border border-gray-200 rounded-xl text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-indigo-300 focus:border-indigo-400"
+                className="w-full pl-9 pr-4 py-2.5 border border-gray-200 rounded-xl text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-brand-300 focus:border-brand-400"
               />
             </div>
           </div>
@@ -97,7 +97,7 @@ function ApproveModal({
             <select
               value={paymentMode}
               onChange={(e) => setPaymentMode(e.target.value)}
-              className="w-full border border-gray-200 rounded-xl px-3.5 py-2.5 text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-indigo-300 focus:border-indigo-400 bg-white"
+              className="w-full border border-gray-200 rounded-xl px-3.5 py-2.5 text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-brand-300 focus:border-brand-400 bg-white"
             >
               <option value="CASH">Cash</option>
               <option value="ONLINE">Online</option>
@@ -262,7 +262,7 @@ function ReassignModal({
             <select
               value={selectedFloorId ?? ''}
               onChange={(e) => { setSelectedFloorId(Number(e.target.value)); setSelectedRoomId(null); setSelectedBedId(null) }}
-              className="w-full border border-gray-200 rounded-xl px-3.5 py-2.5 text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-indigo-300 bg-white"
+              className="w-full border border-gray-200 rounded-xl px-3.5 py-2.5 text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-brand-300 bg-white"
             >
               <option value="">Select floor...</option>
               {(floors as any[]).filter((f) => (f.availableBeds ?? 0) > 0).map((f: any) => (
@@ -277,7 +277,7 @@ function ReassignModal({
               <select
                 value={selectedRoomId ?? ''}
                 onChange={(e) => { setSelectedRoomId(Number(e.target.value)); setSelectedBedId(null) }}
-                className="w-full border border-gray-200 rounded-xl px-3.5 py-2.5 text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-indigo-300 bg-white"
+                className="w-full border border-gray-200 rounded-xl px-3.5 py-2.5 text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-brand-300 bg-white"
               >
                 <option value="">Select room...</option>
                 {(rooms as any[]).filter((r) => (r.availableBeds ?? 0) > 0).map((r: any) => (
@@ -293,7 +293,7 @@ function ReassignModal({
               <select
                 value={selectedBedId ?? ''}
                 onChange={(e) => setSelectedBedId(Number(e.target.value))}
-                className="w-full border border-gray-200 rounded-xl px-3.5 py-2.5 text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-indigo-300 bg-white"
+                className="w-full border border-gray-200 rounded-xl px-3.5 py-2.5 text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-brand-300 bg-white"
               >
                 <option value="">Select bed...</option>
                 {availableBeds.map((b: any) => (
@@ -359,7 +359,7 @@ export default function BookingRequests() {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center py-20">
-        <div className="w-8 h-8 rounded-full border-4 border-indigo-200 border-t-indigo-600 animate-spin" />
+        <div className="w-8 h-8 rounded-full border-4 border-brand-200 border-t-brand-600 animate-spin" />
       </div>
     )
   }
@@ -380,8 +380,8 @@ export default function BookingRequests() {
             onClick={() => setActiveTab(tab)}
             className={`px-4 py-1.5 rounded-full text-sm font-medium transition-colors ${
               activeTab === tab
-                ? 'bg-indigo-600 text-white shadow-sm'
-                : 'bg-white border border-gray-200 text-gray-600 hover:border-indigo-300 hover:text-indigo-600'
+                ? 'bg-brand-600 text-white shadow-sm'
+                : 'bg-white border border-gray-200 text-gray-600 hover:border-brand-300 hover:text-brand-600'
             }`}
           >
             {tab === 'ALL' ? 'All' : tab.replace(/_/g, ' ')}

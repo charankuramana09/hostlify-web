@@ -203,7 +203,7 @@ export default function CreateOwnerPage() {
             type="submit"
             disabled={mutation.isPending}
             className="flex items-center gap-2 px-6 py-2.5 rounded-xl text-sm font-semibold text-white transition-opacity hover:opacity-90 disabled:opacity-60"
-            style={{ background: 'linear-gradient(135deg, #1a0a2e 0%, #7c3aed 100%)' }}
+            style={{ background: 'linear-gradient(135deg, #0f2d4a 0%, #1d6ea8 100%)' }}
           >
             <UserPlus size={16} /> {mutation.isPending ? 'Creating...' : 'Create Owner Account'}
           </button>

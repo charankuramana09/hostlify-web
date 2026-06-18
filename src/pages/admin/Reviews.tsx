@@ -6,7 +6,7 @@ import { getReviews } from '../../api/staff'
 import { useAuthStore } from '../../store/authStore'
 
 const AVATAR_COLORS = [
-  'bg-indigo-500', 'bg-emerald-500', 'bg-purple-500',
+  'bg-brand-500', 'bg-emerald-500', 'bg-purple-500',
   'bg-rose-500', 'bg-amber-500', 'bg-teal-500',
 ]
 
@@ -52,7 +52,7 @@ export default function Reviews() {
 
   if (isLoading) return (
     <div className="flex items-center justify-center py-20">
-      <div className="w-8 h-8 rounded-full border-4 border-indigo-200 border-t-indigo-600 animate-spin" />
+      <div className="w-8 h-8 rounded-full border-4 border-brand-200 border-t-brand-600 animate-spin" />
     </div>
   )
 
@@ -150,8 +150,8 @@ export default function Reviews() {
                   <StarDisplay rating={review.rating ?? 0} />
                   <p className="text-sm text-gray-600 mt-2.5 leading-relaxed">{review.reviewText ?? review.text}</p>
                   <div className="flex items-center justify-between mt-3">
-                    <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-indigo-50 text-indigo-600 text-xs font-semibold">
-                      <Star size={10} className="fill-indigo-400 text-indigo-400" />
+                    <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-brand-50 text-brand-600 text-xs font-semibold">
+                      <Star size={10} className="fill-brand-400 text-brand-400" />
                       Reviewed after checkout
                     </span>
                     <button className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-gray-200 text-gray-500 text-xs font-semibold hover:bg-gray-50 transition-colors">

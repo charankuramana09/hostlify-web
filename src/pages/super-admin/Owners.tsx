@@ -7,11 +7,11 @@ import { getOwners } from '../../api/superadmin'
 
 const PLAN_CHIP: Record<string, string> = {
   STARTER: 'bg-gray-100 text-gray-600',
-  PROFESSIONAL: 'bg-indigo-50 text-indigo-700',
+  PROFESSIONAL: 'bg-brand-50 text-brand-700',
   ENTERPRISE: 'bg-violet-50 text-violet-700',
 }
 
-const AVATAR_COLORS = ['bg-indigo-500', 'bg-emerald-500', 'bg-purple-500', 'bg-rose-500', 'bg-amber-500', 'bg-teal-500']
+const AVATAR_COLORS = ['bg-brand-500', 'bg-emerald-500', 'bg-purple-500', 'bg-rose-500', 'bg-amber-500', 'bg-teal-500']
 
 function getInitials(name: string) {
   return name.split(' ').map((n) => n[0]).join('').toUpperCase().slice(0, 2)
@@ -27,7 +27,7 @@ export default function Owners() {
   if (isLoading)
     return (
       <div className="flex items-center justify-center py-20">
-        <div className="w-8 h-8 rounded-full border-4 border-indigo-200 border-t-indigo-600 animate-spin" />
+        <div className="w-8 h-8 rounded-full border-4 border-brand-200 border-t-brand-600 animate-spin" />
       </div>
     )
 
@@ -54,11 +54,11 @@ export default function Owners() {
       {/* Hero Banner */}
       <div
         className="rounded-2xl p-6 text-white relative overflow-hidden"
-        style={{ background: 'linear-gradient(135deg, #1a0a2e 0%, #7c3aed 100%)' }}
+        style={{ background: 'linear-gradient(135deg, #0f2d4a 0%, #1d6ea8 100%)' }}
       >
         <div
           className="absolute top-0 right-0 w-64 h-64 rounded-full opacity-10 pointer-events-none"
-          style={{ background: 'radial-gradient(circle, #a78bfa, transparent)', transform: 'translate(30%, -30%)' }}
+          style={{ background: 'radial-gradient(circle, #3aaee8, transparent)', transform: 'translate(30%, -30%)' }}
         />
         <div className="flex items-start justify-between gap-4">
           <div>

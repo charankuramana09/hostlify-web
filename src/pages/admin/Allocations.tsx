@@ -1,7 +1,7 @@
 import { useState, type FormEvent } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import {
-  X, ClipboardList, CheckCircle2, XCircle, RefreshCw, IndianRupee,
+  X, ClipboardList, CheckCircle2, XCircle, RefreshCw, IndianRupee, Lock,
 } from 'lucide-react'
 import Badge from '../../components/ui/Badge'
 import PageHeader from '../../components/ui/PageHeader'
@@ -28,7 +28,7 @@ const PREF_CHIP: Record<string, string> = {
   Any:    'bg-emerald-50 text-emerald-700',
 }
 
-const AVATAR_COLORS = ['bg-indigo-500', 'bg-emerald-500', 'bg-purple-500', 'bg-rose-500', 'bg-amber-500']
+const AVATAR_COLORS = ['bg-brand-500', 'bg-emerald-500', 'bg-purple-500', 'bg-rose-500', 'bg-amber-500']
 
 function getInitials(name: string) {
   return (name || '??').split(' ').map((n) => n[0]).join('').toUpperCase().slice(0, 2)
@@ -73,7 +73,7 @@ function ApproveModal({ requestId, onClose, onSuccess }: { requestId: number; on
             <div className="relative">
               <IndianRupee size={14} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" />
               <input type="number" value={monthlyRent} onChange={(e) => setMonthlyRent(e.target.value)} placeholder="e.g. 8000"
-                className="w-full pl-9 pr-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-300" />
+                className="w-full pl-9 pr-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-300" />
             </div>
           </div>
           <div>
@@ -81,13 +81,13 @@ function ApproveModal({ requestId, onClose, onSuccess }: { requestId: number; on
             <div className="relative">
               <IndianRupee size={14} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" />
               <input type="number" value={advanceAmount} onChange={(e) => setAdvanceAmount(e.target.value)} placeholder="e.g. 16000"
-                className="w-full pl-9 pr-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-300" />
+                className="w-full pl-9 pr-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-300" />
             </div>
           </div>
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-1.5">Payment Mode</label>
             <select value={paymentMode} onChange={(e) => setPaymentMode(e.target.value)}
-              className="w-full border border-gray-200 rounded-xl px-3.5 py-2.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-indigo-300">
+              className="w-full border border-gray-200 rounded-xl px-3.5 py-2.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-brand-300">
               <option value="CASH">Cash</option>
               <option value="ONLINE">Online</option>
             </select>
@@ -181,7 +181,7 @@ function ReassignModal({ hostelId, requestId, onClose, onSuccess }: { hostelId: 
             <label className="block text-sm font-semibold text-gray-700 mb-1.5">Floor</label>
             <select value={selectedFloorId ?? ''}
               onChange={(e) => { setSelectedFloorId(Number(e.target.value)); setSelectedRoomId(null); setSelectedBedId(null) }}
-              className="w-full border border-gray-200 rounded-xl px-3.5 py-2.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-indigo-300">
+              className="w-full border border-gray-200 rounded-xl px-3.5 py-2.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-brand-300">
               <option value="">Select floor...</option>
               {(floors as any[]).filter((f) => (f.availableBeds ?? 0) > 0).map((f: any) => (
                 <option key={f.id} value={f.id}>{f.floorName ?? f.name}</option>
@@ -192,7 +192,7 @@ function ReassignModal({ hostelId, requestId, onClose, onSuccess }: { hostelId: 
             <div>
               <label className="block text-sm font-semibold text-gray-700 mb-1.5">Room</label>
               <select value={selectedRoomId ?? ''} onChange={(e) => { setSelectedRoomId(Number(e.target.value)); setSelectedBedId(null) }}
-                className="w-full border border-gray-200 rounded-xl px-3.5 py-2.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-indigo-300">
+                className="w-full border border-gray-200 rounded-xl px-3.5 py-2.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-brand-300">
                 <option value="">Select room...</option>
                 {(rooms as any[]).filter((r) => (r.availableBeds ?? 0) > 0).map((r: any) => (
                   <option key={r.id} value={r.id}>{r.roomName ?? r.roomNumber}</option>
@@ -204,7 +204,7 @@ function ReassignModal({ hostelId, requestId, onClose, onSuccess }: { hostelId: 
             <div>
               <label className="block text-sm font-semibold text-gray-700 mb-1.5">Bed</label>
               <select value={selectedBedId ?? ''} onChange={(e) => setSelectedBedId(Number(e.target.value))}
-                className="w-full border border-gray-200 rounded-xl px-3.5 py-2.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-indigo-300">
+                className="w-full border border-gray-200 rounded-xl px-3.5 py-2.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-brand-300">
                 <option value="">Select bed...</option>
                 {availableBeds.map((b: any) => (
                   <option key={b.id} value={b.id}>{b.bedName ?? b.bedNumber}</option>
@@ -267,7 +267,7 @@ function DirectAllocationsTab() {
 
   if (isLoading) return (
     <div className="flex items-center justify-center py-20">
-      <div className="w-8 h-8 rounded-full border-4 border-indigo-200 border-t-indigo-600 animate-spin" />
+      <div className="w-8 h-8 rounded-full border-4 border-brand-200 border-t-brand-600 animate-spin" />
     </div>
   )
 
@@ -313,14 +313,14 @@ function DirectAllocationsTab() {
                 <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1.5">Bed ID</label>
                 <input required type="number" value={bedId} onChange={(e) => setBedId(e.target.value)}
                   placeholder="Enter bed ID"
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-gray-50 focus:bg-white" />
+                  className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand-400 bg-gray-50 focus:bg-white" />
               </div>
               <div className="flex gap-3 pt-1">
                 <button type="button" onClick={() => setSelected(null)}
                   className="flex-1 py-2.5 border border-gray-200 text-gray-600 rounded-xl text-sm hover:bg-gray-50">Cancel</button>
                 <button type="submit" disabled={allocateMut.isPending}
                   className="flex-1 py-2.5 text-white rounded-xl text-sm font-semibold transition-opacity hover:opacity-90 disabled:opacity-60"
-                  style={{ background: 'linear-gradient(135deg, #059669, #34d399)' }}>
+                  style={{ background: 'linear-gradient(135deg, #1d6ea8, #1a8fd1)' }}>
                   {allocateMut.isPending ? 'Allocating…' : 'Allocate'}
                 </button>
               </div>
@@ -379,7 +379,7 @@ function DirectAllocationsTab() {
                   <td className="px-5 py-3.5"><Badge status={p.status ?? 'PENDING'} /></td>
                   <td className="px-5 py-3.5">
                     <button onClick={() => setSelected(p)}
-                      className="flex items-center gap-1.5 text-emerald-600 hover:text-white font-semibold text-xs border border-emerald-200 bg-emerald-50 hover:bg-emerald-600 px-3 py-1.5 rounded-lg transition-all">
+                      className="flex items-center gap-1.5 text-emerald-600 hover:text-white font-semibold text-xs border border-emerald-200 bg-emerald-50 hover:bg-brand-600 px-3 py-1.5 rounded-lg transition-all">
                       Allocate Room
                     </button>
                   </td>
@@ -421,7 +421,7 @@ function BookingRequestsTab() {
 
   if (isLoading) return (
     <div className="flex items-center justify-center py-20">
-      <div className="w-8 h-8 rounded-full border-4 border-indigo-200 border-t-indigo-600 animate-spin" />
+      <div className="w-8 h-8 rounded-full border-4 border-brand-200 border-t-brand-600 animate-spin" />
     </div>
   )
 
@@ -430,7 +430,7 @@ function BookingRequestsTab() {
       <div className="flex flex-wrap gap-2">
         {STATUS_TABS.map((tab) => (
           <button key={tab} onClick={() => setActiveStatus(tab)}
-            className={`px-4 py-1.5 rounded-full text-sm font-medium transition-colors ${activeStatus === tab ? 'bg-indigo-600 text-white shadow-sm' : 'bg-white border border-gray-200 text-gray-600 hover:border-indigo-300 hover:text-indigo-600'}`}>
+            className={`px-4 py-1.5 rounded-full text-sm font-medium transition-colors ${activeStatus === tab ? 'bg-brand-600 text-white shadow-sm' : 'bg-white border border-gray-200 text-gray-600 hover:border-brand-300 hover:text-brand-600'}`}>
             {tab === 'ALL' ? 'All' : tab.replace(/_/g, ' ')}
           </button>
         ))}
@@ -453,12 +453,14 @@ function BookingRequestsTab() {
               {(requests as any[]).map((req: any) => (
                 <tr key={req.id} className="hover:bg-gray-50/70 transition-colors">
                   <td className="px-5 py-3.5">
-                    <p className="font-semibold text-gray-800">#{req.hostellerProfileId}</p>
-                    <p className="text-xs text-gray-400">Hostel #{req.hostelId}</p>
+                    <p className="font-semibold text-gray-800">{req.applicantName ?? `#${req.hostellerProfileId}`}</p>
+                    {req.detailsLocked
+                      ? <p className="text-[11px] text-amber-600 flex items-center gap-1"><Lock size={10} /> Details unlock after approval</p>
+                      : (req.mobile && <p className="text-xs text-gray-400">{req.mobile}</p>)}
                   </td>
                   <td className="px-5 py-3.5">
-                    <p className="font-medium text-gray-800">Bed #{req.bedId}</p>
-                    <p className="text-xs text-gray-400">Room #{req.roomId} · Floor #{req.floorId}</p>
+                    <p className="font-medium text-gray-800">{req.bedName ?? `Bed #${req.bedId}`}</p>
+                    <p className="text-xs text-gray-400">{req.roomName ?? `Room #${req.roomId}`} · {req.floorName ?? `Floor #${req.floorId}`}</p>
                   </td>
                   <td className="px-5 py-3.5 text-gray-500 whitespace-nowrap">{req.checkInDate ? fmtDate(req.checkInDate) : '—'}</td>
                   <td className="px-5 py-3.5 text-gray-500 whitespace-nowrap">{req.expiresAt ? fmtDate(req.expiresAt) : '—'}</td>

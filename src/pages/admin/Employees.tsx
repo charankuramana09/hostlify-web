@@ -8,7 +8,7 @@ import { getEmployees, addEmployee, recordSalary } from '../../api/staff'
 import { useAuthStore } from '../../store/authStore'
 import { useToastStore } from '../../store/toastStore'
 
-const AVATAR_COLORS = ['bg-indigo-500', 'bg-emerald-500', 'bg-purple-500', 'bg-rose-500', 'bg-amber-500', 'bg-teal-500']
+const AVATAR_COLORS = ['bg-brand-500', 'bg-emerald-500', 'bg-purple-500', 'bg-rose-500', 'bg-amber-500', 'bg-teal-500']
 
 function getInitials(name: string) {
   return name.split(' ').map((n) => n[0]).join('').toUpperCase().slice(0, 2)
@@ -79,7 +79,7 @@ export default function Employees() {
 
   if (isLoading) return (
     <div className="flex items-center justify-center py-20">
-      <div className="w-8 h-8 rounded-full border-4 border-indigo-200 border-t-indigo-600 animate-spin" />
+      <div className="w-8 h-8 rounded-full border-4 border-brand-200 border-t-brand-600 animate-spin" />
     </div>
   )
 
@@ -93,7 +93,7 @@ export default function Employees() {
           <button
             onClick={() => setShowForm(!showForm)}
             className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold text-white transition-opacity hover:opacity-90"
-            style={{ background: 'linear-gradient(135deg, #0f2d4a 0%, #059669 100%)' }}
+            style={{ background: 'linear-gradient(135deg, #0f2d4a 0%, #1d6ea8 100%)' }}
           >
             <Plus size={16} /> Add Employee
           </button>
@@ -113,8 +113,8 @@ export default function Employees() {
           label="Paid"
           value={totalPaid}
           sub="Salaries disbursed"
-          icon={<CheckCircle2 size={20} className="text-indigo-600" />}
-          iconBg="bg-indigo-50"
+          icon={<CheckCircle2 size={20} className="text-brand-600" />}
+          iconBg="bg-brand-50"
         />
         <StatCard
           label="Pending"
@@ -151,7 +151,7 @@ export default function Employees() {
                   value={form.employeeName}
                   onChange={(e) => setForm((f) => ({ ...f, employeeName: e.target.value }))}
                   placeholder="Full name"
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-gray-50 focus:bg-white transition-colors"
+                  className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand-400 bg-gray-50 focus:bg-white transition-colors"
                 />
               </div>
               <div>
@@ -161,7 +161,7 @@ export default function Employees() {
                   value={form.designation}
                   onChange={(e) => setForm((f) => ({ ...f, designation: e.target.value }))}
                   placeholder="Cook, Cleaner, etc."
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-gray-50 focus:bg-white transition-colors"
+                  className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand-400 bg-gray-50 focus:bg-white transition-colors"
                 />
               </div>
               <div>
@@ -172,7 +172,7 @@ export default function Employees() {
                   value={form.mobile}
                   onChange={(e) => setForm((f) => ({ ...f, mobile: e.target.value }))}
                   placeholder="Mobile number"
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-gray-50 focus:bg-white transition-colors"
+                  className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand-400 bg-gray-50 focus:bg-white transition-colors"
                 />
               </div>
               <div>
@@ -182,7 +182,7 @@ export default function Employees() {
                   value={form.salary}
                   onChange={(e) => setForm((f) => ({ ...f, salary: e.target.value }))}
                   placeholder="0"
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-gray-50 focus:bg-white transition-colors"
+                  className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand-400 bg-gray-50 focus:bg-white transition-colors"
                 />
               </div>
               <div>
@@ -191,7 +191,7 @@ export default function Employees() {
                   type="date"
                   value={form.joinDate}
                   onChange={(e) => setForm((f) => ({ ...f, joinDate: e.target.value }))}
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-gray-50 focus:bg-white transition-colors"
+                  className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand-400 bg-gray-50 focus:bg-white transition-colors"
                 />
               </div>
             </div>
@@ -207,7 +207,7 @@ export default function Employees() {
                 type="submit"
                 disabled={addMut.isPending}
                 className="px-5 py-2 text-sm rounded-xl font-semibold text-white transition-opacity hover:opacity-90 disabled:opacity-60"
-                style={{ background: 'linear-gradient(135deg, #0f2d4a 0%, #059669 100%)' }}
+                style={{ background: 'linear-gradient(135deg, #0f2d4a 0%, #1d6ea8 100%)' }}
               >
                 {addMut.isPending ? 'Adding…' : 'Add Employee'}
               </button>
@@ -248,7 +248,7 @@ export default function Employees() {
               <button
                 onClick={() => setConfirmId(emp.id)}
                 className="w-full mt-3 py-2 rounded-xl text-sm font-semibold text-white transition-opacity hover:opacity-90"
-                style={{ background: 'linear-gradient(135deg, #0f2d4a 0%, #059669 100%)' }}
+                style={{ background: 'linear-gradient(135deg, #0f2d4a 0%, #1d6ea8 100%)' }}
               >
                 Record Salary
               </button>
@@ -281,7 +281,7 @@ export default function Employees() {
                 onClick={() => handleRecordSalary(confirmId)}
                 disabled={salaryMut.isPending}
                 className="flex-1 px-4 py-2.5 text-sm text-white rounded-xl font-semibold transition-opacity hover:opacity-90 disabled:opacity-60"
-                style={{ background: 'linear-gradient(135deg, #0f2d4a 0%, #059669 100%)' }}
+                style={{ background: 'linear-gradient(135deg, #0f2d4a 0%, #1d6ea8 100%)' }}
               >
                 {salaryMut.isPending ? 'Processing…' : 'Confirm'}
               </button>

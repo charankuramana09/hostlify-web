@@ -14,7 +14,7 @@ import {
 
 const PLAN_CHIP: Record<string, string> = {
   STARTER: 'bg-gray-100 text-gray-600',
-  PROFESSIONAL: 'bg-indigo-50 text-indigo-700',
+  PROFESSIONAL: 'bg-brand-50 text-brand-700',
   ENTERPRISE: 'bg-violet-50 text-violet-700',
 }
 
@@ -73,7 +73,7 @@ export default function OwnerDetail() {
   if (ownerLoading || hostelsLoading || subLoading || flagsLoading)
     return (
       <div className="flex items-center justify-center py-20">
-        <div className="w-8 h-8 rounded-full border-4 border-indigo-200 border-t-indigo-600 animate-spin" />
+        <div className="w-8 h-8 rounded-full border-4 border-brand-200 border-t-brand-600 animate-spin" />
       </div>
     )
 
@@ -115,18 +115,18 @@ export default function OwnerDetail() {
       <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
         <div
           className="h-20 relative"
-          style={{ background: 'linear-gradient(135deg, #1a0a2e 0%, #7c3aed 100%)' }}
+          style={{ background: 'linear-gradient(135deg, #0f2d4a 0%, #1d6ea8 100%)' }}
         >
           <div
             className="absolute top-0 right-0 w-40 h-40 rounded-full opacity-10 pointer-events-none"
-            style={{ background: 'radial-gradient(circle, #a78bfa, transparent)', transform: 'translate(30%, -30%)' }}
+            style={{ background: 'radial-gradient(circle, #3aaee8, transparent)', transform: 'translate(30%, -30%)' }}
           />
         </div>
         <div className="px-6 pb-6">
           <div className="flex items-end justify-between -mt-9 mb-4 gap-4">
             <div
               className="w-16 h-16 rounded-2xl flex items-center justify-center text-xl font-bold text-white shadow-lg border-4 border-white shrink-0"
-              style={{ background: 'linear-gradient(135deg, #4f46e5, #7c3aed)' }}
+              style={{ background: 'linear-gradient(135deg, #1d6ea8, #1a8fd1)' }}
             >
               {initials}
             </div>
@@ -140,7 +140,7 @@ export default function OwnerDetail() {
               </button>
               <button
                 className="px-4 py-2 rounded-xl text-sm font-semibold text-white transition-opacity hover:opacity-90"
-                style={{ background: 'linear-gradient(135deg, #1a0a2e 0%, #7c3aed 100%)' }}
+                style={{ background: 'linear-gradient(135deg, #0f2d4a 0%, #1d6ea8 100%)' }}
               >
                 Renew Plan
               </button>
@@ -203,7 +203,7 @@ export default function OwnerDetail() {
                               className="h-1.5 rounded-full"
                               style={{
                                 width: `${rate}%`,
-                                background: rate >= 80 ? 'linear-gradient(90deg, #059669, #34d399)' : 'linear-gradient(90deg, #d97706, #fbbf24)',
+                                background: rate >= 80 ? 'linear-gradient(90deg, #1d6ea8, #1a8fd1)' : 'linear-gradient(90deg, #d97706, #fbbf24)',
                               }}
                             />
                           </div>
@@ -268,7 +268,7 @@ export default function OwnerDetail() {
             }}
             disabled={resetPasswordMutation.isPending || !resetPasswordInput}
             className="px-4 py-2.5 rounded-xl text-sm font-semibold text-white transition-opacity hover:opacity-90 disabled:opacity-60"
-            style={{ background: 'linear-gradient(135deg, #1a0a2e 0%, #7c3aed 100%)' }}
+            style={{ background: 'linear-gradient(135deg, #0f2d4a 0%, #1d6ea8 100%)' }}
           >
             {resetPasswordMutation.isPending ? 'Resetting...' : 'Reset Password'}
           </button>

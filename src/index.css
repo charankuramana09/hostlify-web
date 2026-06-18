@@ -9,6 +9,7 @@
     --color-brand-500: #1a8fd1;
     --color-brand-400: #3aaee8;
     --color-brand-300: #7acdf2;
+    --color-brand-200: #b8e0f6;
     --color-brand-100: #e8f4fb;
     --color-brand-50: #f0f8fd;
 
@@ -84,12 +85,20 @@
     }
 
     .btn-primary {
-        background: var(--color-brand-600);
+        background: linear-gradient(135deg, #1d6ea8, #1a8fd1);
         color: white;
     }
 
     .btn-primary:hover {
-        background: var(--color-brand-700);
+        filter: brightness(1.05);
+    }
+
+    /* Reusable brand surfaces (single source of truth for the primary gradient) */
+    .brand-gradient {
+        background: linear-gradient(135deg, #1d6ea8, #1a8fd1);
+    }
+    .brand-gradient-strong {
+        background: linear-gradient(135deg, #1e5080, #1d6ea8);
     }
 
     .btn-secondary {

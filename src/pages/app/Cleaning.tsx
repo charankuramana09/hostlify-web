@@ -50,7 +50,7 @@ export default function Cleaning() {
 
   if (isLoading) return (
     <div className="flex items-center justify-center py-20">
-      <div className="w-8 h-8 rounded-full border-4 border-indigo-200 border-t-indigo-600 animate-spin" />
+      <div className="w-8 h-8 rounded-full border-4 border-brand-200 border-t-brand-600 animate-spin" />
     </div>
   )
 
@@ -75,11 +75,11 @@ export default function Cleaning() {
 
       {/* New Request Form */}
       {showForm && (
-        <div className="bg-white rounded-2xl border border-indigo-100 shadow-sm overflow-hidden">
-          <div className="flex items-center justify-between px-5 py-4 border-b border-indigo-50">
+        <div className="bg-white rounded-2xl border border-brand-100 shadow-sm overflow-hidden">
+          <div className="flex items-center justify-between px-5 py-4 border-b border-brand-50">
             <div className="flex items-center gap-2">
-              <div className="w-7 h-7 rounded-lg bg-indigo-50 flex items-center justify-center">
-                <SprayCan size={14} className="text-indigo-600" />
+              <div className="w-7 h-7 rounded-lg bg-brand-50 flex items-center justify-center">
+                <SprayCan size={14} className="text-brand-600" />
               </div>
               <h3 className="font-semibold text-gray-800 text-sm">New Cleaning Request</h3>
             </div>
@@ -101,7 +101,7 @@ export default function Cleaning() {
                   required
                   value={form.preferredDate}
                   onChange={(e) => setForm((f) => ({ ...f, preferredDate: e.target.value }))}
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-gray-50 focus:bg-white transition-colors"
+                  className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand-400 bg-gray-50 focus:bg-white transition-colors"
                 />
               </div>
               <div>
@@ -112,7 +112,7 @@ export default function Cleaning() {
                   required
                   value={form.slot}
                   onChange={(e) => setForm((f) => ({ ...f, slot: e.target.value }))}
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-gray-50 focus:bg-white transition-colors"
+                  className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand-400 bg-gray-50 focus:bg-white transition-colors"
                 >
                   <option value="">Select time slot</option>
                   {TIME_SLOTS.map((t) => (
@@ -130,7 +130,7 @@ export default function Cleaning() {
                 value={form.notes}
                 onChange={(e) => setForm((f) => ({ ...f, notes: e.target.value }))}
                 placeholder="Any specific instructions…"
-                className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 resize-none bg-gray-50 focus:bg-white transition-colors"
+                className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand-400 resize-none bg-gray-50 focus:bg-white transition-colors"
               />
             </div>
             <div className="flex justify-end gap-3 pt-1">
@@ -160,8 +160,8 @@ export default function Cleaning() {
           <div key={r.id} className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 hover:shadow-md transition-all duration-200">
             <div className="flex items-start justify-between gap-4 mb-3">
               <div className="flex items-center gap-3">
-                <div className="w-9 h-9 rounded-xl bg-indigo-50 flex items-center justify-center shrink-0">
-                  <Calendar size={16} className="text-indigo-600" />
+                <div className="w-9 h-9 rounded-xl bg-brand-50 flex items-center justify-center shrink-0">
+                  <Calendar size={16} className="text-brand-600" />
                 </div>
                 <div>
                   <p className="font-semibold text-gray-900 text-sm">{fmtDate(r.preferredDate)}</p>

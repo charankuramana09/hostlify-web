@@ -10,7 +10,7 @@ import { useToastStore } from '../../store/toastStore'
 const STATUSES = ['ALL', 'OPEN', 'IN_PROGRESS', 'RESOLVED', 'CLOSED']
 
 const AVATAR_COLORS = [
-  'bg-indigo-500', 'bg-emerald-500', 'bg-purple-500',
+  'bg-brand-500', 'bg-emerald-500', 'bg-purple-500',
   'bg-rose-500',   'bg-teal-500',
 ]
 
@@ -66,7 +66,7 @@ export default function AdminComplaints() {
 
   if (isLoading) return (
     <div className="flex items-center justify-center py-20">
-      <div className="w-8 h-8 rounded-full border-4 border-indigo-200 border-t-indigo-600 animate-spin" />
+      <div className="w-8 h-8 rounded-full border-4 border-brand-200 border-t-brand-600 animate-spin" />
     </div>
   )
 
@@ -86,7 +86,7 @@ export default function AdminComplaints() {
             onClick={() => setStatusFilter(s)}
             className={`px-4 py-1.5 rounded-full text-sm font-medium transition-colors ${
               statusFilter === s
-                ? 'bg-emerald-600 text-white shadow-sm'
+                ? 'bg-brand-600 text-white shadow-sm'
                 : 'bg-white border border-gray-200 text-gray-600 hover:border-emerald-300 hover:text-emerald-600'
             }`}
           >
@@ -141,7 +141,7 @@ export default function AdminComplaints() {
                       value={c.status}
                       onChange={(e) => updateStatus(c.id, e.target.value)}
                       disabled={resolveMut.isPending}
-                      className="text-xs border border-gray-200 rounded-xl px-2.5 py-1.5 bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500 text-gray-700 font-medium disabled:opacity-60"
+                      className="text-xs border border-gray-200 rounded-xl px-2.5 py-1.5 bg-white focus:outline-none focus:ring-2 focus:ring-brand-400 text-gray-700 font-medium disabled:opacity-60"
                     >
                       <option value="OPEN">Open</option>
                       <option value="IN_PROGRESS">In Progress</option>

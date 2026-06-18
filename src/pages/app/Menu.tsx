@@ -27,7 +27,7 @@ export default function Menu() {
 
   if (isLoading) return (
     <div className="flex items-center justify-center py-20">
-      <div className="w-8 h-8 rounded-full border-4 border-indigo-200 border-t-indigo-600 animate-spin" />
+      <div className="w-8 h-8 rounded-full border-4 border-brand-200 border-t-brand-600 animate-spin" />
     </div>
   )
 
@@ -103,8 +103,8 @@ export default function Menu() {
       {/* Weekly table */}
       <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
         <div className="flex items-center gap-2.5 px-5 py-4 border-b border-gray-50">
-          <div className="w-7 h-7 rounded-lg bg-indigo-50 flex items-center justify-center">
-            <UtensilsCrossed size={14} className="text-indigo-600" />
+          <div className="w-7 h-7 rounded-lg bg-brand-50 flex items-center justify-center">
+            <UtensilsCrossed size={14} className="text-brand-600" />
           </div>
           <h2 className="font-semibold text-gray-800 text-sm">Full Week Schedule</h2>
         </div>
@@ -135,23 +135,23 @@ export default function Menu() {
                   >
                     <td className="px-5 py-4">
                       <div className="flex items-center gap-2">
-                        <span className={`font-bold text-sm ${isToday ? 'text-indigo-700' : 'text-gray-800'}`}>
+                        <span className={`font-bold text-sm ${isToday ? 'text-brand-700' : 'text-gray-800'}`}>
                           {row.day}
                         </span>
                         {isToday && (
-                          <span className="text-[10px] font-bold bg-indigo-600 text-white px-2 py-0.5 rounded-full uppercase tracking-wide">
+                          <span className="text-[10px] font-bold bg-brand-600 text-white px-2 py-0.5 rounded-full uppercase tracking-wide">
                             Today
                           </span>
                         )}
                       </div>
                     </td>
-                    <td className={`px-5 py-4 text-sm ${isToday ? 'text-indigo-800 font-medium' : 'text-gray-600'}`}>
+                    <td className={`px-5 py-4 text-sm ${isToday ? 'text-brand-800 font-medium' : 'text-gray-600'}`}>
                       {row.breakfast}
                     </td>
-                    <td className={`px-5 py-4 text-sm ${isToday ? 'text-indigo-800 font-medium' : 'text-gray-600'}`}>
+                    <td className={`px-5 py-4 text-sm ${isToday ? 'text-brand-800 font-medium' : 'text-gray-600'}`}>
                       {row.lunch}
                     </td>
-                    <td className={`px-5 py-4 text-sm ${isToday ? 'text-indigo-800 font-medium' : 'text-gray-600'}`}>
+                    <td className={`px-5 py-4 text-sm ${isToday ? 'text-brand-800 font-medium' : 'text-gray-600'}`}>
                       {row.dinner}
                     </td>
                   </tr>

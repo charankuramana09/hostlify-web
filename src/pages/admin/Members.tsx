@@ -8,7 +8,7 @@ import { getMembers } from '../../api/staff'
 import { useAuthStore } from '../../store/authStore'
 
 const AVATAR_COLORS = [
-  'bg-indigo-500', 'bg-emerald-500', 'bg-purple-500',
+  'bg-brand-500', 'bg-emerald-500', 'bg-purple-500',
   'bg-rose-500',   'bg-amber-500',   'bg-teal-500',
 ]
 
@@ -38,7 +38,7 @@ export default function Members() {
 
   if (isLoading) return (
     <div className="flex items-center justify-center py-20">
-      <div className="w-8 h-8 rounded-full border-4 border-indigo-200 border-t-indigo-600 animate-spin" />
+      <div className="w-8 h-8 rounded-full border-4 border-brand-200 border-t-brand-600 animate-spin" />
     </div>
   )
 
@@ -58,7 +58,7 @@ export default function Members() {
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search by name, email or room…"
-            className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-white"
+            className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand-400 bg-white"
           />
         </div>
         <div className="flex gap-1 bg-gray-100 rounded-xl p-1 w-fit">

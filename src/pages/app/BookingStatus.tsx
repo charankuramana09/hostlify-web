@@ -9,9 +9,16 @@ import {
   XCircle,
   RefreshCw,
   Compass,
+  Wallet,
+  ArrowRight,
 } from 'lucide-react'
 import PageHeader from '../../components/ui/PageHeader'
-import { getMyBookingRequest, cancelBookingRequest } from '../../api/hosteller'
+import { getMyBookingRequest, cancelBookingRequest, getMyBooking } from '../../api/hosteller'
+
+function inr(n: any) {
+  const v = Number(n ?? 0)
+  return '₹' + v.toLocaleString('en-IN')
+}
 
 function fmtDate(d: string) {
   if (!d) return '—'
@@ -48,12 +55,12 @@ function StatusTimeline({ status }: { status: string }) {
 
   const stepColor: Record<StepState, string> = {
     done:    'bg-emerald-500 text-white',
-    active:  'bg-indigo-600 text-white ring-4 ring-indigo-100',
+    active:  'bg-brand-600 text-white ring-4 ring-brand-100',
     pending: 'bg-gray-100 text-gray-400',
   }
   const labelColor: Record<StepState, string> = {
     done:    'text-emerald-700 font-semibold',
-    active:  'text-indigo-700 font-bold',
+    active:  'text-brand-700 font-bold',
     pending: 'text-gray-400',
   }
 
@@ -99,10 +106,18 @@ export default function BookingStatus() {
     },
   })
 
+  // Once approved, load the confirmed booking to show rent / advance / next due.
+  const { data: booking } = useQuery({
+    queryKey: ['my-active-booking'],
+    queryFn: getMyBooking,
+    enabled: request?.status === 'APPROVED',
+    retry: false,
+  })
+
   if (isLoading) {
     return (
       <div className="flex items-center justify-center py-20">
-        <div className="w-8 h-8 rounded-full border-4 border-indigo-200 border-t-indigo-600 animate-spin" />
+        <div className="w-8 h-8 rounded-full border-4 border-brand-200 border-t-brand-600 animate-spin" />
       </div>
     )
   }
@@ -115,8 +130,8 @@ export default function BookingStatus() {
       <div className="space-y-6">
         <PageHeader title="Booking Status" subtitle="Track your booking request" />
         <div className="flex flex-col items-center gap-5 py-20 text-center">
-          <div className="w-20 h-20 rounded-3xl bg-gradient-to-br from-indigo-50 to-blue-100 border border-indigo-100 flex items-center justify-center">
-            <BedDouble size={34} className="text-indigo-300" />
+          <div className="w-20 h-20 rounded-3xl bg-gradient-to-br from-brand-50 to-blue-100 border border-brand-100 flex items-center justify-center">
+            <BedDouble size={34} className="text-brand-300" />
           </div>
           <div>
             <p className="font-bold text-gray-800 text-lg">No booking request yet</p>
@@ -176,12 +191,57 @@ export default function BookingStatus() {
       {/* Timeline stepper */}
       <StatusTimeline status={status} />
 
-      {/* APPROVED confirmation */}
-      {status === 'APPROVED' && (
-        <div className="bg-emerald-50 border border-emerald-100 rounded-2xl px-5 py-4 text-sm font-semibold text-emerald-800">
-          Your booking has been approved! Your bed is confirmed.
-        </div>
-      )}
+      {/* APPROVED — confirmation + payment summary + CTA */}
+      {status === 'APPROVED' && (() => {
+        const rent = booking?.rentAmount ?? 0
+        const advance = booking?.advanceAmount ?? 0
+        const checkin = booking?.checkinDate ? new Date(booking.checkinDate) : null
+        const nextDue = checkin ? new Date(checkin.getFullYear(), checkin.getMonth() + 1, 1) : null
+        return (
+          <div className="space-y-4">
+            <div className="bg-emerald-50 border border-emerald-100 rounded-2xl px-5 py-4 flex items-center gap-3">
+              <CheckCircle2 size={20} className="text-emerald-600 shrink-0" />
+              <p className="text-sm font-semibold text-emerald-800">Your booking is approved and your bed is confirmed. Complete your payment to finish moving in.</p>
+            </div>
+
+            <div className="rounded-2xl border border-brand-100 shadow-sm overflow-hidden">
+              <div className="px-5 py-4 brand-gradient text-white flex items-center gap-2">
+                <Wallet size={18} />
+                <h3 className="font-bold text-sm">Payment Summary</h3>
+              </div>
+              <div className="bg-white divide-y divide-gray-50 text-sm">
+                <div className="flex justify-between px-5 py-3">
+                  <span className="text-gray-500 font-medium">Monthly Rent</span>
+                  <span className="font-bold text-gray-900">{inr(rent)}</span>
+                </div>
+                <div className="flex justify-between px-5 py-3">
+                  <span className="text-gray-500 font-medium">Advance / Deposit</span>
+                  <span className="font-bold text-gray-900">{inr(advance)}</span>
+                </div>
+                <div className="flex justify-between px-5 py-3">
+                  <span className="text-gray-500 font-medium">Move-in Date</span>
+                  <span className="font-semibold text-gray-800">{checkin ? fmtDate(checkin.toISOString()) : '—'}</span>
+                </div>
+                <div className="flex justify-between px-5 py-3">
+                  <span className="text-gray-500 font-medium">Next Month Due</span>
+                  <span className="font-semibold text-gray-800">{nextDue ? fmtDate(nextDue.toISOString()) : '—'}</span>
+                </div>
+                <div className="flex justify-between px-5 py-3.5 bg-brand-50/60">
+                  <span className="text-brand-700 font-bold">First Month Rent · due now</span>
+                  <span className="font-extrabold text-brand-700 text-base">{inr(rent)}</span>
+                </div>
+              </div>
+            </div>
+
+            <button
+              onClick={() => navigate('/app/dues')}
+              className="w-full py-3 rounded-xl text-sm font-bold text-white flex items-center justify-center gap-2 transition-opacity hover:opacity-90 brand-gradient"
+            >
+              Proceed to Payment <ArrowRight size={16} />
+            </button>
+          </div>
+        )
+      })()}
 
       {/* Expiry countdown */}
       {countdown && (
@@ -245,7 +305,7 @@ export default function BookingStatus() {
               <p className="text-sm text-gray-500 mb-2">Request cancelled.</p>
               <button
                 onClick={() => navigate('/app/discover')}
-                className="text-sm text-indigo-600 font-semibold hover:underline flex items-center gap-1.5 mx-auto"
+                className="text-sm text-brand-600 font-semibold hover:underline flex items-center gap-1.5 mx-auto"
               >
                 <Compass size={14} /> Discover other hostels
               </button>

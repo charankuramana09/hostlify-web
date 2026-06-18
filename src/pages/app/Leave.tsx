@@ -86,7 +86,7 @@ export default function Leave() {
 
   if (isLoading) return (
     <div className="flex items-center justify-center py-20">
-      <div className="w-8 h-8 rounded-full border-4 border-indigo-200 border-t-indigo-600 animate-spin" />
+      <div className="w-8 h-8 rounded-full border-4 border-brand-200 border-t-brand-600 animate-spin" />
     </div>
   )
 
@@ -135,14 +135,14 @@ export default function Leave() {
 
       {/* New leave request form */}
       {showForm && (
-        <div className="bg-white rounded-2xl border border-indigo-100 shadow-sm overflow-hidden">
+        <div className="bg-white rounded-2xl border border-brand-100 shadow-sm overflow-hidden">
           <div
             className="flex items-center justify-between px-5 py-4"
             style={{ borderBottom: '1px solid #e0e7ff' }}
           >
             <div className="flex items-center gap-2">
-              <div className="w-7 h-7 rounded-lg bg-indigo-50 flex items-center justify-center">
-                <CalendarClock size={14} className="text-indigo-600" />
+              <div className="w-7 h-7 rounded-lg bg-brand-50 flex items-center justify-center">
+                <CalendarClock size={14} className="text-brand-600" />
               </div>
               <h3 className="font-semibold text-gray-800 text-sm">New Leave Request</h3>
             </div>
@@ -160,7 +160,7 @@ export default function Leave() {
                 required
                 value={form.leaveType}
                 onChange={(e) => setForm((f) => ({ ...f, leaveType: e.target.value }))}
-                className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-gray-50 focus:bg-white transition-colors"
+                className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand-400 bg-gray-50 focus:bg-white transition-colors"
               >
                 {LEAVE_TYPES.map((lt) => (
                   <option key={lt.value} value={lt.value}>{lt.label}</option>
@@ -179,7 +179,7 @@ export default function Leave() {
                   type="date"
                   value={form.fromDate}
                   onChange={(e) => { setForm((f) => ({ ...f, fromDate: e.target.value })); setErrors((er) => ({ ...er, fromDate: undefined })) }}
-                  className={`w-full px-3.5 py-2.5 rounded-xl border text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-gray-50 focus:bg-white transition-colors ${errors.fromDate ? 'border-red-400' : 'border-gray-200'}`}
+                  className={`w-full px-3.5 py-2.5 rounded-xl border text-sm focus:outline-none focus:ring-2 focus:ring-brand-400 bg-gray-50 focus:bg-white transition-colors ${errors.fromDate ? 'border-red-400' : 'border-gray-200'}`}
                 />
                 {errors.fromDate && <p className="mt-1 text-xs text-red-500">{errors.fromDate}</p>}
               </div>
@@ -189,7 +189,7 @@ export default function Leave() {
                   type="date"
                   value={form.toDate}
                   onChange={(e) => { setForm((f) => ({ ...f, toDate: e.target.value })); setErrors((er) => ({ ...er, toDate: undefined })) }}
-                  className={`w-full px-3.5 py-2.5 rounded-xl border text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-gray-50 focus:bg-white transition-colors ${errors.toDate ? 'border-red-400' : 'border-gray-200'}`}
+                  className={`w-full px-3.5 py-2.5 rounded-xl border text-sm focus:outline-none focus:ring-2 focus:ring-brand-400 bg-gray-50 focus:bg-white transition-colors ${errors.toDate ? 'border-red-400' : 'border-gray-200'}`}
                 />
                 {errors.toDate && <p className="mt-1 text-xs text-red-500">{errors.toDate}</p>}
               </div>
@@ -201,7 +201,7 @@ export default function Leave() {
                 rows={3}
                 value={form.reason}
                 onChange={(e) => { setForm((f) => ({ ...f, reason: e.target.value })); setErrors((er) => ({ ...er, reason: undefined })) }}
-                className={`w-full px-3.5 py-2.5 rounded-xl border text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 resize-none bg-gray-50 focus:bg-white transition-colors ${errors.reason ? 'border-red-400' : 'border-gray-200'}`}
+                className={`w-full px-3.5 py-2.5 rounded-xl border text-sm focus:outline-none focus:ring-2 focus:ring-brand-400 resize-none bg-gray-50 focus:bg-white transition-colors ${errors.reason ? 'border-red-400' : 'border-gray-200'}`}
                 placeholder="Reason for leave…"
               />
               {errors.reason && <p className="mt-1 text-xs text-red-500">{errors.reason}</p>}
@@ -274,7 +274,7 @@ export default function Leave() {
               <div>
                 <div className="flex items-center gap-2 mb-1">
                   {l.leaveType && (
-                    <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${l.leaveType === 'VACATE' ? 'bg-red-100 text-red-700' : 'bg-indigo-50 text-indigo-700'}`}>
+                    <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${l.leaveType === 'VACATE' ? 'bg-red-100 text-red-700' : 'bg-brand-50 text-brand-700'}`}>
                       {LEAVE_TYPES.find((lt) => lt.value === l.leaveType)?.label ?? l.leaveType}
                     </span>
                   )}

@@ -7,7 +7,7 @@ import { getPendingAllocations, allocateBed } from '../../api/staff'
 import { useAuthStore } from '../../store/authStore'
 
 const AVATAR_COLORS = [
-  'bg-indigo-500', 'bg-emerald-500', 'bg-purple-500',
+  'bg-brand-500', 'bg-emerald-500', 'bg-purple-500',
   'bg-rose-500',   'bg-amber-500',
 ]
 
@@ -52,7 +52,7 @@ export default function PendingAllocations() {
 
   if (isLoading) return (
     <div className="flex items-center justify-center py-20">
-      <div className="w-8 h-8 rounded-full border-4 border-indigo-200 border-t-indigo-600 animate-spin" />
+      <div className="w-8 h-8 rounded-full border-4 border-brand-200 border-t-brand-600 animate-spin" />
     </div>
   )
 
@@ -125,7 +125,7 @@ export default function PendingAllocations() {
                   value={bedId}
                   onChange={(e) => setBedId(e.target.value)}
                   placeholder="Enter bed ID"
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-gray-50 focus:bg-white transition-colors"
+                  className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand-400 bg-gray-50 focus:bg-white transition-colors"
                 />
               </div>
               <div className="flex gap-3 pt-1">
@@ -140,7 +140,7 @@ export default function PendingAllocations() {
                   type="submit"
                   disabled={allocateMut.isPending}
                   className="flex-1 py-2.5 text-white rounded-xl text-sm font-semibold transition-opacity hover:opacity-90 disabled:opacity-60"
-                  style={{ background: 'linear-gradient(135deg, #059669, #34d399)' }}
+                  style={{ background: 'linear-gradient(135deg, #1d6ea8, #1a8fd1)' }}
                 >
                   {allocateMut.isPending ? 'Allocating…' : 'Allocate'}
                 </button>
@@ -208,7 +208,7 @@ export default function PendingAllocations() {
                   <td className="px-5 py-3.5">
                     <button
                       onClick={() => setSelected(p)}
-                      className="flex items-center gap-1.5 text-emerald-600 hover:text-white font-semibold text-xs border border-emerald-200 bg-emerald-50 hover:bg-emerald-600 px-3 py-1.5 rounded-lg transition-all"
+                      className="flex items-center gap-1.5 text-emerald-600 hover:text-white font-semibold text-xs border border-emerald-200 bg-emerald-50 hover:bg-brand-600 px-3 py-1.5 rounded-lg transition-all"
                     >
                       Allocate Room
                     </button>

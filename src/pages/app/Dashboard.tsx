@@ -18,7 +18,7 @@ const CATEGORY_DOT: Record<string, string> = {
 }
 
 const QUICK_LINKS = [
-  { label: 'My Dues',    to: '/app/dues',       icon: CreditCard,      bg: 'bg-indigo-50',  iconColor: 'text-indigo-600',  border: 'border-indigo-100' },
+  { label: 'My Dues',    to: '/app/dues',       icon: CreditCard,      bg: 'bg-brand-50',  iconColor: 'text-brand-600',  border: 'border-brand-100' },
   { label: 'Complaints', to: '/app/complaints', icon: AlertCircle,     bg: 'bg-amber-50',   iconColor: 'text-amber-600',   border: 'border-amber-100' },
   { label: 'Leave',      to: '/app/leave',      icon: CalendarClock,   bg: 'bg-rose-50',    iconColor: 'text-rose-600',    border: 'border-rose-100' },
   { label: 'Menu',       to: '/app/menu',       icon: UtensilsCrossed, bg: 'bg-emerald-50', iconColor: 'text-emerald-600', border: 'border-emerald-100' },
@@ -126,8 +126,8 @@ export default function Dashboard() {
           label="Total Due"
           value={dueAmount}
           sub={dueDateStr !== '—' ? `Due ${dueDateStr}` : 'No due information'}
-          icon={<CreditCard size={20} className="text-indigo-600" />}
-          iconBg="bg-indigo-50"
+          icon={<CreditCard size={20} className="text-brand-600" />}
+          iconBg="bg-brand-50"
           trend={daysLeft != null ? { value: `${daysLeft} days`, up: daysLeft > 0 } : undefined}
         />
         <StatCard
@@ -188,7 +188,7 @@ export default function Dashboard() {
             </div>
             <Link
               to="/app/announcements"
-              className="text-xs font-semibold text-indigo-600 hover:text-indigo-700 flex items-center gap-0.5"
+              className="text-xs font-semibold text-brand-600 hover:text-brand-700 flex items-center gap-0.5"
             >
               View all <ChevronRight size={12} />
             </Link>

@@ -13,7 +13,7 @@ const CATEGORY_COLORS: Record<string, string> = {
 }
 
 const ACTIVITY_DOT: Record<string, string> = {
-  allocation: 'bg-indigo-500',
+  allocation: 'bg-brand-500',
   payment: 'bg-amber-500',
   complaint: 'bg-emerald-500',
 }
@@ -51,7 +51,7 @@ export default function MemberDetail() {
 
   if (isLoading) return (
     <div className="flex items-center justify-center py-20">
-      <div className="w-8 h-8 rounded-full border-4 border-indigo-200 border-t-indigo-600 animate-spin" />
+      <div className="w-8 h-8 rounded-full border-4 border-brand-200 border-t-brand-600 animate-spin" />
     </div>
   )
 
@@ -81,11 +81,11 @@ export default function MemberDetail() {
       <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
         <div
           className="h-20 relative"
-          style={{ background: 'linear-gradient(135deg, #0f2d4a 0%, #059669 100%)' }}
+          style={{ background: 'linear-gradient(135deg, #0f2d4a 0%, #1d6ea8 100%)' }}
         >
           <div
             className="absolute top-0 right-0 w-40 h-40 rounded-full opacity-10 pointer-events-none"
-            style={{ background: 'radial-gradient(circle, #34d399, transparent)', transform: 'translate(30%, -30%)' }}
+            style={{ background: 'radial-gradient(circle, #3aaee8, transparent)', transform: 'translate(30%, -30%)' }}
           />
         </div>
         <div className="px-6 pb-6">

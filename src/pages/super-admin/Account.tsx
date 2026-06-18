@@ -29,18 +29,18 @@ export default function SAAccount() {
       <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
         <div
           className="h-20 relative"
-          style={{ background: 'linear-gradient(135deg, #1a0a2e 0%, #7c3aed 100%)' }}
+          style={{ background: 'linear-gradient(135deg, #0f2d4a 0%, #1d6ea8 100%)' }}
         >
           <div
             className="absolute top-0 right-0 w-40 h-40 rounded-full opacity-10 pointer-events-none"
-            style={{ background: 'radial-gradient(circle, #a78bfa, transparent)', transform: 'translate(30%, -30%)' }}
+            style={{ background: 'radial-gradient(circle, #3aaee8, transparent)', transform: 'translate(30%, -30%)' }}
           />
         </div>
         <div className="px-6 pb-6">
           <div className="flex items-end gap-4 -mt-9 mb-4">
             <div
               className="w-16 h-16 rounded-2xl flex items-center justify-center text-xl font-bold text-white shadow-lg border-4 border-white shrink-0"
-              style={{ background: 'linear-gradient(135deg, #4f46e5, #7c3aed)' }}
+              style={{ background: 'linear-gradient(135deg, #1d6ea8, #1a8fd1)' }}
             >
               {form.firstName[0]}{form.lastName[0]}
             </div>
@@ -95,7 +95,7 @@ export default function SAAccount() {
                 <button
                   type="submit"
                   className="px-5 py-2 rounded-xl text-sm font-semibold text-white transition-opacity hover:opacity-90"
-                  style={{ background: 'linear-gradient(135deg, #1a0a2e 0%, #7c3aed 100%)' }}
+                  style={{ background: 'linear-gradient(135deg, #0f2d4a 0%, #1d6ea8 100%)' }}
                 >
                   Save Changes
                 </button>
@@ -135,7 +135,7 @@ export default function SAAccount() {
                   type="submit"
                   disabled
                   className="px-5 py-2 rounded-xl text-sm font-semibold text-white transition-opacity hover:opacity-90 opacity-50 cursor-not-allowed"
-                  style={{ background: 'linear-gradient(135deg, #1a0a2e 0%, #7c3aed 100%)' }}
+                  style={{ background: 'linear-gradient(135deg, #0f2d4a 0%, #1d6ea8 100%)' }}
                 >
                   Update Password
                 </button>

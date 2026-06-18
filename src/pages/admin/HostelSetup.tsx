@@ -12,7 +12,7 @@ import {
 
 type TabType = 'amenities' | 'pricing' | 'booking'
 
-const inputCls = 'w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-gray-50 focus:bg-white transition-colors'
+const inputCls = 'w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand-400 bg-gray-50 focus:bg-white transition-colors'
 
 function TabButton({ active, onClick, children }: { active: boolean; onClick: () => void; children: ReactNode }) {
   return (
@@ -144,14 +144,14 @@ export default function HostelSetup() {
       {tab === 'amenities' && (
         <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
           <div className="flex items-center gap-2 mb-5">
-            <div className="w-7 h-7 rounded-lg bg-indigo-50 flex items-center justify-center">
-              <Wifi size={14} className="text-indigo-600" />
+            <div className="w-7 h-7 rounded-lg bg-brand-50 flex items-center justify-center">
+              <Wifi size={14} className="text-brand-600" />
             </div>
             <h3 className="font-semibold text-gray-800 text-sm">Amenities</h3>
           </div>
           {amenitiesLoading ? (
             <div className="flex items-center justify-center py-10">
-              <div className="w-7 h-7 rounded-full border-4 border-indigo-200 border-t-indigo-600 animate-spin" />
+              <div className="w-7 h-7 rounded-full border-4 border-brand-200 border-t-brand-600 animate-spin" />
             </div>
           ) : amenities.length === 0 ? (
             <p className="text-sm text-gray-400 py-4 text-center">No amenities configured for this hostel.</p>
@@ -168,7 +168,7 @@ export default function HostelSetup() {
                         updated[i] = { ...updated[i], enabled: e.target.checked }
                         setAmenities(updated)
                       }}
-                      className="w-4 h-4 rounded text-indigo-600 focus:ring-indigo-500"
+                      className="w-4 h-4 rounded text-brand-600 focus:ring-brand-400"
                     />
                     <span className="text-sm font-medium text-gray-700">{a.label || a.key}</span>
                   </label>
@@ -199,7 +199,7 @@ export default function HostelSetup() {
           </div>
           {pricingLoading ? (
             <div className="flex items-center justify-center py-10">
-              <div className="w-7 h-7 rounded-full border-4 border-indigo-200 border-t-indigo-600 animate-spin" />
+              <div className="w-7 h-7 rounded-full border-4 border-brand-200 border-t-brand-600 animate-spin" />
             </div>
           ) : (
             <>
@@ -241,7 +241,7 @@ export default function HostelSetup() {
                   onClick={() => savePricingMut.mutate()}
                   disabled={savePricingMut.isPending}
                   className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-white text-sm font-semibold shadow-sm hover:opacity-90 transition-opacity disabled:opacity-60"
-                  style={{ background: 'linear-gradient(135deg, #059669, #34d399)' }}
+                  style={{ background: 'linear-gradient(135deg, #1d6ea8, #1a8fd1)' }}
                 >
                   <Save size={14} />
                   {savePricingMut.isPending ? 'Saving…' : 'Save Pricing'}
@@ -263,7 +263,7 @@ export default function HostelSetup() {
           </div>
           {bookingSettingsLoading ? (
             <div className="flex items-center justify-center py-10">
-              <div className="w-7 h-7 rounded-full border-4 border-indigo-200 border-t-indigo-600 animate-spin" />
+              <div className="w-7 h-7 rounded-full border-4 border-brand-200 border-t-brand-600 animate-spin" />
             </div>
           ) : (
             <div className="space-y-5">
@@ -272,7 +272,7 @@ export default function HostelSetup() {
                   type="checkbox"
                   checked={bkSettings.selfBookingEnabled}
                   onChange={(e) => setBkSettings((s) => ({ ...s, selfBookingEnabled: e.target.checked }))}
-                  className="w-4 h-4 rounded text-indigo-600 focus:ring-indigo-500"
+                  className="w-4 h-4 rounded text-brand-600 focus:ring-brand-400"
                 />
                 <div>
                   <p className="text-sm font-semibold text-gray-800">Self Booking Enabled</p>
@@ -285,7 +285,7 @@ export default function HostelSetup() {
                   type="checkbox"
                   checked={bkSettings.requiresAdminApproval}
                   onChange={(e) => setBkSettings((s) => ({ ...s, requiresAdminApproval: e.target.checked }))}
-                  className="w-4 h-4 rounded text-indigo-600 focus:ring-indigo-500"
+                  className="w-4 h-4 rounded text-brand-600 focus:ring-brand-400"
                 />
                 <div>
                   <p className="text-sm font-semibold text-gray-800">Requires Admin Approval</p>
@@ -321,13 +321,13 @@ export default function HostelSetup() {
       )}
 
       {/* Placeholder for hostel basic info note */}
-      <div className="bg-indigo-50 border border-indigo-100 rounded-2xl p-4 flex items-start gap-3">
-        <div className="w-7 h-7 rounded-lg bg-indigo-100 flex items-center justify-center shrink-0">
-          <Building2 size={14} className="text-indigo-600" />
+      <div className="bg-brand-50 border border-brand-100 rounded-2xl p-4 flex items-start gap-3">
+        <div className="w-7 h-7 rounded-lg bg-brand-100 flex items-center justify-center shrink-0">
+          <Building2 size={14} className="text-brand-600" />
         </div>
         <div>
-          <p className="text-sm font-semibold text-indigo-800">Hostel Basic Info</p>
-          <p className="text-xs text-indigo-600 mt-0.5">
+          <p className="text-sm font-semibold text-brand-800">Hostel Basic Info</p>
+          <p className="text-xs text-brand-600 mt-0.5">
             To update hostel name, address, contact, and rent — go to <strong>Settings → General</strong>.
           </p>
         </div>

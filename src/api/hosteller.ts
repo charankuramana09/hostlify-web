@@ -10,6 +10,24 @@ export const getHostellerProfile = (id: number) =>
 export const updateHostellerProfile = (id: number, data: Record<string, unknown>) =>
   apiClient.put(`/hostellers/${id}`, data).then((r) => r.data.data)
 
+export const getEmergencyContact = (id: number) =>
+  apiClient.get(`/hostellers/${id}/emergency-contact`).then((r) => r.data.data)
+
+export const saveEmergencyContact = (id: number, data: Record<string, unknown>) =>
+  apiClient.put(`/hostellers/${id}/emergency-contact`, data).then((r) => r.data.data)
+
+export const uploadProfilePhoto = (hostellerId: number, file: File) => {
+  const fd = new FormData(); fd.append('file', file)
+  return apiClient.post(`/hostellers/profile/photo?hostellerId=${hostellerId}`, fd,
+    { headers: { 'Content-Type': 'multipart/form-data' } }).then((r) => r.data.data)
+}
+
+export const uploadIdProof = (hostellerId: number, file: File) => {
+  const fd = new FormData(); fd.append('file', file)
+  return apiClient.post(`/hostellers/profile/id-proof?hostellerId=${hostellerId}`, fd,
+    { headers: { 'Content-Type': 'multipart/form-data' } }).then((r) => r.data.data)
+}
+
 // ─── Payment / Dues ───────────────────────────────────────────────────────────
 export const getCurrentDue = () =>
   apiClient.get('/payment/dues/current').then((r) => r.data.data)
@@ -17,8 +35,17 @@ export const getCurrentDue = () =>
 export const getDuesHistory = () =>
   apiClient.get('/payment/dues/history').then((r) => r.data.data)
 
+// My actual payment transactions (records)
+export const getMyPaymentRecords = () =>
+  apiClient.get('/payment/records/my').then((r) => r.data.data)
+
+// Returns Razorpay checkout info: { keyId, orderId, amountPaise, currency, dueId, hostellerName, description }
 export const initiateRazorpay = (dueId: number) =>
   apiClient.post('/payment/razorpay/initiate', { dueId }).then((r) => r.data.data)
+
+// Verify the checkout signature server-side and capture the payment
+export const verifyRazorpay = (payload: { razorpayPaymentId: string; razorpayOrderId: string; razorpaySignature: string }) =>
+  apiClient.post('/payment/razorpay/verify', payload).then((r) => r.data.data)
 
 // ─── Complaints ───────────────────────────────────────────────────────────────
 export const getMyComplaints = (hostellerProfileId: number) =>

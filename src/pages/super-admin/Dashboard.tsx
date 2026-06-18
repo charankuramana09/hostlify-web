@@ -12,7 +12,7 @@ export default function SuperAdminDashboard() {
   if (dashLoading)
     return (
       <div className="flex items-center justify-center py-20">
-        <div className="w-8 h-8 rounded-full border-4 border-indigo-200 border-t-indigo-600 animate-spin" />
+        <div className="w-8 h-8 rounded-full border-4 border-brand-200 border-t-brand-600 animate-spin" />
       </div>
     )
 
@@ -29,11 +29,11 @@ export default function SuperAdminDashboard() {
       {/* Welcome banner */}
       <div
         className="rounded-2xl p-6 text-white relative overflow-hidden"
-        style={{ background: 'linear-gradient(135deg, #0f2d4a 0%, #7c3aed 100%)' }}
+        style={{ background: 'linear-gradient(135deg, #0f2d4a 0%, #1d6ea8 100%)' }}
       >
         <div
           className="absolute top-0 right-0 w-64 h-64 rounded-full opacity-10 pointer-events-none"
-          style={{ background: 'radial-gradient(circle, #a78bfa, transparent)', transform: 'translate(30%, -30%)' }}
+          style={{ background: 'radial-gradient(circle, #3aaee8, transparent)', transform: 'translate(30%, -30%)' }}
         />
         <p className="text-sm font-medium" style={{ color: 'rgba(255,255,255,0.6)' }}>Super Admin 👋</p>
         <h1 className="text-2xl font-bold mt-0.5 tracking-tight">Network Overview</h1>
@@ -55,8 +55,8 @@ export default function SuperAdminDashboard() {
           label="Total Residents"
           value={dashboard?.totalResidents ?? totalOccupied}
           sub={`${totalCapacity - (dashboard?.totalResidents ?? totalOccupied)} beds available`}
-          icon={<Users size={20} className="text-indigo-600" />}
-          iconBg="bg-indigo-50"
+          icon={<Users size={20} className="text-brand-600" />}
+          iconBg="bg-brand-50"
           trend={{ value: `${totalCapacity > 0 ? Math.round(((dashboard?.totalResidents ?? totalOccupied) / totalCapacity) * 100) : 0}% full`, up: true }}
         />
         <StatCard
@@ -107,7 +107,7 @@ export default function SuperAdminDashboard() {
                       <div className="flex items-center gap-3">
                         <div
                           className="w-8 h-8 rounded-xl flex items-center justify-center text-xs font-bold text-white shrink-0"
-                          style={{ background: 'linear-gradient(135deg, #4f46e5, #7c3aed)' }}
+                          style={{ background: 'linear-gradient(135deg, #1d6ea8, #1a8fd1)' }}
                         >
                           {h.name[0]}
                         </div>
@@ -123,7 +123,7 @@ export default function SuperAdminDashboard() {
                             style={{
                               width: `${rate}%`,
                               background: rate >= 80
-                                ? 'linear-gradient(90deg, #059669, #34d399)'
+                                ? 'linear-gradient(90deg, #1d6ea8, #1a8fd1)'
                                 : 'linear-gradient(90deg, #d97706, #fbbf24)',
                             }}
                           />
@@ -167,7 +167,7 @@ export default function SuperAdminDashboard() {
                           className="h-2 rounded-full"
                           style={{
                             width: `${totalCapacity > 0 ? Math.round((totalOccupied / totalCapacity) * 100) : 0}%`,
-                            background: 'linear-gradient(90deg, #7c3aed, #a78bfa)',
+                            background: 'linear-gradient(90deg, #1d6ea8, #3aaee8)',
                           }}
                         />
                       </div>
